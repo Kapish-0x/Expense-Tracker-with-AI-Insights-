@@ -14,6 +14,16 @@ const userSchema = new Schema ({
         type: String,
         required: [true, "Password is required"]
     },
+    monthlyBudget : {
+            type: Number,
+            default:0
+    },
+
+    currency: {
+        type:String,
+        default:"INR",
+    },
+
     role : {
         type: String,
         enum: ["USER" , "ADMIN"],
