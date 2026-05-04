@@ -53,3 +53,17 @@ commonApp.post("/login", async (req, res) => {
   //send res
   res.status(200).json({ message: "login success", payload: userObj });
 });
+
+
+
+//Route for Logout
+commonApp.get("/logout", (req, res) => {
+  //delete token from cookie storage
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+  //send res
+  res.status(200).json({ message: "Logout success" });
+});

@@ -24,3 +24,9 @@ Content-Type: application/json
 }
 
 
+###
+//logout
+
+GET http://localhost:4000/common-api/logout 
+
+
