@@ -12,14 +12,14 @@ app.use(exp.json())
 
 
 //port number
-const port=process.env.PORT || 4000
+const port=process.env.PORT || 5000
 
 async function connectDB(){
     try{
         await connect(process.env.DB_URL);
         console.log("DB connection succesfull");
         //start server
-        app.listen(port,()=>console.log("server on port 4000.."))
+        app.listen(port,()=>console.log(`Server on port ${process.env.PORT}`))
     }
     catch(err){
         console.log("Error in db connection :",err);
