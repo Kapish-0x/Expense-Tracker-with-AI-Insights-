@@ -1,4 +1,18 @@
+//register
+POST http://localhost:4000/user-api/users
+Content-Type: application/json
 
+{
+    "name":"user2",
+    "email":"user2@gmail.com",
+    "password":"user2",
+    "monthlyBudget":"20000",
+    "role":"USER"
+}
+
+
+
+###
 // login
 
 POST http://localhost:4000/common-api/login
@@ -8,3 +22,5 @@ Content-Type: application/json
     "email":"user1@gmail.com",
     "password":"user1"
 }
+
+

@@ -5,15 +5,18 @@ const userSchema = new Schema ({
         type: String,
         required: [true, "Name is required"],
     },
+    
     email: {
         type: String,
         required: [true, "Email is required"],
         unique: [true , "Email already registered"]
     },
+
     password: {
         type: String,
         required: [true, "Password is required"]
     },
+
     monthlyBudget : {
             type: Number,
             default:0

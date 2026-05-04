@@ -3,6 +3,7 @@ import { connect } from "mongoose";
 import bcrypt from 'bcryptjs';
 import {config} from 'dotenv'
 import { commonApp } from "./APIs/CommonAPI.js";
+import { userApp } from "./APIs/UserAPI.js";
 
 config();           //process.env.PORT , process.env.PORT
 
@@ -12,6 +13,7 @@ const app=exp()
 app.use(exp.json())
 
 app.use("/common-api",commonApp)
+app.use("/user-api",userApp)
 
 
 //port number
