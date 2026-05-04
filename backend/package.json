@@ -11,7 +11,17 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+<<<<<<< HEAD
     "express": "^5.2.1",
     "mongoose": "^9.6.1"
+=======
+<<<<<<< HEAD
+    "bcryptjs": "^3.0.3",
+    "express": "^5.2.1"
+=======
+    "express": "^5.2.1",
+    "mongoose": "^9.6.1"
+>>>>>>> 40addb47eddf0a25ac81880428b4b2bf6d411ea4
+>>>>>>> 4be5ba6546ee3a2bcc6471fa84f1d090fdab5568
   }
 }
