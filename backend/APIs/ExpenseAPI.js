@@ -218,12 +218,6 @@ expenseApp.delete("/expense/:id",VerifyToken("USER", "ADMIN"),async (req, res) =
     }
   });
 
-
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 4f6a9f72bebe1b81e46355e950e7d65ca905a9b7
   //predict next month expenses
 
   expenseApp.get(
@@ -289,7 +283,6 @@ if (recentMonths.length > 0) {
       });
     }
   }
-<<<<<<< HEAD
 );
 
 
@@ -358,6 +351,4 @@ expenseApp.get(
       });
     }
   }
-=======
->>>>>>> 4f6a9f72bebe1b81e46355e950e7d65ca905a9b7
 );
