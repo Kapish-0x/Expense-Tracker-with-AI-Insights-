@@ -30,7 +30,7 @@ const userSchema = new Schema ({
     role : {
         type: String,
         enum: ["USER" , "ADMIN"],
-        required: [true, "Invalid role"]
+        default:"USER"
     },
     profileImageUrl: {
         type: String
