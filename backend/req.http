@@ -36,11 +36,11 @@ POST http://localhost:4000/expense-api/expense
 Content-Type: application/json
 
 {
-  "title": "Clothes",
-  "amount": 3000,
-  "type": "EXPENSE",
-  "category": "SHOPPING",
-  "description": "Shopping with friends"
+  "title": "job",
+  "amount": 30000,
+  "type": "INCOME",
+  "category": "SALARY",
+  "description": "Salary credited"
 }
 
 
@@ -70,3 +70,9 @@ Content-Type: application/json
 ###
 //delete expense
 DELETE http://localhost:4000/expense-api/expense/69f96db3c6426a5820ccc2e7
+
+
+###
+//summary or dashboard
+
+GET http://localhost:4000/expense-api/summary

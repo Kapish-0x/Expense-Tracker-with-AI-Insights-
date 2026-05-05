@@ -74,3 +74,28 @@ expenseApp.delete("/expense/:id",VerifyToken("USER", "ADMIN"),async (req, res) =
       res.status(500).json({message: err.message});
     }
   });
+
+
+
+
+  //Dashboard kind of thing
+
+  expenseApp.get("/summary",VerifyToken("USER", "ADMIN"),async (req, res) => {
+    try {
+      const userIdOfToken = req.user?.id;
+
+      const expenses = await ExpenseModel.find({userId: userIdOfToken,});
+      let income = 0;
+      let expense = 0;
+
+      expenses.forEach((item) => {
+        if (item.type === "INCOME") income += item.amount;
+        else expense += item.amount;
+      });
+      const savings = income - expense;
+
+      res.status(200).json({message: "summary",payload: {income,expense,savings,}});
+    } catch (err) {
+      res.status(500).json({message: err.message});
+    }
+  });
