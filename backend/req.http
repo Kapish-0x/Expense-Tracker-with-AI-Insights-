@@ -3,15 +3,9 @@ POST http://localhost:4000/user-api/users
 Content-Type: application/json
 
 {
-<<<<<<< HEAD
     "name":"user1",
     "email":"user1@gmail.com",
-    "password":"user1",
-=======
-    "name":"user3",
-    "email":"user3@gmail.com",
-    "password":"user3",
->>>>>>> 4f6a9f72bebe1b81e46355e950e7d65ca905a9b7
+    "password":"user1"
     "monthlyBudget":"20000",
     "role":"USER"
 }
@@ -25,13 +19,8 @@ POST http://localhost:4000/common-api/login
 Content-Type: application/json
 
 {
-<<<<<<< HEAD
     "email":"user1@gmail.com",
     "password":"user1"
-=======
-    "email":"user3@gmail.com",
-    "password":"user3"
->>>>>>> 4f6a9f72bebe1b81e46355e950e7d65ca905a9b7
 }
 
 
