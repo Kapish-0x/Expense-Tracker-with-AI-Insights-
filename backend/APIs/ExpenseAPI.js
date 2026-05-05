@@ -216,3 +216,72 @@ expenseApp.delete("/expense/:id",VerifyToken("USER", "ADMIN"),async (req, res) =
       res.status(500).json({message: err.message});
     }
   });
+
+
+
+  //predict next month expenses
+
+  expenseApp.get(
+  "/predict-expense",
+  VerifyToken("USER", "ADMIN"),
+  async (req, res) => {
+    try {
+      const userIdOfToken = req.user?.id;
+
+      // group monthly expenses
+      const monthlyExpenses = await ExpenseModel.aggregate([
+        {
+          $match: {
+            userId: new mongoose.Types.ObjectId(userIdOfToken),
+            type: "EXPENSE"
+          }
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+              month: { $month: "$date" }
+            },
+            total: {
+              $sum: "$amount"
+            }
+          }
+        },
+        {
+          $sort: {
+            "_id.year": 1,
+            "_id.month": 1
+          }
+        }
+      ]);
+
+      // calculate average
+     let predicted = 0;
+
+// take only last 3 months
+const recentMonths = monthlyExpenses.slice(-3);
+
+if (recentMonths.length > 0) {
+  const sum = recentMonths.reduce(
+    (acc, item) => acc + item.total,
+    0
+  );
+
+  predicted = Math.round(sum / recentMonths.length);
+}
+
+      res.status(200).json({
+  message: "Predicted next month expense",
+  payload: {
+    consideredMonths: recentMonths,
+    predicted
+  }
+});
+
+    } catch (err) {
+      res.status(500).json({
+        message: err.message
+      });
+    }
+  }
+);

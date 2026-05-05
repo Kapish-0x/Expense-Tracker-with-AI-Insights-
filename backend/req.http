@@ -3,9 +3,9 @@ POST http://localhost:4000/user-api/users
 Content-Type: application/json
 
 {
-    "name":"user2",
-    "email":"user2@gmail.com",
-    "password":"user2",
+    "name":"user3",
+    "email":"user3@gmail.com",
+    "password":"user3",
     "monthlyBudget":"20000",
     "role":"USER"
 }
@@ -19,8 +19,8 @@ POST http://localhost:4000/common-api/login
 Content-Type: application/json
 
 {
-    "email":"user2@gmail.com",
-    "password":"user2"
+    "email":"user3@gmail.com",
+    "password":"user3"
 }
 
 
@@ -89,3 +89,6 @@ GET http://localhost:4000/expense-api/category-analytics
 //monthly income vs expense
 GET http://localhost:4000/expense-api/income-expense-analytics 
 
+###
+//predict next month expense
+GET http://localhost:4000/expense-api/predict-expense
