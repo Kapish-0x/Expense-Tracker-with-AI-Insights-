@@ -90,7 +90,6 @@ GET http://localhost:4000/expense-api/category-analytics
 //monthly income vs expense
 GET http://localhost:4000/expense-api/income-expense-analytics 
 
-<<<<<<< HEAD
 
 ###
 //predict next months expense
@@ -100,8 +99,3 @@ GET http://localhost:4000/expense-api/predict-expense
 ###
 //AI insights
 GET http://localhost:4000/expense-api/ai-insights
-=======
-###
-//predict next month expense
-GET http://localhost:4000/expense-api/predict-expense
->>>>>>> 4f6a9f72bebe1b81e46355e950e7d65ca905a9b7
