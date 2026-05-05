@@ -36,28 +36,28 @@ POST http://localhost:4000/expense-api/expense
 Content-Type: application/json
 
 {
-  "title": "job",
-  "amount": 30000,
-  "type": "INCOME",
-  "category": "SALARY",
-  "description": "Salary credited"
+  "title": "burger",
+  "amount": 300,
+  "type": "EXPENSE",
+  "category": "FOOD",
+  "description": "Tasty"
 }
 
 
 
 ###
-//Get all expenses
+//Get all transactions
 GET http://localhost:4000/expense-api/expenses
 
 
 ###
 //get expenses of any one user
-GET http://localhost:4000/expense-api/expense/69f96ddfc6426a5820ccc2e8
+GET http://localhost:4000/expense-api/expense/69f869dbc722ef0994ce403e
 
 
 ###
 //update expense
-PUT http://localhost:4000/expense-api/expense/69f96db3c6426a5820ccc2e7
+PUT http://localhost:4000/expense-api/expense/69f981e5ed7b935d4a3faeb4
 Content-Type: application/json
 
 {
@@ -69,10 +69,23 @@ Content-Type: application/json
 
 ###
 //delete expense
-DELETE http://localhost:4000/expense-api/expense/69f96db3c6426a5820ccc2e7
+DELETE http://localhost:4000/expense-api/expense/69f98ff96f508117fe232486
 
 
 ###
 //summary or dashboard
 
 GET http://localhost:4000/expense-api/summary
+
+
+
+###
+//analytics
+GET http://localhost:4000/expense-api/category-analytics
+
+
+
+###
+//monthly income vs expense
+GET http://localhost:4000/expense-api/income-expense-analytics 
+

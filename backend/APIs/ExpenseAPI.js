@@ -1,23 +1,63 @@
 import exp from "express";
 import { ExpenseModel } from "../models/ExpenseModel.js";
 import { VerifyToken } from "../Middlewares/VerifyToken.js";
-
+import { UserModel } from "../models/UserModel.js";
 export const expenseApp = exp.Router();
+import mongoose from "mongoose";
 
 
 // ADD EXPENSE
-expenseApp.post("/expense",VerifyToken("USER", "ADMIN"),async (req, res) => {
-    try {
-      const userIdOfToken = req.user?.id;
+expenseApp.post("/expense", VerifyToken("USER", "ADMIN"), async (req, res) => {
+  try {
+    const userIdOfToken = req.user?.id;
 
-      const newExpense = new ExpenseModel({...req.body,userId: userIdOfToken,});
-      const savedExpense = await newExpense.save();
-      res.status(201).json({message: "Expense added",payload: savedExpense,});
-    } catch (err) {
-      res.status(500).json({message: err.message,});
+    // 1. Save the new expense
+    const newExpense = new ExpenseModel({ ...req.body, userId: userIdOfToken });
+    const savedExpense = await newExpense.save();
+
+    // 2. Fetch User & Current Month's totals
+    const user = await UserModel.findById(userIdOfToken);
+    
+    // Helper to get first day of current month
+    const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+
+    const monthlyExpenses = await ExpenseModel.find({
+      userId: userIdOfToken,
+      type: "EXPENSE",
+      date: { $gte: startOfMonth }
+    });
+
+    const totalSpent = monthlyExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+
+    // 3. Logic: Check for Budget Alerts
+    let alertMessage = null;
+    if (user.monthlyBudget > 0) {
+      const usagePercentage = (totalSpent / user.monthlyBudget) * 100;
+
+      if (usagePercentage >= 90) {
+        alertMessage = "🚨 CRITICAL: You have used over 90% of your monthly budget!";
+      } else if (usagePercentage >= 50) {
+        alertMessage = "⚠️ ALERT: You've crossed 50% of your monthly budget.";
+      }
     }
-  });
 
+    // 4. Save alert to User's History if triggered
+    if (alertMessage) {
+      user.alertHistory.push({ message: alertMessage });
+      await user.save();
+    }
+
+    // 5. Send response with the alert (if any)
+    res.status(201).json({
+      message: "Expense added",
+      alert: alertMessage, // Frontend can show this in a Toast/Popup
+      payload: savedExpense,
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 // GET ALL EXPENSES
 expenseApp.get("/expenses",VerifyToken("USER", "ADMIN"),async (req, res) => {
@@ -56,7 +96,7 @@ expenseApp.put("/expense/:id",VerifyToken("USER", "ADMIN"),async (req, res) => {
       const updatedExpense = await ExpenseModel.findOneAndUpdate({_id: expenseId,userId: userIdOfToken},req.body,{ new: true });
         res.status(200).json({message: "Expense updated",payload: updatedExpense,});
     } catch (err) {
-      res.status(500).json({message: err.message,});
+      res.status(500).json({message: err.message});
     }
   });
 
@@ -78,7 +118,7 @@ expenseApp.delete("/expense/:id",VerifyToken("USER", "ADMIN"),async (req, res) =
 
 
 
-  //Dashboard kind of thing
+//Dashboard kind of thing
 
   expenseApp.get("/summary",VerifyToken("USER", "ADMIN"),async (req, res) => {
     try {
@@ -95,6 +135,83 @@ expenseApp.delete("/expense/:id",VerifyToken("USER", "ADMIN"),async (req, res) =
       const savings = income - expense;
 
       res.status(200).json({message: "summary",payload: {income,expense,savings,}});
+    } catch (err) {
+      res.status(500).json({message: err.message});
+    }
+  });
+
+
+
+  //charts purpose
+  //expenses category
+
+  expenseApp.get("/category-analytics",VerifyToken("USER", "ADMIN"),async (req, res) => {
+    try {
+      const userIdOfToken = req.user?.id;
+
+      // aggregate category totals
+      const analytics = await ExpenseModel.aggregate([
+        {
+          $match: {
+            userId: new mongoose.Types.ObjectId(userIdOfToken),
+            type: "EXPENSE"
+          }
+        },
+        {
+          $group: {
+            _id: "$category",
+            total: {
+              $sum: "$amount"
+            }
+          }
+        },
+        {
+          $sort: {
+            total: -1
+          }
+        }
+      ]);
+
+      res.status(200).json({message: "Category analytics",payload: analytics});
+    } catch (err) {
+      res.status(500).json({
+        message: err.message
+      });
+    }
+  });
+
+
+  
+
+  //monthly income vs expenses comparision chart 
+
+  expenseApp.get("/income-expense-analytics",VerifyToken("USER", "ADMIN"),async (req, res) => {
+    try {
+      const userIdOfToken = req.user?.id;
+
+      const analytics = await ExpenseModel.aggregate([
+        {
+          $match: {
+            userId: new mongoose.Types.ObjectId(userIdOfToken),
+          },
+        },
+        {
+          $group: {
+            _id: {
+              month: { $month: "$date" },
+              type: "$type",
+            },
+            total: { $sum: "$amount" },
+          },
+        },
+        {
+          $sort: {
+            "_id.month": 1,
+          },
+        },
+      ]);
+
+      res.status(200).json({message: "Income vs Expense analytics",payload: analytics,});
     } catch (err) {
       res.status(500).json({message: err.message});
     }

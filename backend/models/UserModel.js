@@ -38,7 +38,15 @@ const userSchema = new Schema ({
     isUserActive: {
         type: Boolean,
         default: true
-    }
+    },
+    minSavings:{
+        type:Number,
+        default:0,
+    },
+    alertHistory:[{
+        message:String,
+        date:{type:Date, default: Date.now},
+    }],
 },
     {
         timestamps: true,
