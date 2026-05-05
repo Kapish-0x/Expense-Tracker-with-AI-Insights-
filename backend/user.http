@@ -1,0 +1,11 @@
+### Get User Profile
+GET http://localhost:4000/user-api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Zjg2YWRmZTI1YmQ3MzRmNGUwNDdkMiIsImVtYWlsIjoidXNlcjJAZ21haWwuY29tIiwicm9sZSI6IlVTRVIiLCJuYW1lIjoidXNlcjIiLCJpYXQiOjE3Nzc5NTU5NzIsImV4cCI6MTc3Nzk1OTU3Mn0.8EdPpkvi5e-spsQCt7zHUhh8siiY8sNnaIrnm8JemT0
+### Update Monthly Budget
+PATCH  http://localhost:4000/user-api/budget
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Zjg2YWRmZTI1YmQ3MzRmNGUwNDdkMiIsImVtYWlsIjoidXNlcjJAZ21haWwuY29tIiwicm9sZSI6IlVTRVIiLCJuYW1lIjoidXNlcjIiLCJpYXQiOjE3Nzc5NTU5NzIsImV4cCI6MTc3Nzk1OTU3Mn0.8EdPpkvi5e-spsQCt7zHUhh8siiY8sNnaIrnm8JemT0
+Content-Type: application/json 
+
+{
+    "monthlyBudget" : 25000
+}

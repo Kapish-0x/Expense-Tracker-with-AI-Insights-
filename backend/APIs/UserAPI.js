@@ -22,3 +22,22 @@ if(!allowedRoles.includes(newuser.role))
     await newUserDoc.save()
 res.status(200).json({message:"user created"})
 })
+
+//get details 
+userApp.get("/profile" , VerifyToken("USER" , "ADMIN"), async(req , res)=> {
+  const user = await UserModel.findById(req.user.id).select("-password");
+  if(!user) return res.status(404).json({message: "User not found"});
+  res.status(200).json({message: "User Profile", payload: user})
+});
+
+//update the budget
+userApp.patch("/budget" , VerifyToken("USER") , async(req , res)=> {
+  const {monthlyBudget} = req.body;
+
+  const updatedUser = await UserModel.findByIdAndUpdate(
+    req.user.id,
+    { monthlyBudget },
+    { new: true , runValidators: true }
+  ).select("-password");
+  res.status(200).json({message: "Budget Updated" , payload: updatedUser});
+});
