@@ -30,3 +30,43 @@ Content-Type: application/json
 GET http://localhost:4000/common-api/logout 
 
 
+###
+//add expense
+POST http://localhost:4000/expense-api/expense
+Content-Type: application/json
+
+{
+  "title": "Clothes",
+  "amount": 3000,
+  "type": "EXPENSE",
+  "category": "SHOPPING",
+  "description": "Shopping with friends"
+}
+
+
+
+###
+//Get all expenses
+GET http://localhost:4000/expense-api/expenses
+
+
+###
+//get expenses of any one user
+GET http://localhost:4000/expense-api/expense/69f96ddfc6426a5820ccc2e8
+
+
+###
+//update expense
+PUT http://localhost:4000/expense-api/expense/69f96db3c6426a5820ccc2e7
+Content-Type: application/json
+
+{
+  "title": "Dominos Pizza",
+  "amount": 450,
+  "description": "Updated expense"
+}
+
+
+###
+//delete expense
+DELETE http://localhost:4000/expense-api/expense/69f96db3c6426a5820ccc2e7

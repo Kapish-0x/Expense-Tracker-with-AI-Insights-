@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import {config} from 'dotenv'
 import { commonApp } from "./APIs/CommonAPI.js";
 import { userApp } from "./APIs/UserAPI.js";
+import {expenseApp} from "./APIs/ExpenseAPI.js"
 
 config();           //process.env.PORT , process.env.PORT
 
@@ -12,8 +13,14 @@ const app=exp()
 
 app.use(exp.json())
 
+//cookie parser
+import cookieParser from "cookie-parser";
+app.use(cookieParser());
+
+
 app.use("/common-api",commonApp)
 app.use("/user-api",userApp)
+app.use("/expense-api",expenseApp)
 
 
 //port number
