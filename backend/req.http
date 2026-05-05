@@ -19,8 +19,8 @@ POST http://localhost:4000/common-api/login
 Content-Type: application/json
 
 {
-    "email":"user1@gmail.com",
-    "password":"user1"
+    "email":"user2@gmail.com",
+    "password":"user2"
 }
 
 
