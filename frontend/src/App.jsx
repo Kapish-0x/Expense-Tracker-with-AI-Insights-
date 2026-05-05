@@ -1,9 +1,12 @@
-import React from 'react'
+import RootLayout from "../components/RootLayout";
+import Dashboard from "../components/DashBoard";
 
 function App() {
   return (
-    <div>App</div>
-  )
+    <RootLayout>
+      <Dashboard />
+    </RootLayout>
+  );
 }
 
-export default App
+export default App;

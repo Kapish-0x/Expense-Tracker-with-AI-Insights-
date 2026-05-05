@@ -1,0 +1,46 @@
+###
+//add expense
+POST http://localhost:4000/expense-api/expense
+Content-Type: application/json
+
+{
+  "title": "EMI",
+  "amount": 15000,
+  "type": "EXPENSE",
+  "category": "OTHERS",
+  "description": "EMI paid"
+}
+
+
+
+###
+//Get all expenses
+GET http://localhost:4000/expense-api/expenses
+
+
+###
+//get expenses of any one user
+GET http://localhost:4000/expense-api/expense/69f983b9ea480a563eda11ed
+
+
+###
+//update expense
+PUT http://localhost:4000/expense-api/expense/69f983b9ea480a563eda11ed
+Content-Type: application/json
+
+{
+  "title": "EMI",
+  "amount": 29000,
+  "description": "Updated expense"
+}
+
+
+###
+//delete expense
+DELETE http://localhost:4000/expense-api/expense/69f982e2ea480a563eda11ec
+
+
+###
+//summary or dashboard
+
+GET http://localhost:4000/expense-api/summary
