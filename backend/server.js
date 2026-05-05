@@ -8,6 +8,8 @@ import {expenseApp} from "./APIs/ExpenseAPI.js"
 
 config();           //process.env.PORT , process.env.PORT
 
+console.log("ENV KEY:", process.env.OPENAI_API_KEY);
+
 const app=exp()
 //add body parser
 

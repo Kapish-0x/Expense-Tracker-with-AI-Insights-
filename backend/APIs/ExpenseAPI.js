@@ -4,6 +4,7 @@ import { VerifyToken } from "../Middlewares/VerifyToken.js";
 import { UserModel } from "../models/UserModel.js";
 export const expenseApp = exp.Router();
 import mongoose from "mongoose";
+import { getFinancialAdvice } from "../Services/AIService.js";
 
 
 // ADD EXPENSE
@@ -69,7 +70,7 @@ expenseApp.get("/expenses",VerifyToken("USER", "ADMIN"),async (req, res) => {
     } catch (err) {
       res.status(500).json({message: err.message});
     }
-  });
+});
 
 
 // GET SINGLE EXPENSE
@@ -216,3 +217,141 @@ expenseApp.delete("/expense/:id",VerifyToken("USER", "ADMIN"),async (req, res) =
       res.status(500).json({message: err.message});
     }
   });
+
+
+
+
+  //predict next month expenses
+
+  expenseApp.get(
+  "/predict-expense",
+  VerifyToken("USER", "ADMIN"),
+  async (req, res) => {
+    try {
+      const userIdOfToken = req.user?.id;
+
+      // group monthly expenses
+      const monthlyExpenses = await ExpenseModel.aggregate([
+        {
+          $match: {
+            userId: new mongoose.Types.ObjectId(userIdOfToken),
+            type: "EXPENSE"
+          }
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+              month: { $month: "$date" }
+            },
+            total: {
+              $sum: "$amount"
+            }
+          }
+        },
+        {
+          $sort: {
+            "_id.year": 1,
+            "_id.month": 1
+          }
+        }
+      ]);
+
+      // calculate average
+     let predicted = 0;
+
+// take only last 3 months
+const recentMonths = monthlyExpenses.slice(-3);
+
+if (recentMonths.length > 0) {
+  const sum = recentMonths.reduce(
+    (acc, item) => acc + item.total,
+    0
+  );
+
+  predicted = Math.round(sum / recentMonths.length);
+}
+
+      res.status(200).json({
+  message: "Predicted next month expense",
+  payload: {
+    consideredMonths: recentMonths,
+    predicted
+  }
+});
+
+    } catch (err) {
+      res.status(500).json({
+        message: err.message
+      });
+    }
+  }
+);
+
+
+
+//AI insights
+
+expenseApp.get(
+  "/ai-insights",
+  VerifyToken("USER", "ADMIN"),
+  async (req, res) => {
+    try {
+      const userIdOfToken = req.user?.id;
+
+      const transactions = await ExpenseModel.find({
+        userId: userIdOfToken,
+      });
+
+      let income = 0;
+      let expense = 0;
+      let categoryTotals = {};
+
+      transactions.forEach((item) => {
+        if (item.type === "INCOME") {
+          income += item.amount;
+        } else {
+          expense += item.amount;
+          categoryTotals[item.category] =
+            (categoryTotals[item.category] || 0) + item.amount;
+        }
+      });
+
+      const savings = income - expense;
+
+      let topCategory = "OTHERS";
+      let max = 0;
+
+      for (let category in categoryTotals) {
+        if (categoryTotals[category] > max) {
+          max = categoryTotals[category];
+          topCategory = category;
+        }
+      }
+
+      const percentageUsed =
+        income > 0 ? Math.round((expense / income) * 100) : 0;
+
+      const predicted = expense;
+
+      const advice = await getFinancialAdvice({
+        income,
+        expense,
+        savings,
+        percentageUsed,
+        topCategory,
+        predicted,
+      });
+
+      res.status(200).json({
+        message: "AI Insights",
+        payload: advice,
+      });
+
+    } catch (err) {
+      res.status(500).json({
+        message: err.message,
+      });
+    }
+  }
+);
