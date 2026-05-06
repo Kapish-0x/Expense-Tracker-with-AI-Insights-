@@ -3,6 +3,7 @@ import RootLayout from "../components/RootLayout";
 import Dashboard from "../components/Dashboard";
 import Register from "../components/register";
 import Login from "../components/Login";
+import UploadReceipt from "../components/UploadReceipt";
 
 function App() {
   const routerObj = createBrowserRouter([
@@ -11,7 +12,7 @@ function App() {
       element: <RootLayout />,
       children: [
         {
-          index: true, // App khulne par seedha Register dikhega
+          index: true,
           element: <Register />,
         },
         {
@@ -26,6 +27,12 @@ function App() {
           path: "dashboard",
           element: <Dashboard />,
         },
+
+        {
+          path: "upload-receipt",
+          element: <UploadReceipt />,
+        },
+
         {
           path: "transactions",
           element: <div className="text-white">TRANSACTIONS_LOG</div>,
