@@ -1,99 +1,62 @@
-// import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-// import { useEffect } from 'react';
-// import Sidebar from './Sidebar';
-// import { useAuth } from '../store/authStore';
-
-// const RootLayout = () => {
-//   const location = useLocation();
-//   const navigate = useNavigate();
-
-//   const { isAuthenticated } = useAuth();
-
-//   const hideSidebarPaths = ['/', '/login', '/register'];
-//   const shouldHideSidebar = hideSidebarPaths.includes(location.pathname);
-
-//   // 🔐 Global Auth Control
-//   useEffect(() => {
-//     const publicPaths = ['/', '/login', '/register'];
-
-//     // Agar user logged in hai aur auth page pe hai → dashboard bhej
-//     if (isAuthenticated && publicPaths.includes(location.pathname)) {
-//       navigate('/dashboard');
-//     }
-
-//     // Agar user logged out hai aur protected route pe hai → login bhej
-//     if (!isAuthenticated && !publicPaths.includes(location.pathname)) {
-//       navigate('/login');
-//     }
-
-//   }, [isAuthenticated, location.pathname, navigate]);
-
-//   return (
-//     <div className="flex h-screen w-full bg-[#000000] overflow-hidden font-mono">
-//       {/* Conditional Rendering: Agar auth page nahi hai, tabhi sidebar dikhao */}
-//       {!shouldHideSidebar && <Sidebar />}
-
-//       {/* Dynamic Content Area */}
-//       <div className="flex-1 relative overflow-y-auto">
-//         {/* Subtle Nothing Dot Background */}
-//         <div 
-//           className="absolute inset-0 opacity-[0.03] pointer-events-none" 
-//           style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '30px 30px' }}
-//         ></div>
-
-//         {/* Main content: centering for auth pages, padding for dashboard */}
-//         <main className={`relative z-10 ${shouldHideSidebar ? 'flex items-center justify-center min-h-screen' : 'p-10'}`}>
-//           <Outlet />
-//         </main>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default RootLayout;
-
-
-
-
-
-
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import Sidebar from './Sidebar';
 import { useAuth } from '../store/authStore';
+import { Loader2 } from 'lucide-react'; // Ek clean loader use karle
 
 const RootLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  
+  // 'isCheckingAuth' zaroor fetch kar store se
+  const { isAuthenticated, isCheckingAuth, checkAuth } = useAuth();
 
-  const hideSidebarPaths = ['/', '/login', '/register'];
-  const shouldHideSidebar = hideSidebarPaths.includes(location.pathname);
+  const publicPaths = ['/', '/login', '/register'];
+  const shouldHideSidebar = publicPaths.includes(location.pathname);
 
+  // 1. Initial Auth Check (Cookie verification)
   useEffect(() => {
-    const publicPaths = ['/', '/login', '/register'];
+    if (checkAuth) {
+      checkAuth();
+    }
+  }, [checkAuth]);
+
+  // 2. Protected Routes Logic
+  useEffect(() => {
+    // Agar abhi check chal raha hai, toh kuch mat karo
+    if (isCheckingAuth) return;
+
     if (isAuthenticated && publicPaths.includes(location.pathname)) {
       navigate('/dashboard');
     }
+    
     if (!isAuthenticated && !publicPaths.includes(location.pathname)) {
       navigate('/login');
     }
-  }, [isAuthenticated, location.pathname, navigate]);
+  }, [isAuthenticated, isCheckingAuth, location.pathname, navigate]);
+
+  // 3. Loading Screen (Essential for Cookies)
+  // Jab tak cookie verify ho rahi hai, tab tak blank ya loader dikhao
+  // Iske bina user login screen dekh kar dashboard par jump karega (Ghosting)
+  if (isCheckingAuth) {
+    return (
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-[#fafafa]">
+        <Loader2 className="animate-spin text-slate-400 mb-4" size={32} />
+        <p className="text-slate-400 text-xs font-bold uppercase tracking-[3px]">Syncing Node...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen w-full bg-[#fafafa] text-slate-900 selection:bg-slate-200">
       
-      {/* Sidebar - Clean Ivory/White look */}
       {!shouldHideSidebar && (
-        <aside className="bg-white border-r border-slate-100 shadow-[4px_0_24px_rgba(0,0,0,0,02)] z-20">
+        <aside className="bg-white border-r border-slate-100 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20">
           <Sidebar />
         </aside>
       )}
 
-      {/* Main Content Area */}
       <div className="flex-1 relative overflow-hidden flex flex-col">
-        
-        {/* Subtle Textured Background */}
         <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:32px_32px] opacity-40 pointer-events-none"></div>
 
         <main
@@ -104,8 +67,6 @@ const RootLayout = () => {
           }`}
         >
           <div className={`${shouldHideSidebar ? 'w-full max-w-md' : 'w-full max-w-[1400px] mx-auto'}`}>
-            
-            {/* The "Floating Canvas" container */}
             <div className={`
               ${shouldHideSidebar 
                 ? 'bg-white border border-slate-200 shadow-2xl rounded-3xl p-8' 

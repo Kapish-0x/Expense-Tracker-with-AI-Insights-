@@ -13,7 +13,10 @@ import { expenseApp } from "./APIs/ExpenseAPI.js";
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:5173", "http://localhost:5174"], // allow both ports
+  credentials: true
+}));
 app.use(express.json());
 app.use(cookieParser());
 const upload = multer({ dest: "uploads/" });
@@ -147,14 +150,14 @@ const PORT = process.env.PORT || 4000;
 async function startServer() {
   try {
     await mongoose.connect(process.env.DB_URL);
-    console.log("✅ Database connected");
+    console.log("Database connected");
 
     app.listen(PORT, () => {
-      console.log(`🚀 Server running: http://localhost:${PORT}`);
+      console.log(`Server running on: ${PORT}`);
     });
 
   } catch (err) {
-    console.error("❌ DB connection failed:", err);
+    console.error("DB connection failed:", err);
   }
 }
 

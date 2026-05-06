@@ -11,9 +11,11 @@ export const useAuth = create((set) => ({
     try {
       set({ loading: true, error: null });
 
+      // Added withCredentials to receive the cookie from backend
       let res = await axios.post(
         "http://localhost:4000/common-api/login",
-        userCred
+        userCred,
+        { withCredentials: true }
       );
 
       if (res.status === 200) {
@@ -38,7 +40,10 @@ export const useAuth = create((set) => ({
     try {
       set({ loading: true });
 
-      await axios.get("http://localhost:4000/common-api/logout");
+      // Added withCredentials so backend can clear the specific cookie
+      await axios.get("http://localhost:4000/common-api/logout", {
+        withCredentials: true,
+      });
 
       set({
         currentUser: null,
@@ -54,3 +59,11 @@ export const useAuth = create((set) => ({
     }
   },
 }));
+
+
+
+
+
+
+
+

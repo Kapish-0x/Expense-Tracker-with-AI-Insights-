@@ -7,55 +7,129 @@ import mongoose from "mongoose";
 import { getFinancialAdvice } from "../Services/AIService.js";
 
 
-// ADD EXPENSE
+// // ADD EXPENSE
+// expenseApp.post("/expense", VerifyToken("USER", "ADMIN"), async (req, res) => {
+//   try {
+//     const userIdOfToken = req.user?.id;
+
+//     // 1. Save the new expense
+//     const newExpense = new ExpenseModel({ ...req.body, userId: userIdOfToken });
+//     const savedExpense = await newExpense.save();
+
+//     // 2. Fetch User & Current Month's totals
+//     const user = await UserModel.findById(userIdOfToken);
+    
+//     // Helper to get first day of current month
+//     const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+
+//     const monthlyExpenses = await ExpenseModel.find({
+//       userId: userIdOfToken,
+//       type: "EXPENSE",
+//       date: { $gte: startOfMonth }
+//     });
+
+//     const totalSpent = monthlyExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+
+//     // 3. Logic: Check for Budget Alerts
+//     let alertMessage = null;
+//     if (user.monthlyBudget > 0) {
+//       const usagePercentage = (totalSpent / user.monthlyBudget) * 100;
+
+//       if (usagePercentage >= 90) {
+//         alertMessage = "🚨 CRITICAL: You have used over 90% of your monthly budget!";
+//       } else if (usagePercentage >= 50) {
+//         alertMessage = "⚠️ ALERT: You've crossed 50% of your monthly budget.";
+//       }
+//     }
+
+//     // 4. Save alert to User's History if triggered
+//     if (alertMessage) {
+//       user.alertHistory.push({ message: alertMessage });
+//       await user.save();
+//     }
+
+//     // 5. Send response with the alert (if any)
+//     res.status(201).json({
+//       message: "Expense added",
+//       alert: alertMessage, // Frontend can show this in a Toast/Popup
+//       payload: savedExpense,
+//     });
+
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// });
+
+// ADD EXPENSE & UPDATE USER TOTALS
 expenseApp.post("/expense", VerifyToken("USER", "ADMIN"), async (req, res) => {
   try {
     const userIdOfToken = req.user?.id;
+    const { amount, type } = req.body;
 
-    // 1. Save the new expense
+    // 1. Save the new expense/income transaction
     const newExpense = new ExpenseModel({ ...req.body, userId: userIdOfToken });
     const savedExpense = await newExpense.save();
 
-    // 2. Fetch User & Current Month's totals
-    const user = await UserModel.findById(userIdOfToken);
+    // 2. Update User's Total Income/Expense in Database
+    // $inc atomicity provide karta hai (race conditions se bachata hai)
+    const updateField = type === "INCOME" ? { income: amount } : { expense: amount };
     
-    // Helper to get first day of current month
-    const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    // Hamein user ka updated document chahiye alerts check karne ke liye
+    const user = await UserModel.findByIdAndUpdate(
+      userIdOfToken,
+      { $inc: updateField },
+      { new: true } // Updated user wapas dega
+    );
 
-    const monthlyExpenses = await ExpenseModel.find({
-      userId: userIdOfToken,
-      type: "EXPENSE",
-      date: { $gte: startOfMonth }
-    });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    const totalSpent = monthlyExpenses.reduce((sum, exp) => sum + exp.amount, 0);
-
-    // 3. Logic: Check for Budget Alerts
+    // 3. Logic: Check for Budget Alerts (Only for Expenses)
     let alertMessage = null;
-    if (user.monthlyBudget > 0) {
-      const usagePercentage = (totalSpent / user.monthlyBudget) * 100;
+    if (type === "EXPENSE") {
+      // Current month ka start date nikalne ke liye
+      const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 
-      if (usagePercentage >= 90) {
-        alertMessage = "🚨 CRITICAL: You have used over 90% of your monthly budget!";
-      } else if (usagePercentage >= 50) {
-        alertMessage = "⚠️ ALERT: You've crossed 50% of your monthly budget.";
+      // Current month ke saare expenses fetch karo total spent calculate karne ke liye
+      const monthlyExpenses = await ExpenseModel.find({
+        userId: userIdOfToken,
+        type: "EXPENSE",
+        date: { $gte: startOfMonth }
+      });
+
+      const totalSpent = monthlyExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+
+      if (user.monthlyBudget > 0) {
+        const usagePercentage = (totalSpent / user.monthlyBudget) * 100;
+
+        if (usagePercentage >= 90) {
+          alertMessage = "🚨 CRITICAL: You have used over 90% of your monthly budget!";
+        } else if (usagePercentage >= 50) {
+          alertMessage = "⚠️ ALERT: You've crossed 50% of your monthly budget.";
+        }
+      }
+
+      // 4. Save alert to User's History if triggered
+      if (alertMessage) {
+        user.alertHistory.push({ message: alertMessage });
+        await user.save(); // Alert save kar rahe hain
       }
     }
 
-    // 4. Save alert to User's History if triggered
-    if (alertMessage) {
-      user.alertHistory.push({ message: alertMessage });
-      await user.save();
-    }
-
-    // 5. Send response with the alert (if any)
+    // 5. Send final response
     res.status(201).json({
-      message: "Expense added",
-      alert: alertMessage, // Frontend can show this in a Toast/Popup
+      message: type === "INCOME" ? "Income added successfully" : "Expense added successfully",
+      alert: alertMessage,
       payload: savedExpense,
+      updatedUser: { // Optional: for debugging
+        income: user.income,
+        expense: user.expense
+      }
     });
 
   } catch (err) {
+    console.error("Route Error:", err);
     res.status(500).json({ message: err.message });
   }
 });

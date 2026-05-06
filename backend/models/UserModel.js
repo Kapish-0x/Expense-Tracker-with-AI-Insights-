@@ -16,6 +16,8 @@ const userSchema = new Schema ({
         type: String,
         required: [true, "Password is required"]
     },
+    income: { type: Number, default: 0 },
+    expense: { type: Number, default: 0 },
 
     monthlyBudget : {
             type: Number,
