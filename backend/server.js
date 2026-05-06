@@ -5,14 +5,20 @@ import {config} from 'dotenv'
 import { commonApp } from "./APIs/CommonAPI.js";
 import { userApp } from "./APIs/UserAPI.js";
 import {expenseApp} from "./APIs/ExpenseAPI.js"
+import cors from 'cors'
 
 config();           //process.env.PORT , process.env.PORT
 
+const app = exp();
+//enable cors
+app.use(cors({
+  origin: ["http://localhost:5173", "http://localhost:5174"], // allow both ports
+  credentials: true
+}));
+
 console.log("ENV KEY:", process.env.OPENAI_API_KEY);
 
-const app=exp()
 //add body parser
-
 app.use(exp.json())
 
 //cookie parser

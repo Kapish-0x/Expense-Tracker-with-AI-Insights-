@@ -19,9 +19,9 @@ const Dashboard = () => {
 
       {/* 2. Stats Grid (The 3 Cards) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard label="TOTAL_INCOME" value="₹50,000" />
-        <StatCard label="TOTAL_EXPENSE" value="₹29,000" color="[#FF0000]" />
-        <StatCard label="NET_SAVINGS" value="₹21,000" />
+        <StatCard label="TOTAL INCOME" value="₹50,000" />
+        <StatCard label="TOTAL EXPENSE" value="₹29,000"/>
+        <StatCard label="NET SAVINGS" value="₹21,000" />
       </div>
 
       {/* 3. Placeholder for Chart / AI Section */}

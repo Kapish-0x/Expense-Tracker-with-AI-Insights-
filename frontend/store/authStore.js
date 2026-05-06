@@ -1,0 +1,68 @@
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import axios from "axios";
+
+export const useAuth = create(
+  persist(
+    (set) => ({
+      currentUser: null,
+      loading: false,
+      isAuthenticated: false,
+      error: null,
+
+      login: async (userCred) => {
+        try {
+          set({ loading: true, error: null });
+
+          let res = await axios.post("http://localhost:4000/common-api/login", userCred, {
+            withCredentials: true,
+          });
+
+          if (res.status === 200) {
+            set({
+              currentUser: res.data?.payload, 
+              isAuthenticated: true,
+              loading: false,
+              error: null,
+            });
+          }
+        } catch (err) {
+          set({
+            loading: false,
+            isAuthenticated: false,
+            currentUser: null,
+            error: err.response?.data?.message || "Login failed",
+          });
+        }
+      },
+
+      logout: async () => {
+        try {
+          set({ loading: true });
+          await axios.get("http://localhost:4000/common-api/logout", {
+            withCredentials: true,
+          });
+          
+          set({
+            currentUser: null,
+            isAuthenticated: false,
+            error: null,
+            loading: false,
+          });
+          
+          // Optional: Clear local storage manually if needed
+          localStorage.removeItem("auth-storage");
+        } catch (err) {
+          set({
+            loading: false,
+            error: "Logout failed",
+          });
+        }
+      },
+    }),
+    {
+      name: "auth-storage", // Unique name for localStorage key
+      storage: createJSONStorage(() => localStorage), 
+    }
+  )
+);

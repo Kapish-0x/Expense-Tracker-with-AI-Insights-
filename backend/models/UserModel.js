@@ -29,8 +29,10 @@ const userSchema = new Schema ({
 
     role : {
         type: String,
-        enum: ["USER" , "ADMIN"],
-        default:"USER"
+        enum: ["USER","ADMIN"],
+        default:"USER",
+        uppercase: true,
+        trim: true
     },
     profileImageUrl: {
         type: String

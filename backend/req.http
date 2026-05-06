@@ -3,9 +3,9 @@ POST http://localhost:4000/user-api/users
 Content-Type: application/json
 
 {
-    "name":"user1",
-    "email":"user1@gmail.com",
-    "password":"user1"
+    "name":"ravi",
+    "email":"ravi@gmail.com",
+    "password":"ravi1234",
     "monthlyBudget":"20000",
     "role":"USER"
 }
