@@ -102,4 +102,4 @@ GET http://localhost:4000/expense-api/ai-insights
 
 ###
 //for OCR Scanning
-curl.exe -X POST "http://localhost:4000/scan-receipt" -F "receipt=@test-receipt.jpg"
+curl.exe -X POST "http://localhost:4000/scan-receipt" -F "receipt=@test-receipt2.jpg"
