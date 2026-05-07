@@ -7,12 +7,9 @@ import { Loader2, ShieldCheck } from "lucide-react";
 function Login() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   
-  // Added 'checkAuth' from store
   const { login, isAuthenticated, error, loading, checkAuth } = useAuth();
   const navigate = useNavigate();
 
-  // 1. Cookie-based Persistence Check
-  // Agar page refresh ho aur user ke paas valid cookie ho, toh ye usey login hi rakhega
   useEffect(() => {
     const initAuth = async () => {
       if (checkAuth) {
@@ -22,7 +19,6 @@ function Login() {
     initAuth();
   }, [checkAuth]);
 
-  // 2. Redirect Logic
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/dashboard");

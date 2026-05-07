@@ -1,11 +1,11 @@
 import React from "react";
-import { NavLink, useNavigate } from "react-router-dom"; // useNavigate add karo
-import { LayoutDashboard, Receipt, BrainCircuit, Bell, Settings, LogOut } from "lucide-react";
+import { NavLink, useNavigate } from "react-router-dom"; 
+import { LayoutDashboard, Receipt, BrainCircuit, Bell, Settings, LogOut, BarChart3 } from "lucide-react";
 import { useAuth } from "../store/authStore";
 
 const Sidebar = () => {
   const { currentUser, logout } = useAuth();
-  const navigate = useNavigate(); // Navigation ke liye
+  const navigate = useNavigate(); 
 
   const getInitials = (name) => {
     if (!name) return "??";
@@ -17,11 +17,11 @@ const Sidebar = () => {
       .slice(0, 2);
   };
 
-  // Logout wrapper to ensure clean exit
+  // Logout  
   const handleLogout = async () => {
     try {
-      await logout(); // Ye store mein clearAuth() aur backend call dono handle karega
-      navigate("/login"); // Safety redirect
+      await logout(); 
+      navigate("/login"); 
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -29,7 +29,7 @@ const Sidebar = () => {
 
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} strokeWidth={1.5} />, path: "/dashboard" },
-    { id: "transactions", label: "Transactions", icon: <Receipt size={18} strokeWidth={1.5} />, path: "/transactions" },
+    { id: "analytics", label: "Analytics", icon: <BarChart3 size={18} strokeWidth={1.5} />, path: "/analytics" },
     { id: "ai", label: "AI Insights", icon: <BrainCircuit size={18} strokeWidth={1.5} />, path: "/ai-insights" },
     { id: "alerts", label: "Notifications", icon: <Bell size={18} strokeWidth={1.5} />, path: "/alerts" },
     { id: "settings", label: "Settings", icon: <Settings size={18} strokeWidth={1.5} />, path: "/settings" },
@@ -94,7 +94,6 @@ const Sidebar = () => {
               <span className="text-slate-900 text-[12px] font-bold tracking-tight truncate w-32">
                 {currentUser?.name || currentUser?.username || "Guest User"}
               </span>
-              <span className="text-slate-400 text-[10px] font-medium">Node Active</span>
             </div>
           </div>
           

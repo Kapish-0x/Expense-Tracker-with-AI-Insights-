@@ -2,19 +2,17 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import Sidebar from './Sidebar';
 import { useAuth } from '../store/authStore';
-import { Loader2 } from 'lucide-react'; // Ek clean loader use karle
+import { Loader2 } from 'lucide-react'; 
 
 const RootLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
-  // 'isCheckingAuth' zaroor fetch kar store se
   const { isAuthenticated, isCheckingAuth, checkAuth } = useAuth();
 
   const publicPaths = ['/', '/login', '/register'];
   const shouldHideSidebar = publicPaths.includes(location.pathname);
 
-  // 1. Initial Auth Check (Cookie verification)
   useEffect(() => {
     if (checkAuth) {
       checkAuth();
@@ -23,7 +21,7 @@ const RootLayout = () => {
 
   // 2. Protected Routes Logic
   useEffect(() => {
-    // Agar abhi check chal raha hai, toh kuch mat karo
+    
     if (isCheckingAuth) return;
 
     if (isAuthenticated && publicPaths.includes(location.pathname)) {
@@ -35,9 +33,6 @@ const RootLayout = () => {
     }
   }, [isAuthenticated, isCheckingAuth, location.pathname, navigate]);
 
-  // 3. Loading Screen (Essential for Cookies)
-  // Jab tak cookie verify ho rahi hai, tab tak blank ya loader dikhao
-  // Iske bina user login screen dekh kar dashboard par jump karega (Ghosting)
   if (isCheckingAuth) {
     return (
       <div className="h-screen w-full flex flex-col items-center justify-center bg-[#fafafa]">
