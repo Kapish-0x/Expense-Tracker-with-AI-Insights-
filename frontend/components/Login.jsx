@@ -37,8 +37,8 @@ function Login() {
         <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-950 mb-6 shadow-xl shadow-slate-200">
           <ShieldCheck className="text-white" size={28} strokeWidth={1.5} />
         </div>
-        <h2 className="text-slate-900 text-4xl font-semibold tracking-tight mb-2">Welcome Back</h2>
-        <p className="text-slate-400 text-sm font-medium tracking-wide">Enter your credentials to access the node</p>
+        <h2 className="text-slate-900 text-4xl font-semibold tracking-tight mb-2">Welcome to CashFlow</h2>
+        <p className="text-slate-400 text-sm font-medium tracking-wide">Enter your credentials</p>
       </div>
 
       {/* Error Alert */}
@@ -52,11 +52,11 @@ function Login() {
         
         {/* Email Field */}
         <div className="space-y-2">
-          <label className="text-[11px] font-bold uppercase tracking-[2px] text-slate-500 ml-1">Network Email</label>
+          <label className="text-[11px] font-bold uppercase tracking-[2px] text-slate-500 ml-1">Email</label>
           <input
             {...register("email", { required: "Email is required" })}
             className="w-full bg-white border border-slate-200 px-5 py-4 rounded-2xl text-slate-900 outline-none transition-all focus:ring-4 focus:ring-slate-100 focus:border-slate-400 placeholder:text-slate-300"
-            placeholder="name@ghost.network"
+            placeholder="name@mail.com"
             type="email"
           />
           {errors.email && <p className="text-red-500 text-[10px] font-medium mt-1 ml-1">{errors.email.message}</p>}
@@ -65,7 +65,7 @@ function Login() {
         {/* Password Field */}
         <div className="space-y-2">
           <div className="flex justify-between items-center px-1">
-            <label className="text-[11px] font-bold uppercase tracking-[2px] text-slate-500">Security Key</label>
+            <label className="text-[11px] font-bold uppercase tracking-[2px] text-slate-500">Password</label>
             <button type="button" className="text-[10px] font-bold text-slate-400 hover:text-slate-900 transition-colors uppercase tracking-wider">Forgot?</button>
           </div>
           <input
@@ -86,7 +86,7 @@ function Login() {
           {loading ? (
             <Loader2 className="animate-spin" size={20} />
           ) : (
-            <span className="tracking-wide text-sm">Sign In to Dashboard</span>
+            <span className="tracking-wide text-sm">Login</span>
           )}
         </button>
       </form>
@@ -94,9 +94,9 @@ function Login() {
       {/* Footer */}
       <div className="mt-12 text-center">
         <p className="text-slate-400 text-[13px] font-medium">
-          New to the network? 
+          New user? 
           <NavLink to="/register" className="text-slate-900 ml-2 font-bold hover:underline underline-offset-4 decoration-slate-200">
-            Create an Identifier
+            Sign Up
           </NavLink>
         </p>
       </div>

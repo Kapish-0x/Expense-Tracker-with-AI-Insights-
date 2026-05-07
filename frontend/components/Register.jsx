@@ -49,8 +49,7 @@ function Register() {
         <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white border border-slate-100 mb-6 shadow-sm">
           <UserPlus className="text-slate-900" size={26} strokeWidth={1.5} />
         </div>
-        <h2 className="text-slate-900 text-3xl font-semibold tracking-tight mb-2">Create Identifier</h2>
-        <p className="text-slate-400 text-sm font-medium tracking-wide">Join the decentralized node network</p>
+        <h2 className="text-slate-900 text-3xl font-semibold tracking-tight mb-2">Create Account</h2>
       </div>
 
       {/* Error Notification */}
@@ -63,31 +62,31 @@ function Register() {
       <form onSubmit={handleSubmit(onUserRegister)} className="space-y-5">
         {/* Name Input */}
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-[2px] text-slate-500 ml-1">Identity Name</label>
+          <label className="text-[11px] font-bold uppercase tracking-[2px] text-slate-500 ml-1">Name</label>
           <input
             type="text"
             {...register("name", { required: "Name is required" })}
             className="w-full bg-white border border-slate-200 px-5 py-3.5 rounded-2xl text-slate-900 outline-none transition-all focus:ring-4 focus:ring-slate-100 focus:border-slate-400 placeholder:text-slate-300"
-            placeholder="John Doe"
+            placeholder="Enter Name"
           />
           {errors.name && <p className="text-red-500 text-[10px] font-medium ml-1">{errors.name.message}</p>}
         </div>
 
         {/* Email Input */}
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-[2px] text-slate-500 ml-1">Network Email</label>
+          <label className="text-[11px] font-bold uppercase tracking-[2px] text-slate-500 ml-1">Email</label>
           <input
             type="email"
             {...register("email", { required: "Email is required" })}
             className="w-full bg-white border border-slate-200 px-5 py-3.5 rounded-2xl text-slate-900 outline-none transition-all focus:ring-4 focus:ring-slate-100 focus:border-slate-400 placeholder:text-slate-300"
-            placeholder="name@ghost.network"
+            placeholder="Enter Email"
           />
           {errors.email && <p className="text-red-500 text-[10px] font-medium ml-1">{errors.email.message}</p>}
         </div>
 
         {/* Password Input */}
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-[2px] text-slate-500 ml-1">Security Key</label>
+          <label className="text-[11px] font-bold uppercase tracking-[2px] text-slate-500 ml-1">Password</label>
           <input
             type="password"
             {...register("password", { required: "Password is required" })}
@@ -107,7 +106,7 @@ function Register() {
             <Loader2 className="animate-spin" size={20} />
           ) : (
             <>
-              <span className="tracking-wide text-sm">Initialize Identity</span>
+              <span className="tracking-wide text-sm">Sign Up</span>
               <div className="w-1.5 h-1.5 rounded-full bg-slate-400 group-hover:bg-white transition-colors"></div>
             </>
           )}
@@ -117,9 +116,9 @@ function Register() {
       {/* Footer */}
       <div className="mt-10 text-center">
         <p className="text-slate-400 text-[13px] font-medium">
-          Already authenticated? 
+          Already a user? 
           <NavLink to="/login" className="text-slate-900 ml-2 font-bold hover:underline underline-offset-4 decoration-slate-200">
-            Login Portal
+            Login
           </NavLink>
         </p>
       </div>
