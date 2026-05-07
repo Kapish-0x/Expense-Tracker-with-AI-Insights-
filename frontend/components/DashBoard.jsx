@@ -4,6 +4,7 @@ import { useAuth } from "../store/authStore";
 import { Plus, UploadCloud, TrendingUp, Wallet, ReceiptIndianRupee, ArrowDownRight, ArrowUpRight } from "lucide-react";
 import AddTransaction from "./AddTransaction";
 import axios from "axios";
+import UploadReceipt from "./UploadReceipt";
 
 const StatCard = ({ label, value, icon: Icon, variant = "default" }) => (
   <div className={`h-44 border rounded-4xl p-8 flex flex-col justify-between transition-all duration-500 group ${
@@ -35,6 +36,8 @@ const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showUpload, setShowUpload] = useState(false);
+const [scannedData, setScannedData] = useState(null);
 
 
   const handleRefresh = useCallback(async () => {
@@ -76,9 +79,12 @@ const Dashboard = () => {
         </div>
 
         <div className="flex items-center gap-3 w-full md:w-auto">
-          <button className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-700 px-6 py-3 rounded-2xl font-semibold text-sm hover:bg-slate-50 transition-all active:scale-95 shadow-sm">
-            <UploadCloud size={18} /> Upload Receipt
-          </button>
+          <button
+  onClick={() => setShowUpload(!showUpload)}
+  className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-700 px-6 py-3 rounded-2xl font-semibold text-sm hover:bg-slate-50 transition-all active:scale-95 shadow-sm"
+>
+  <UploadCloud size={18} /> Upload Receipt
+</button>
           
           <button 
             onClick={() => setIsModalOpen(true)}
@@ -88,6 +94,14 @@ const Dashboard = () => {
           </button>
         </div>
       </div>
+      {showUpload && (
+  <UploadReceipt
+    onReceiptScanned={(data) => {
+      setScannedData(data);
+      console.log(data);
+    }}
+  />
+)}
 
       {/* 2. Stats Grid - Real-time Data Mapping */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -109,6 +123,34 @@ const Dashboard = () => {
           icon={Wallet} 
         />
       </div>
+      {scannedData && (
+  <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
+    <h2 className="text-2xl font-semibold mb-4">Scanned Receipt</h2>
+
+    <div className="grid md:grid-cols-3 gap-4">
+      <div className="p-4 border rounded-2xl">
+        <p className="text-sm text-slate-500">Vendor</p>
+        <h3 className="text-lg font-semibold">
+          {scannedData.vendor}
+        </h3>
+      </div>
+
+      <div className="p-4 border rounded-2xl">
+        <p className="text-sm text-slate-500">Amount</p>
+        <h3 className="text-lg font-semibold">
+          ₹{scannedData.amount}
+        </h3>
+      </div>
+
+      <div className="p-4 border rounded-2xl">
+        <p className="text-sm text-slate-500">Date</p>
+        <h3 className="text-lg font-semibold">
+          {scannedData.date}
+           </h3>
+      </div>
+    </div>
+  </div>
+)}
 
       {/* 3. Data Stream / Transaction History */}
       <div className="flex flex-col gap-6">

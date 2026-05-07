@@ -1,36 +1,82 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import axios from "axios";
 
-function UploadReceipt({ setExpense }) {
-    const [file, setFile] = useState(null);
+export default function UploadReceipt() {
 
-    const uploadReceipt = async () => {
-        const formData = new FormData();
-        formData.append("receipt", file);
+  const [file, setFile] = useState(null);
+  const [data, setData] = useState(null);
 
-        const res = await fetch('http://localhost:5000/scan-receipt', {
-            method: 'POST',
-            body: formData
-        });
+  const uploadReceipt = async () => {
 
-        const data = await res.json();
+    console.log("BUTTON CLICKED");
 
-        // 🔥 Extract amount from OCR text
-        const amountMatch = data.text.match(/₹\s*(\d+)/);
+    if (!file) {
+      alert("Please select file");
+      return;
+    }
 
-        if (amountMatch) {
-            setExpense(parseInt(amountMatch[1]));
-        } else {
-            alert("Amount not detected");
+    try {
+
+      const formData = new FormData();
+
+      formData.append("receipt", file);
+
+      console.log("Sending API request");
+
+      const res = await axios.post(
+        "http://localhost:4000/scan-receipt",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
         }
-    };
+      );
 
-    return (
-        <div>
-            <h2>Upload Receipt</h2>
-            <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-            <button onClick={uploadReceipt}>Scan Receipt</button>
+      console.log("API RESPONSE:", res.data);
+
+      setData(res.data.extracted);
+
+    } catch (err) {
+
+      console.log("UPLOAD ERROR");
+
+      console.log(err);
+
+      if (err.response) {
+        console.log(err.response.data);
+      }
+    }
+  };
+
+  return (
+    <div className="p-5">
+
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          console.log(e.target.files[0]);
+          setFile(e.target.files[0]);
+        }}
+      />
+
+      <button
+        onClick={uploadReceipt}
+        className="bg-black text-white px-4 py-2 rounded"
+      >
+        Upload Receipt
+      </button>
+
+      {data && (
+        <div className="mt-5">
+          <h2>Vendor: {data.vendor}</h2>
+          <h2>Amount: ₹{data.amount}</h2>
+          <h2>Date: {data.date}</h2>
         </div>
-    );
-}
+      )}
 
-export default UploadReceipt;
+    </div>
+  );
+}
