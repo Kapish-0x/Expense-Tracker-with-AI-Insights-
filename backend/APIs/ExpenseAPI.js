@@ -6,60 +6,6 @@ export const expenseApp = exp.Router();
 import mongoose from "mongoose";
 import { getFinancialAdvice } from "../Services/AIService.js";
 
-
-// // ADD EXPENSE
-// expenseApp.post("/expense", VerifyToken("USER", "ADMIN"), async (req, res) => {
-//   try {
-//     const userIdOfToken = req.user?.id;
-
-//     // 1. Save the new expense
-//     const newExpense = new ExpenseModel({ ...req.body, userId: userIdOfToken });
-//     const savedExpense = await newExpense.save();
-
-//     // 2. Fetch User & Current Month's totals
-//     const user = await UserModel.findById(userIdOfToken);
-    
-//     // Helper to get first day of current month
-//     const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-
-//     const monthlyExpenses = await ExpenseModel.find({
-//       userId: userIdOfToken,
-//       type: "EXPENSE",
-//       date: { $gte: startOfMonth }
-//     });
-
-//     const totalSpent = monthlyExpenses.reduce((sum, exp) => sum + exp.amount, 0);
-
-//     // 3. Logic: Check for Budget Alerts
-//     let alertMessage = null;
-//     if (user.monthlyBudget > 0) {
-//       const usagePercentage = (totalSpent / user.monthlyBudget) * 100;
-
-//       if (usagePercentage >= 90) {
-//         alertMessage = "🚨 CRITICAL: You have used over 90% of your monthly budget!";
-//       } else if (usagePercentage >= 50) {
-//         alertMessage = "⚠️ ALERT: You've crossed 50% of your monthly budget.";
-//       }
-//     }
-
-//     // 4. Save alert to User's History if triggered
-//     if (alertMessage) {
-//       user.alertHistory.push({ message: alertMessage });
-//       await user.save();
-//     }
-
-//     // 5. Send response with the alert (if any)
-//     res.status(201).json({
-//       message: "Expense added",
-//       alert: alertMessage, // Frontend can show this in a Toast/Popup
-//       payload: savedExpense,
-//     });
-
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// });
-
 // ADD EXPENSE & UPDATE USER TOTALS
 expenseApp.post("/expense", VerifyToken("USER", "ADMIN"), async (req, res) => {
   try {
@@ -122,6 +68,7 @@ expenseApp.post("/expense", VerifyToken("USER", "ADMIN"), async (req, res) => {
       message: type === "INCOME" ? "Income added successfully" : "Expense added successfully",
       alert: alertMessage,
       payload: savedExpense,
+      user: user ,
       updatedUser: { // Optional: for debugging
         income: user.income,
         expense: user.expense
