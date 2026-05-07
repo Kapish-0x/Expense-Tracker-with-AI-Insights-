@@ -2,13 +2,12 @@ import { create } from "zustand";
 import axios from "axios";
 
 export const useAuth = create((set) => ({
-  // 1. Initial State: Pehle check karo local storage mein user hai ya nahi
+  // LocalStorage se initial state uthao
   currentUser: JSON.parse(localStorage.getItem("cashflow_user")) || null,
   loading: false,
   isAuthenticated: !!localStorage.getItem("cashflow_user"),
   error: null,
 
-  // 2. LOGIN: User ko login karana aur storage mein save karna
   login: async (userCred) => {
     try {
       set({ loading: true, error: null });
@@ -20,7 +19,7 @@ export const useAuth = create((set) => ({
 
       if (res.status === 200) {
         const userData = res.data?.payload;
-        // Local storage mein save karo taaki refresh par logout na ho
+        // LocalStorage mein save karo
         localStorage.setItem("cashflow_user", JSON.stringify(userData));
         
         set({
@@ -40,14 +39,12 @@ export const useAuth = create((set) => ({
     }
   },
 
-  // 3. UPDATE USER: Bina refresh kiye stats badalne ke liye
-  // Jab transaction add ho jaye, toh backend se aaya naya 'user' yahan pass karo
+  // 🔥 YE WALA MISSING THA - ISSE ERROR THEEK HO JAYEGA
   updateUser: (updatedUserData) => {
     localStorage.setItem("cashflow_user", JSON.stringify(updatedUserData));
     set({ currentUser: updatedUserData });
   },
 
-  // 4. LOGOUT: Storage saaf karo aur state reset karo
   logout: async () => {
     try {
       set({ loading: true });
@@ -55,6 +52,7 @@ export const useAuth = create((set) => ({
         withCredentials: true,
       });
 
+      // Storage saaf karo
       localStorage.removeItem("cashflow_user");
       set({
         currentUser: null,
