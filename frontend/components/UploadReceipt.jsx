@@ -73,7 +73,7 @@ export default function UploadReceipt() {
         <div className="mt-5">
           <h2>Vendor: {data.vendor}</h2>
           <h2>Amount: ₹{data.amount}</h2>
-          <h2>Date: {data.date}</h2>
+          {/* <h2>Date: {data.date}</h2> */}
         </div>
       )}
 

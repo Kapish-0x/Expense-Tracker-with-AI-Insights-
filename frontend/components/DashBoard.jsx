@@ -57,11 +57,8 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const [transactions, setTransactions] = useState([]);
-
   const [isLoading, setIsLoading] = useState(true);
-
   const [receiptLoading, setReceiptLoading] = useState(false);
 
   // REFRESH DASHBOARD
@@ -98,26 +95,15 @@ const Dashboard = () => {
 
   try {
 
-    console.log("========== OCR START ==========");
-
     const file = e.target.files[0];
 
-    console.log("Selected File:", file);
-
-    if (!file) {
-      console.log("No file selected");
-      return;
-    }
+    if (!file) return;
 
     setReceiptLoading(true);
 
     const formData = new FormData();
-
     formData.append("receipt", file);
 
-    console.log("Sending receipt to backend OCR API...");
-
-    // OCR API CALL
     const scanRes = await axios.post(
       "http://localhost:4000/scan-receipt",
       formData,
@@ -128,63 +114,33 @@ const Dashboard = () => {
       }
     );
 
-    console.log("OCR RESPONSE:", scanRes.data);
-
     const extracted = scanRes.data.extracted;
 
-    console.log("Extracted Data:", extracted);
+    if (!extracted) throw new Error("No extracted data received");
 
-    // VALIDATION
-    if (!extracted) {
-      throw new Error("No extracted data received");
-    }
+    await axios.post(
+      "http://localhost:4000/expense-api/expense",
+      {
+        amount: parseFloat(extracted.amount) || 0,
+        category: "FOOD",
+        type: "EXPENSE",
+        date: extracted.date || new Date(),
+        description: extracted.vendor || "Added from receipt scan",
+      },
+      {
+        withCredentials: true,
+      }
+    );
 
-    console.log("Saving expense into database...");
-
-    // SAVE EXPENSE
-const saveRes = await axios.post(
-  "http://localhost:4000/expense-api/expense",
-  {
-    amount: parseFloat(extracted.amount) || 0,
-    category: "FOOD",
-    type: "EXPENSE",
-    date: extracted.date || new Date(),
-    description: extracted.vendor || "Added from receipt scan",
-  },
-  {
-    withCredentials: true,
-  }
-);
-
-console.log("SAVE RESPONSE:", saveRes.data);
-
-    console.log("SAVE RESPONSE:", saveRes.data);
-
-    console.log("Refreshing dashboard...");
-
-    // REFRESH DASHBOARD
     await handleRefresh();
-
-    console.log("========== OCR SUCCESS ==========");
-
     alert("Receipt scanned successfully");
 
   } catch (err) {
 
-    console.error("========== OCR ERROR ==========");
-
-    console.error("Full Error:", err);
-
-    console.error("Error Response:", err.response);
-
-    console.error("Error Data:", err.response?.data);
-
-    console.error("Error Message:", err.message);
-
+    console.error(err);
     alert("Receipt scan failed");
 
   } finally {
-
     setReceiptLoading(false);
   }
 };
@@ -192,19 +148,20 @@ console.log("SAVE RESPONSE:", saveRes.data);
   useEffect(() => {
 
     if (!isAuthenticated) {
-
       navigate("/login");
-
     } else {
-
       handleRefresh();
     }
 
   }, [isAuthenticated, navigate, handleRefresh]);
 
-  const income = currentUser?.income || 0;
+  const income = transactions
+    .filter((t) => t.type === "INCOME")
+    .reduce((sum, t) => sum + Number(t.amount), 0);
 
-  const expense = currentUser?.expense || 0;
+  const expense = transactions
+    .filter((t) => t.type === "EXPENSE")
+    .reduce((sum, t) => sum + Number(t.amount), 0);
 
   const savings = income - expense;
 
@@ -222,7 +179,6 @@ console.log("SAVE RESPONSE:", saveRes.data);
 
         <div className="flex items-center gap-3 w-full md:w-auto">
 
-          {/* RECEIPT BUTTON */}
           <div className="relative">
 
             <input
@@ -238,20 +194,15 @@ console.log("SAVE RESPONSE:", saveRes.data);
               className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-700 px-6 py-3 rounded-2xl font-semibold text-sm hover:bg-slate-50 transition-all active:scale-95 shadow-sm cursor-pointer"
             >
               <UploadCloud size={18} />
-
-              {receiptLoading
-                ? "Scanning..."
-                : "Upload Receipt"}
+              {receiptLoading ? "Scanning..." : "Upload Receipt"}
             </label>
           </div>
 
-          {/* ADD TRANSACTION */}
           <button
             onClick={() => setIsModalOpen(true)}
             className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-slate-950 text-white px-6 py-3 rounded-2xl font-semibold text-sm hover:bg-slate-800 transition-all active:scale-95 shadow-lg shadow-slate-200"
           >
             <Plus size={18} />
-
             Add Transaction
           </button>
         </div>
@@ -281,7 +232,7 @@ console.log("SAVE RESPONSE:", saveRes.data);
         />
       </div>
 
-      {/* TRANSACTION HISTORY */}
+      {/* TRANSACTION HISTORY (ONLY SCROLL ADDED HERE) */}
       <div className="flex flex-col gap-6">
 
         <div className="flex justify-between items-end px-2">
@@ -295,96 +246,98 @@ console.log("SAVE RESPONSE:", saveRes.data);
 
         <div className="bg-white border border-slate-100 rounded-[2.5rem] overflow-hidden shadow-sm transition-all duration-500">
 
-          {isLoading ? (
+          {/* ONLY CHANGE: SCROLL WRAPPER */}
+          <div className="max-h-[420px] overflow-y-auto">
 
-            <div className="p-20 text-center flex flex-col items-center gap-2">
+            {isLoading ? (
 
-              <div className="w-2 h-2 bg-slate-950 rounded-full animate-ping"></div>
+              <div className="p-20 text-center flex flex-col items-center gap-2">
 
-              <p className="text-slate-400 text-xs font-bold uppercase tracking-[3px]">
-                Syncing...
-              </p>
-            </div>
+                <div className="w-2 h-2 bg-slate-950 rounded-full animate-ping"></div>
 
-          ) : transactions.length === 0 ? (
-
-            <div className="p-20 text-center flex flex-col items-center">
-
-              <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center mb-4">
-
-                <div className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-pulse"></div>
+                <p className="text-slate-400 text-xs font-bold uppercase tracking-[3px]">
+                  Syncing...
+                </p>
               </div>
 
-              <p className="text-slate-400 text-sm font-medium italic">
-                No recent transactions found.
-              </p>
-            </div>
+            ) : transactions.length === 0 ? (
 
-          ) : (
+              <div className="p-20 text-center flex flex-col items-center">
 
-            <div className="divide-y divide-slate-50">
+                <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center mb-4">
 
-              {transactions.slice(0, 5).map((t, idx) => (
+                  <div className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-pulse"></div>
+                </div>
 
-                <div
-                  key={t._id || idx}
-                  className="p-6 flex items-center justify-between hover:bg-slate-50/50 transition-colors group"
-                >
+                <p className="text-slate-400 text-sm font-medium italic">
+                  No recent transactions found.
+                </p>
+              </div>
 
-                  <div className="flex items-center gap-4">
+            ) : (
 
-                    <div
-                      className={`p-3 rounded-2xl transition-transform duration-300 group-hover:scale-110 ${
-                        t.type === "INCOME"
-                          ? "bg-emerald-50 text-emerald-600"
-                          : "bg-rose-50 text-rose-600"
-                      }`}
-                    >
-                      {t.type === "INCOME"
-                        ? <ArrowUpRight size={18} />
-                        : <ArrowDownRight size={18} />}
-                    </div>
+              <div className="divide-y divide-slate-50">
 
-                    <div>
+                {transactions.slice(0, 100).map((t, idx) => (
 
-                      <p className="text-slate-900 font-semibold text-sm">
-                        {t.description || t.category}
-                      </p>
+                  <div
+                    key={t._id || idx}
+                    className="p-6 flex items-center justify-between hover:bg-slate-50/50 transition-colors group"
+                  >
 
-                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
-                        {new Date(t.date).toLocaleDateString(
-                          "en-IN",
-                          {
+                    <div className="flex items-center gap-4">
+
+                      <div
+                        className={`p-3 rounded-2xl transition-transform duration-300 group-hover:scale-110 ${
+                          t.type === "INCOME"
+                            ? "bg-emerald-50 text-emerald-600"
+                            : "bg-rose-50 text-rose-600"
+                        }`}
+                      >
+                        {t.type === "INCOME"
+                          ? <ArrowUpRight size={18} />
+                          : <ArrowDownRight size={18} />}
+                      </div>
+
+                      <div>
+
+                        <p className="text-slate-900 font-semibold text-sm">
+                          {t.description || t.category}
+                        </p>
+
+                        <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
+                          {new Date(t.date).toLocaleDateString("en-IN", {
                             day: "2-digit",
                             month: "short",
                             year: "numeric",
-                          }
-                        )}
+                          })}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+
+                      <p className={`font-bold text-sm ${
+                        t.type === "INCOME"
+                          ? "text-emerald-600"
+                          : "text-slate-900"
+                      }`}>
+                        {t.type === "INCOME" ? "+" : "-"} ₹
+                        {t.amount.toLocaleString("en-IN")}
+                      </p>
+
+                      <p className="text-[10px] text-slate-400 font-medium italic uppercase">
+                        {t.category}
                       </p>
                     </div>
                   </div>
 
-                  <div className="text-right">
+                ))}
 
-                    <p
-                      className={`font-bold text-sm ${
-                        t.type === "INCOME"
-                          ? "text-emerald-600"
-                          : "text-slate-900"
-                      }`}
-                    >
-                      {t.type === "INCOME" ? "+" : "-"} ₹
-                      {t.amount.toLocaleString("en-IN")}
-                    </p>
+              </div>
+            )}
 
-                    <p className="text-[10px] text-slate-400 font-medium italic uppercase">
-                      {t.category}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          </div>
         </div>
       </div>
 

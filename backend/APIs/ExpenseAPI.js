@@ -6,79 +6,81 @@ export const expenseApp = exp.Router();
 import mongoose from "mongoose";
 import { getFinancialAdvice } from "../Services/AIService.js";
 
-// ADD EXPENSE & UPDATE USER TOTALS
 expenseApp.post("/expense", VerifyToken("USER", "ADMIN"), async (req, res) => {
   console.log("REQ BODY:", req.body);
+  console.log("REQ USER:", req.user);
+
   try {
     const userIdOfToken = req.user?.id;
+    console.log("USER ID:", userIdOfToken);
+
     const { amount, type } = req.body;
 
-    // 1. Save the new expense/income transaction
-    const newExpense = new ExpenseModel({ ...req.body, userId: userIdOfToken });
-    const savedExpense = await newExpense.save();
+    // Fix date format
+    let expenseData = {
+      ...req.body,
+      userId: userIdOfToken,
+    };
 
-    // 2. Update User's Total Income/Expense in Database
-    // $inc atomicity provide karta hai (race conditions se bachata hai)
-    const updateField = type === "INCOME" ? { income: amount } : { expense: amount };
-    
-    // Hamein user ka updated document chahiye alerts check karne ke liye
+    if (expenseData.date) {
+      const dateStr = expenseData.date;
+
+      if (typeof dateStr === "string" && dateStr.includes("/")) {
+        const [day, month, year] = dateStr.split("/");
+
+        const fullYear =
+          year.length === 2
+            ? `20${year}`
+            : year;
+
+        expenseData.date = new Date(
+          `${fullYear}-${month}-${day}`
+        );
+      } else {
+        expenseData.date = new Date(dateStr);
+      }
+
+      // fallback if invalid date
+      if (isNaN(expenseData.date.getTime())) {
+        expenseData.date = new Date();
+      }
+    }
+
+    // Save expense
+    const newExpense = new ExpenseModel(expenseData);
+    const savedExpense = await newExpense.save();
+    console.log("SAVED:", savedExpense);
+
+    // Update totals
+    const updateField =
+      type === "INCOME"
+        ? { income: amount }
+        : { expense: amount };
+
     const user = await UserModel.findByIdAndUpdate(
       userIdOfToken,
       { $inc: updateField },
-      { new: true } // Updated user wapas dega
+      { returnDocument: "after" } // replaces deprecated { new: true }
     );
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    console.log("UPDATED USER:", user);
 
-    // 3. Logic: Check for Budget Alerts (Only for Expenses)
-    let alertMessage = null;
-    if (type === "EXPENSE") {
-      // Current month ka start date nikalne ke liye
-      const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-
-      // Current month ke saare expenses fetch karo total spent calculate karne ke liye
-      const monthlyExpenses = await ExpenseModel.find({
-        userId: userIdOfToken,
-        type: "EXPENSE",
-        date: { $gte: startOfMonth }
-      });
-
-      const totalSpent = monthlyExpenses.reduce((sum, exp) => sum + exp.amount, 0);
-
-      if (user.monthlyBudget > 0) {
-        const usagePercentage = (totalSpent / user.monthlyBudget) * 100;
-
-        if (usagePercentage >= 90) {
-          alertMessage = "🚨 CRITICAL: You have used over 90% of your monthly budget!";
-        } else if (usagePercentage >= 50) {
-          alertMessage = "⚠️ ALERT: You've crossed 50% of your monthly budget.";
-        }
-      }
-
-      // 4. Save alert to User's History if triggered
-      if (alertMessage) {
-        user.alertHistory.push({ message: alertMessage });
-        await user.save(); // Alert save kar rahe hain
-      }
-    }
-
-    // 5. Send final response
     res.status(201).json({
-      message: type === "INCOME" ? "Income added successfully" : "Expense added successfully",
-      alert: alertMessage,
+      message:
+        type === "INCOME"
+          ? "Income added successfully"
+          : "Expense added successfully",
       payload: savedExpense,
-      user: user ,
-      updatedUser: { // Optional: for debugging
-        income: user.income,
-        expense: user.expense
-      }
+      user,
     });
 
   } catch (err) {
-    console.error("Route Error:", err);
-    res.status(500).json({ message: err.message });
+    console.error("FULL ERROR:", err);
+
+    res.status(500).json({
+      message: err.message,
+      stack: err.stack,
+    });
   }
 });
 
