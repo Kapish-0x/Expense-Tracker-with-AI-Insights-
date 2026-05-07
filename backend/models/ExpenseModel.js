@@ -7,9 +7,7 @@ const ExpenseSchema = new Schema ({
         required: true,
     },
     title:{
-        type: String,
-        required:[true, "Expense title is required"],
-        trim:true,
+        type: String
     },
     amount:{
         type:Number,

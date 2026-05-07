@@ -8,6 +8,7 @@ import { getFinancialAdvice } from "../Services/AIService.js";
 
 // ADD EXPENSE & UPDATE USER TOTALS
 expenseApp.post("/expense", VerifyToken("USER", "ADMIN"), async (req, res) => {
+  console.log("REQ BODY:", req.body);
   try {
     const userIdOfToken = req.user?.id;
     const { amount, type } = req.body;
