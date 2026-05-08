@@ -122,7 +122,7 @@ const Dashboard = () => {
       "http://localhost:4000/expense-api/expense",
       {
         amount: parseFloat(extracted.amount) || 0,
-        category: "FOOD",
+        category: "RECEIPT",
         type: "EXPENSE",
         date: extracted.date || new Date(),
         description: extracted.vendor || "Added from receipt scan",
