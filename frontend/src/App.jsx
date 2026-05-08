@@ -6,6 +6,7 @@ import Login from "../components/Login";
 import UploadReceipt from "../components/UploadReceipt";
 import { useAuth } from "../store/authStore";
 import AiInsights from "../components/AiInsights";
+import Settings from "../components/Settings";
 
 // 1. Gatekeeper for Protected Routes
 const ProtectedRoute = ({ children }) => {
@@ -81,7 +82,7 @@ function App() {
           path: "settings",
           element: (
             <ProtectedRoute>
-              <div className="text-white">SYSTEM_SETTINGS</div>
+              <Settings />
             </ProtectedRoute>
           ),
         },

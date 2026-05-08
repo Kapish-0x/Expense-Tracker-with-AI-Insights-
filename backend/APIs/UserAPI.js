@@ -69,3 +69,5 @@ userApp.patch("/budget" , VerifyToken("USER") , async(req , res)=> {
   ).select("-password");
   res.status(200).json({message: "Budget Updated" , payload: updatedUser});
 });
+
+//delete account

@@ -67,3 +67,30 @@ commonApp.get("/logout", (req, res) => {
   //send res
   res.status(200).json({ message: "Logout success" });
 });
+
+//change password
+commonApp.put("/password" , VerifyToken("USER","ADMIN"), async (req,res) => {
+  //check if current password and new password are same
+  const {currentPassword , newPassword} = req.body;
+  if(currentPassword === newPassword) {
+    return res.status(400).json({message: "Both the passwords are same! pls change"});
+  }
+  //check if current password matches the user password
+  const user = await UserModel.findById(req.user.id);
+  if(!user) {
+    return res.status(404).json({message:"User not found"});
+  }
+  //check the current password of request and user are not same 
+  const isMatched = await compare(currentPassword, user.password);
+  if(!isMatched) {
+    return res.status(400).json({message:"Current password doesnt match"})
+  }
+  //hash new password 
+  const hashedPassword = await hash(newPassword,12);
+  //replace current password of user with hashed new password 
+  user.password = hashedPassword;
+  //save
+  await user.save();
+  //send res
+  res.status(200).json({message: "Password changed"})
+});
