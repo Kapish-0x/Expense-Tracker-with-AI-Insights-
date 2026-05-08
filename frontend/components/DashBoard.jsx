@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../store/authStore";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   Plus,
   UploadCloud,
@@ -164,6 +166,53 @@ const Dashboard = () => {
     .reduce((sum, t) => sum + Number(t.amount), 0);
 
   const savings = income - expense;
+  const downloadPDF = () => {
+
+  const doc = new jsPDF();
+
+  doc.setFontSize(18);
+  doc.text("Recent Transaction Logs", 14, 20);
+
+  // const tableData = transactions.map((t, index) => [
+
+  //   index + 1,
+  //   t.description || "No Description",
+  //   t.type,
+  //   t.category,
+  //   `₹ ${t.amount}`,
+  //   new Date(t.date).toLocaleDateString("en-IN"),
+
+  // ]);
+const tableData = transactions.map((t, index) => [
+
+  index + 1,
+  t.description || "No Description",
+  t.type,
+  t.category,
+  String(Number(t.amount).toFixed(2)),
+  new Date(t.date).toLocaleDateString("en-IN"),
+
+]);
+
+  autoTable(doc, {
+
+    startY: 30,
+
+    head: [[
+      "#",
+      "Description",
+      "Type",
+      "Category",
+      "Amount",
+      "Date"
+    ]],
+
+    body: tableData,
+
+  });
+
+  doc.save("recent-transactions.pdf");
+};
 
   return (
     <div className="flex flex-col gap-12 animate-in fade-in duration-1000">
@@ -235,15 +284,22 @@ const Dashboard = () => {
       {/* TRANSACTION HISTORY (ONLY SCROLL ADDED HERE) */}
       <div className="flex flex-col gap-6">
 
-        <div className="flex justify-between items-end px-2">
+        <div className="flex justify-between items-center px-2">
 
-          <div>
-            <h3 className="text-xl font-semibold text-slate-900">
-              Recent Logs
-            </h3>
-          </div>
-        </div>
+  <div>
+    <h3 className="text-xl font-semibold text-slate-900">
+      Recent Logs
+    </h3>
+  </div>
 
+  <button
+    onClick={downloadPDF}
+    className="bg-slate-950 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-slate-800 transition-all"
+  >
+    Export PDF
+  </button>
+
+</div>
         <div className="bg-white border border-slate-100 rounded-[2.5rem] overflow-hidden shadow-sm transition-all duration-500">
 
           {/* ONLY CHANGE: SCROLL WRAPPER */}
