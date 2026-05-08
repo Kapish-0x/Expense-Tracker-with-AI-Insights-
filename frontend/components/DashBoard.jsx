@@ -95,28 +95,56 @@ const Dashboard = () => {
     setIsModalOpen(true);
   };
 
-  const downloadPDF = () => {
+const downloadPDF = () => {
+  try {
     const doc = new jsPDF();
+
     doc.setFontSize(18);
     doc.text("Recent Transaction Logs", 14, 20);
+
+    doc.setFontSize(12);
+
+    doc.text(
+      `Total Income: Rs. ${income.toLocaleString("en-IN")}`,
+      14,
+      35
+    );
+
+    doc.text(
+      `Total Expense: Rs. ${expense.toLocaleString("en-IN")}`,
+      14,
+      45
+    );
+
+    doc.text(
+      `Net Savings: Rs. ${savings.toLocaleString("en-IN")}`,
+      14,
+      55
+    );
 
     const tableData = transactions.map((t, index) => [
       index + 1,
       t.description || "No Description",
       t.type,
       t.category,
-      String(Number(t.amount).toFixed(2)),
+      `Rs. ${Number(t.amount).toFixed(2)}`,
       new Date(t.date).toLocaleDateString("en-IN"),
     ]);
 
     autoTable(doc, {
-      startY: 30,
+      startY: 70,
       head: [["#", "Description", "Type", "Category", "Amount", "Date"]],
       body: tableData,
+      theme: "grid",
     });
 
     doc.save("recent-transactions.pdf");
-  };
+
+  } catch (error) {
+    console.error("PDF Export Error:", error);
+    alert("Failed to export PDF");
+  }
+};
 
   const handleReceiptUpload = async (e) => {
     try {
