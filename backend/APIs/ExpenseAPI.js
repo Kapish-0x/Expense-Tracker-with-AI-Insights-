@@ -5,6 +5,7 @@ import { UserModel } from "../models/UserModel.js";
 export const expenseApp = exp.Router();
 import mongoose from "mongoose";
 import { getFinancialAdvice } from "../Services/AIService.js";
+import { GoalModel } from "../models/GoalModel.js";
 
 
 
@@ -368,6 +369,172 @@ expenseApp.get(
         payload: advice,
       });
 
+    } catch (err) {
+      res.status(500).json({
+        message: err.message,
+      });
+    }
+  }
+);
+
+
+
+
+//GOAL TRACKING
+
+
+//Add goal
+
+expenseApp.post(
+  "/goal",
+  VerifyToken("USER", "ADMIN"),
+  async (req, res) => {
+    try {
+      const userIdOfToken = req.user?.id;
+
+      const goal = await GoalModel.create({
+        ...req.body,
+        userId: userIdOfToken,
+      });
+
+      res.status(201).json({
+        message: "Goal created",
+        payload: goal,
+      });
+    } catch (err) {
+      res.status(500).json({
+        message: err.message,
+      });
+    }
+  }
+);
+
+
+
+
+//get goal
+
+expenseApp.get(
+  "/goals",
+  VerifyToken("USER", "ADMIN"),
+  async (req, res) => {
+    try {
+      const userIdOfToken = req.user?.id;
+
+      const goals = await GoalModel.find({
+        userId: userIdOfToken,
+      }).sort({ createdAt: -1 });
+
+      res.status(200).json({
+        message: "Goals",
+        payload: goals,
+      });
+    } catch (err) {
+      res.status(500).json({
+        message: err.message,
+      });
+    }
+  }
+);
+
+
+//delete goal
+
+expenseApp.delete(
+  "/goal/:id",
+  VerifyToken("USER", "ADMIN"),
+  async (req, res) => {
+    try {
+      const userIdOfToken = req.user?.id;
+      const goalId = req.params.id;
+
+      await GoalModel.findOneAndDelete({
+        _id: goalId,
+        userId: userIdOfToken,
+      });
+
+      res.status(200).json({
+        message: "Goal deleted",
+      });
+    } catch (err) {
+      res.status(500).json({
+        message: err.message,
+      });
+    }
+  }
+);
+
+
+
+//edit goal
+
+expenseApp.put(
+  "/goal/:id",
+  VerifyToken("USER", "ADMIN"),
+  async (req, res) => {
+    try {
+      const userIdOfToken = req.user?.id;
+      const goalId = req.params.id;
+
+      const updatedGoal = await GoalModel.findOneAndUpdate(
+        {
+          _id: goalId,
+          userId: userIdOfToken,
+        },
+        req.body,
+        {
+          new: true,
+        }
+      );
+
+      res.status(200).json({
+        message: "Goal updated",
+        payload: updatedGoal,
+      });
+    } catch (err) {
+      res.status(500).json({
+        message: err.message,
+      });
+    }
+  }
+);
+
+
+//goal-analytics
+
+expenseApp.get(
+  "/goal-analytics",
+  VerifyToken("USER", "ADMIN"),
+  async (req, res) => {
+    try {
+      const userIdOfToken = req.user?.id;
+
+      const user = await UserModel.findById(userIdOfToken);
+
+      const savings = user.income - user.expense;
+
+      const goals = await GoalModel.find({
+        userId: userIdOfToken,
+      });
+
+      const analytics = goals.map((goal) => {
+        const progress = Math.min(
+          (savings / goal.targetAmount) * 100,
+          100
+        );
+
+        return {
+          ...goal._doc,
+          currentSavings: savings,
+          progress: Number(progress.toFixed(1)),
+          completed: savings >= goal.targetAmount,
+        };
+      });
+
+      res.status(200).json({
+        message: "Goal analytics",
+        payload: analytics,
+      });
     } catch (err) {
       res.status(500).json({
         message: err.message,

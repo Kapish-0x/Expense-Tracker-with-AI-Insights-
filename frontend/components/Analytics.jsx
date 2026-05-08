@@ -5,6 +5,10 @@ import {
   ReceiptIndianRupee,
   BadgePercent,
   PieChart as PieChartIcon,
+  Plus,
+  Pencil,
+  Trash2,
+  Target,
 } from "lucide-react";
 
 import {
@@ -20,6 +24,7 @@ import {
 } from "chart.js";
 
 import { Doughnut, Line } from "react-chartjs-2";
+import AddGoal from "./AddGoal";
 
 ChartJS.register(
   ArcElement,
@@ -77,39 +82,58 @@ const Analytics = () => {
   const [transactions, setTransactions] = useState([]);
   const [categoryAnalytics, setCategoryAnalytics] = useState([]);
   const [monthlyAnalytics, setMonthlyAnalytics] = useState([]);
+  const [goals, setGoals] = useState([]);
+
+  const [goalModalOpen, setGoalModalOpen] = useState(false);
+  const [editingGoal, setEditingGoal] = useState(null);
+
+  const fetchAnalytics = async () => {
+    try {
+      const [txRes, categoryRes, monthlyRes, goalRes] = await Promise.all([
+        axios.get("http://localhost:4000/expense-api/expenses", {
+          withCredentials: true,
+        }),
+        axios.get("http://localhost:4000/expense-api/category-analytics", {
+          withCredentials: true,
+        }),
+        axios.get(
+          "http://localhost:4000/expense-api/income-expense-analytics",
+          {
+            withCredentials: true,
+          }
+        ),
+        axios.get("http://localhost:4000/expense-api/goal-analytics", {
+          withCredentials: true,
+        }),
+      ]);
+
+      setTransactions(txRes.data.payload || []);
+      setCategoryAnalytics(categoryRes.data.payload || []);
+      setMonthlyAnalytics(monthlyRes.data.payload || []);
+      setGoals(goalRes.data.payload || []);
+    } catch (err) {
+      console.error("Analytics fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchAnalytics = async () => {
-      try {
-        const [txRes, categoryRes, monthlyRes] = await Promise.all([
-          axios.get("http://localhost:4000/expense-api/expenses", {
-            withCredentials: true,
-          }),
-          axios.get("http://localhost:4000/expense-api/category-analytics", {
-            withCredentials: true,
-          }),
-          axios.get(
-            "http://localhost:4000/expense-api/income-expense-analytics",
-            {
-              withCredentials: true,
-            }
-          ),
-        ]);
-
-        setTransactions(txRes.data.payload || []);
-        setCategoryAnalytics(categoryRes.data.payload || []);
-        setMonthlyAnalytics(monthlyRes.data.payload || []);
-      } catch (err) {
-        console.error("Analytics fetch error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchAnalytics();
   }, []);
 
-  // KPI calculations
+  const deleteGoal = async (id) => {
+    try {
+      await axios.delete(`http://localhost:4000/expense-api/goal/${id}`, {
+        withCredentials: true,
+      });
+
+      fetchAnalytics();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const income = transactions
     .filter((t) => t.type === "INCOME")
     .reduce((sum, t) => sum + Number(t.amount), 0);
@@ -126,7 +150,6 @@ const Analytics = () => {
   const topCategory =
     categoryAnalytics.length > 0 ? categoryAnalytics[0]._id : "N/A";
 
-  // Doughnut data
   const doughnutData = {
     labels: categoryAnalytics.map((c) => c._id),
     datasets: [
@@ -148,7 +171,6 @@ const Analytics = () => {
     ],
   };
 
-  // Monthly line data
   const months = [
     "Jan","Feb","Mar","Apr","May","Jun",
     "Jul","Aug","Sep","Oct","Nov","Dec"
@@ -196,92 +218,208 @@ const Analytics = () => {
   }
 
   return (
-    <div className="flex flex-col gap-12 animate-in fade-in duration-1000">
-      <div>
-        <h1 className="text-4xl font-semibold tracking-tight text-slate-900">
-          Analytics
-        </h1>
-      </div>
+    <>
+      <div className="flex flex-col gap-12 animate-in fade-in duration-1000">
+        <div>
+          <h1 className="text-4xl font-semibold tracking-tight text-slate-900">
+            Analytics
+          </h1>
+        </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
-        <StatCard
-          label="Total Income"
-          value={`₹${income.toLocaleString("en-IN")}`}
-          icon={TrendingUp}
-          variant="income"
-        />
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+          <StatCard
+            label="Total Income"
+            value={`₹${income.toLocaleString("en-IN")}`}
+            icon={TrendingUp}
+            variant="income"
+          />
 
-        <StatCard
-          label="Total Expense"
-          value={`₹${expense.toLocaleString("en-IN")}`}
-          icon={ReceiptIndianRupee}
-          variant="expense"
-        />
+          <StatCard
+            label="Total Expense"
+            value={`₹${expense.toLocaleString("en-IN")}`}
+            icon={ReceiptIndianRupee}
+            variant="expense"
+          />
 
-        <StatCard
-          label="Top Category"
-          value={topCategory}
-          icon={PieChartIcon}
-          variant="category"
-        />
+          <StatCard
+            label="Top Category"
+            value={topCategory}
+            icon={PieChartIcon}
+            variant="category"
+          />
 
-        <StatCard
-          label="Savings Rate"
-          value={`${savingsRate}%`}
-          icon={BadgePercent}
-        />
-      </div>
+          <StatCard
+            label="Savings Rate"
+            value={`${savingsRate}%`}
+            icon={BadgePercent}
+          />
+        </div>
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900 mb-8">
-            Category Breakdown
-          </h2>
+        {/* Charts */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+          <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm">
+            <h2 className="text-xl font-semibold text-slate-900 mb-8">
+              Category Breakdown
+            </h2>
 
-          <div className="h-[380px] flex items-center justify-center">
-            <Doughnut
-              data={doughnutData}
-              options={{
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    position: "bottom",
-                    labels: {
-                      padding: 20,
-                      usePointStyle: true,
+            <div className="h-[380px] flex items-center justify-center">
+              <Doughnut
+                data={doughnutData}
+                options={{
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: "bottom",
+                      labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                      },
                     },
                   },
-                },
-                cutout: "68%",
-              }}
-            />
+                  cutout: "68%",
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm">
+            <h2 className="text-xl font-semibold text-slate-900 mb-8">
+              Income vs Expense
+            </h2>
+
+            <div className="h-[380px]">
+              <Line
+                data={lineData}
+                options={{
+                  maintainAspectRatio: false,
+                  responsive: true,
+                  plugins: {
+                    legend: {
+                      position: "bottom",
+                    },
+                  },
+                }}
+              />
+            </div>
           </div>
         </div>
 
-        <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900 mb-8">
-            Income vs Expense
-          </h2>
+        {/* Goals */}
+        <div className="flex flex-col gap-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-semibold text-slate-900">
+              Savings Goals
+            </h2>
 
-          <div className="h-[380px]">
-            <Line
-              data={lineData}
-              options={{
-                maintainAspectRatio: false,
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: "bottom",
-                  },
-                },
+            <button
+              onClick={() => {
+                setEditingGoal(null);
+                setGoalModalOpen(true);
               }}
-            />
+              className="flex items-center gap-2 bg-slate-950 text-white px-6 py-3 rounded-2xl font-semibold text-sm"
+            >
+              <Plus size={18} />
+              Add Goal
+            </button>
           </div>
+
+          {goals.length === 0 ? (
+            <div className="bg-white border border-slate-100 rounded-[2.5rem] p-16 text-center text-slate-400">
+              No goals created yet.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+              {goals.map((goal) => (
+                <div
+                  key={goal._id}
+                  className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm"
+                >
+                  <div className="flex justify-between items-start mb-6">
+                    <div>
+                      <div className="flex items-center gap-3">
+                        <div className="p-3 rounded-2xl bg-blue-100 text-blue-600">
+                          <Target size={18} />
+                        </div>
+
+                        <div>
+                          <h3 className="text-lg font-semibold text-slate-900">
+                            {goal.title}
+                          </h3>
+
+                          <p className="text-sm text-slate-400">
+                            ₹{goal.targetAmount.toLocaleString("en-IN")}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => {
+                          setEditingGoal(goal);
+                          setGoalModalOpen(true);
+                        }}
+                      >
+                        <Pencil
+                          size={18}
+                          className="text-slate-500 hover:text-slate-900"
+                        />
+                      </button>
+
+                      <button onClick={() => deleteGoal(goal._id)}>
+                        <Trash2
+                          size={18}
+                          className="text-rose-500 hover:text-rose-700"
+                        />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mb-3 flex justify-between text-sm font-medium">
+                    <span>Progress</span>
+                    <span>{goal.progress}%</span>
+                  </div>
+
+                  <div className="h-4 rounded-full bg-slate-100 overflow-hidden mb-4">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-blue-500 via-violet-500 to-pink-500"
+                      style={{ width: `${goal.progress}%` }}
+                    />
+                  </div>
+
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-500">
+                      Savings: ₹{savings.toLocaleString("en-IN")}
+                    </span>
+
+                    {goal.completed && (
+                      <span className="text-emerald-600 font-semibold">
+                        Completed ✓
+                      </span>
+                    )}
+                  </div>
+
+                  {goal.deadline && (
+                    <p className="mt-4 text-xs font-medium text-slate-400 uppercase tracking-wider">
+                      Deadline:{" "}
+                      {new Date(goal.deadline).toLocaleDateString("en-IN")}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
-    </div>
+
+      <AddGoal
+        isOpen={goalModalOpen}
+        onClose={() => setGoalModalOpen(false)}
+        onRefresh={fetchAnalytics}
+        initialData={editingGoal}
+      />
+    </>
   );
 };
 
