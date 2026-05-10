@@ -47,6 +47,10 @@ const userSchema = new Schema ({
         type:Number,
         default:0,
     },
+    savingsAlertEnabled: {
+    type: Boolean,
+    default: true
+},
     alertHistory:[{
         message:String,
         date:{type:Date, default: Date.now},
