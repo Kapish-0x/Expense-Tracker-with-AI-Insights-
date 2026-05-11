@@ -119,3 +119,38 @@ userApp.delete(
     res.status(200).json({ message: "Account terminated successfully" });
   }),
 );
+
+
+
+
+
+
+userApp.put(
+  "/update-profile",
+  VerifyToken("USER", "ADMIN"),
+  async (req, res) => {
+    try {
+
+      const { name } = req.body;
+
+      const updatedUser = await UserModel.findByIdAndUpdate(
+        req.user.id,
+        { name },
+        { new: true }
+      );
+
+      res.json({
+        success: true,
+        payload: updatedUser,
+      });
+
+    } catch (err) {
+
+      console.log(err);
+
+      res.status(500).json({
+        message: err.message,
+      });
+    }
+  }
+);

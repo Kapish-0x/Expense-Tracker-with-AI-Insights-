@@ -6,6 +6,7 @@ export const expenseApp = exp.Router();
 import mongoose from "mongoose";
 import { getFinancialAdvice } from "../Services/AIService.js";
 import { GoalModel } from "../models/GoalModel.js";
+import expressAsyncHandler from "express-async-handler";
 
 // ADD EXPENSE & UPDATE USER TOTALS
 expenseApp.post("/expense", VerifyToken("USER", "ADMIN"), async (req, res) => {
@@ -547,4 +548,22 @@ expenseApp.get(
       });
     }
   },
+);
+
+
+
+expenseApp.delete(
+  "/delete-all",
+  VerifyToken("USER", "ADMIN"),
+  expressAsyncHandler(async (req, res) => {
+
+    await ExpenseModel.deleteMany({
+      userId: req.user.id,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "All transactions removed successfully",
+    });
+  })
 );

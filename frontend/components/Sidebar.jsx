@@ -2,7 +2,6 @@ import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
-  Receipt,
   BrainCircuit,
   Bell,
   Settings,
@@ -17,6 +16,7 @@ const Sidebar = () => {
 
   const getInitials = (name) => {
     if (!name) return "??";
+
     return name
       .split(" ")
       .map((n) => n[0])
@@ -76,10 +76,12 @@ const Sidebar = () => {
           <div className="w-8 h-8 bg-slate-950 rounded-xl flex items-center justify-center">
             <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
           </div>
+
           <h2 className="text-slate-900 text-lg font-bold tracking-tight">
             Cashflow
           </h2>
         </div>
+
         <p className="text-slate-400 text-[10px] tracking-[2px] mt-2 font-bold uppercase">
           Expense Tracker
         </p>
@@ -103,15 +105,23 @@ const Sidebar = () => {
               {({ isActive }) => (
                 <>
                   <span
-                    className={`transition-all duration-300 ${isActive ? "text-slate-900 scale-110" : "group-hover:scale-110"}`}
+                    className={`transition-all duration-300 ${
+                      isActive
+                        ? "text-slate-900 scale-110"
+                        : "group-hover:scale-110"
+                    }`}
                   >
                     {item.icon}
                   </span>
+
                   <span
-                    className={`text-[13px] font-semibold tracking-tight transition-all ${isActive ? "translate-x-1" : ""}`}
+                    className={`text-[13px] font-semibold tracking-tight transition-all ${
+                      isActive ? "translate-x-1" : ""
+                    }`}
                   >
                     {item.label}
                   </span>
+
                   {isActive && (
                     <div className="ml-auto w-1.5 h-5 bg-slate-950 rounded-full animate-in fade-in zoom-in duration-300"></div>
                   )}
@@ -122,25 +132,43 @@ const Sidebar = () => {
         ))}
       </ul>
 
-      {/* Dynamic User Info & Logout */}
+      {/* User Section */}
       <div className="pt-6 border-t border-slate-50">
         <div className="flex items-center justify-between group">
-          <div className="flex items-center gap-3 cursor-pointer">
+          
+          {/* Clickable Profile */}
+          <div
+            onClick={() => navigate("/profile")}
+            className="flex items-center gap-3 cursor-pointer p-2 rounded-2xl hover:bg-slate-50 transition-all duration-300"
+          >
+            {/* Avatar */}
             <div className="relative">
               <div className="w-10 h-10 rounded-2xl bg-slate-950 border border-slate-900 flex items-center justify-center text-[11px] font-bold text-white overflow-hidden uppercase">
-                {getInitials(currentUser?.name || currentUser?.username)}
+                {getInitials(
+                  currentUser?.name || currentUser?.username
+                )}
               </div>
+
               <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></div>
             </div>
+
+            {/* User Details */}
             <div className="flex flex-col">
               <span className="text-slate-900 text-[12px] font-bold tracking-tight truncate w-32">
-                {currentUser?.name || currentUser?.username || "Guest User"}
+                {currentUser?.name ||
+                  currentUser?.username ||
+                  "Guest User"}
+              </span>
+
+              <span className="text-slate-400 text-[10px] truncate w-32">
+                {currentUser?.email || "No Email"}
               </span>
             </div>
           </div>
 
+          {/* Logout */}
           <button
-            onClick={handleLogout} // Updated handler
+            onClick={handleLogout}
             className="p-2 text-slate-400 hover:text-red-500 transition-colors group-hover:rotate-12 duration-300"
             title="Logout Session"
           >
