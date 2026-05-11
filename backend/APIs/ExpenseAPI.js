@@ -510,47 +510,53 @@ expenseApp.put("/goal/:id", VerifyToken("USER", "ADMIN"), async (req, res) => {
   }
 });
 
-//goal-analytics
-
 expenseApp.get(
   "/goal-analytics",
   VerifyToken("USER", "ADMIN"),
-  async (req, res) => {
-    try {
-      const userIdOfToken = req.user?.id;
+  expressAsyncHandler(async (req, res) => {
 
-      const user = await UserModel.findById(userIdOfToken);
+    // GET ALL USER TRANSACTIONS
+    const transactions = await ExpenseModel.find({
+      userId: req.user.id,
+    });
 
-      const savings = user.income - user.expense;
+    // CALCULATE CURRENT SAVINGS
+    const income = transactions
+      .filter((t) => t.type === "INCOME")
+      .reduce((sum, t) => sum + Number(t.amount), 0);
 
-      const goals = await GoalModel.find({
-        userId: userIdOfToken,
-      });
+    const expense = transactions
+      .filter((t) => t.type === "EXPENSE")
+      .reduce((sum, t) => sum + Number(t.amount), 0);
 
-      const analytics = goals.map((goal) => {
-        const progress = Math.min((savings / goal.targetAmount) * 100, 100);
+    const savings = income - expense;
 
-        return {
-          ...goal._doc,
-          currentSavings: savings,
-          progress: Number(progress.toFixed(1)),
-          completed: savings >= goal.targetAmount,
-        };
-      });
+    // GET GOALS
+    const goals = await GoalModel.find({
+      userId: req.user.id,
+    });
 
-      res.status(200).json({
-        message: "Goal analytics",
-        payload: analytics,
-      });
-    } catch (err) {
-      res.status(500).json({
-        message: err.message,
-      });
-    }
-  },
+    // UPDATE GOAL PROGRESS DYNAMICALLY
+    const updatedGoals = goals.map((goal) => {
+
+      const progress = Math.min(
+        100,
+        ((savings / goal.targetAmount) * 100).toFixed(1)
+      );
+
+      return {
+        ...goal._doc,
+        progress,
+        completed: progress >= 100,
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      payload: updatedGoals,
+    });
+  })
 );
-
-
 
 expenseApp.delete(
   "/delete-all",
