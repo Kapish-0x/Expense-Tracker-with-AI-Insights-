@@ -52,6 +52,10 @@ const userSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    budgetAlertEnabled: {
+      type: Boolean,
+      default: true,
+    },
     alertHistory: [
       {
         message: String,
