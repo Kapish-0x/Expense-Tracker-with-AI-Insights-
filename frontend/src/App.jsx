@@ -12,6 +12,7 @@ import { useAuth } from "../store/authStore";
 import AiInsights from "../components/AiInsights";
 import Settings from "../components/Settings";
 import Analytics from "../components/Analytics";
+import UserProfile from "../components/UserProfile";
 
 // 1. Gatekeeper for Protected Routes
 const ProtectedRoute = ({ children }) => {
@@ -95,6 +96,14 @@ function App() {
             </ProtectedRoute>
           ),
         },
+        {
+           path: "profile",
+          element: (
+    <ProtectedRoute>
+      <UserProfile />
+    </ProtectedRoute>
+  ),
+},
       ],
     },
   ]);
