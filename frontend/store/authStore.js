@@ -2,7 +2,6 @@ import { create } from "zustand";
 import axios from "axios";
 
 export const useAuth = create((set) => ({
-  // LocalStorage se initial state uthao
   currentUser: JSON.parse(localStorage.getItem("cashflow_user")) || null,
   loading: false,
   isAuthenticated: !!localStorage.getItem("cashflow_user"),
@@ -14,14 +13,14 @@ export const useAuth = create((set) => ({
       let res = await axios.post(
         "http://localhost:4000/common-api/login",
         userCred,
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       if (res.status === 200) {
         const userData = res.data?.payload;
         // LocalStorage mein save karo
         localStorage.setItem("cashflow_user", JSON.stringify(userData));
-        
+
         set({
           currentUser: userData,
           isAuthenticated: true,

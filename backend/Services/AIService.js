@@ -44,14 +44,11 @@ JSON FORMAT:
 }
 `;
 
-    const response = await axios.post(
-      "http://localhost:11434/api/generate",
-      {
-        model: "granite3.3:2b",
-        prompt,
-        stream: false,
-      }
-    );
+    const response = await axios.post("http://localhost:11434/api/generate", {
+      model: "granite3.3:2b",
+      prompt,
+      stream: false,
+    });
 
     const raw = response.data.response;
 
@@ -65,7 +62,6 @@ JSON FORMAT:
     console.log("CLEAN JSON:", jsonString);
 
     return JSON.parse(jsonString);
-
   } catch (err) {
     console.log("AI ERROR:", err);
 
@@ -81,10 +77,10 @@ JSON FORMAT:
       tips: [
         "Limit high-frequency spending categories to avoid gradual monthly overspending",
         "Review weekly expense trends instead of waiting for month-end analysis",
-        "Maintain an emergency savings buffer for unexpected future expenses"
+        "Maintain an emergency savings buffer for unexpected future expenses",
       ],
 
-      predictedExpense: data.predicted || 0
+      predictedExpense: data.predicted || 0,
     };
   }
 }

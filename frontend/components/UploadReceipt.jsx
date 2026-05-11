@@ -2,12 +2,10 @@ import React, { useState } from "react";
 import axios from "axios";
 
 export default function UploadReceipt() {
-
   const [file, setFile] = useState(null);
   const [data, setData] = useState(null);
 
   const uploadReceipt = async () => {
-
     console.log("BUTTON CLICKED");
 
     if (!file) {
@@ -16,7 +14,6 @@ export default function UploadReceipt() {
     }
 
     try {
-
       const formData = new FormData();
 
       formData.append("receipt", file);
@@ -31,15 +28,13 @@ export default function UploadReceipt() {
             "Content-Type": "multipart/form-data",
           },
           withCredentials: true,
-        }
+        },
       );
 
       console.log("API RESPONSE:", res.data);
 
       setData(res.data.extracted);
-
     } catch (err) {
-
       console.log("UPLOAD ERROR");
 
       console.log(err);
@@ -52,7 +47,6 @@ export default function UploadReceipt() {
 
   return (
     <div className="p-5">
-
       <input
         type="file"
         accept="image/*"
@@ -76,7 +70,6 @@ export default function UploadReceipt() {
           {/* <h2>Date: {data.date}</h2> */}
         </div>
       )}
-
     </div>
   );
 }

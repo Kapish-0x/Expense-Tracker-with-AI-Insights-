@@ -7,8 +7,6 @@ import mongoose from "mongoose";
 import { getFinancialAdvice } from "../Services/AIService.js";
 import { GoalModel } from "../models/GoalModel.js";
 
-
-
 // ADD EXPENSE & UPDATE USER TOTALS
 expenseApp.post("/expense", VerifyToken("USER", "ADMIN"), async (req, res) => {
   try {
@@ -21,13 +19,14 @@ expenseApp.post("/expense", VerifyToken("USER", "ADMIN"), async (req, res) => {
 
     // 2. Update User's Total Income/Expense in Database
     // $inc atomicity provide karta hai (race conditions se bachata hai)
-    const updateField = type === "INCOME" ? { income: amount } : { expense: amount };
-    
+    const updateField =
+      type === "INCOME" ? { income: amount } : { expense: amount };
+
     // Hamein user ka updated document chahiye alerts check karne ke liye
     const user = await UserModel.findByIdAndUpdate(
       userIdOfToken,
       { $inc: updateField },
-      { new: true } // Updated user wapas dega
+      { new: true }, // Updated user wapas dega
     );
 
     if (!user) {
@@ -38,22 +37,30 @@ expenseApp.post("/expense", VerifyToken("USER", "ADMIN"), async (req, res) => {
     let alertMessage = null;
     if (type === "EXPENSE") {
       // Current month ka start date nikalne ke liye
-      const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+      const startOfMonth = new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        1,
+      );
 
       // Current month ke saare expenses fetch karo total spent calculate karne ke liye
       const monthlyExpenses = await ExpenseModel.find({
         userId: userIdOfToken,
         type: "EXPENSE",
-        date: { $gte: startOfMonth }
+        date: { $gte: startOfMonth },
       });
 
-      const totalSpent = monthlyExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+      const totalSpent = monthlyExpenses.reduce(
+        (sum, exp) => sum + exp.amount,
+        0,
+      );
 
       if (user.monthlyBudget > 0) {
         const usagePercentage = (totalSpent / user.monthlyBudget) * 100;
 
         if (usagePercentage >= 90) {
-          alertMessage = "🚨 CRITICAL: You have used over 90% of your monthly budget!";
+          alertMessage =
+            "🚨 CRITICAL: You have used over 90% of your monthly budget!";
         } else if (usagePercentage >= 50) {
           alertMessage = "⚠️ ALERT: You've crossed 50% of your monthly budget.";
         }
@@ -68,16 +75,19 @@ expenseApp.post("/expense", VerifyToken("USER", "ADMIN"), async (req, res) => {
 
     // 5. Send final response
     res.status(201).json({
-      message: type === "INCOME" ? "Income added successfully" : "Expense added successfully",
+      message:
+        type === "INCOME"
+          ? "Income added successfully"
+          : "Expense added successfully",
       alert: alertMessage,
       payload: savedExpense,
       user: user,
-      updatedUser: { // Optional: for debugging
+      updatedUser: {
+        // Optional: for debugging
         income: user.income,
-        expense: user.expense
-      }
+        expense: user.expense,
+      },
     });
-
   } catch (err) {
     console.error("Route Error:", err);
     res.status(500).json({ message: err.message });
@@ -85,92 +95,115 @@ expenseApp.post("/expense", VerifyToken("USER", "ADMIN"), async (req, res) => {
 });
 
 // GET ALL EXPENSES
-expenseApp.get("/expenses",VerifyToken("USER", "ADMIN"),async (req, res) => {
-    try {
-      const userIdOfToken = req.user?.id;
+expenseApp.get("/expenses", VerifyToken("USER", "ADMIN"), async (req, res) => {
+  try {
+    const userIdOfToken = req.user?.id;
 
-      const expensesList = await ExpenseModel.find({userId: userIdOfToken,}).sort({ date: -1 });
-      res.status(200).json({message: "Expenses",payload: expensesList});
-    } catch (err) {
-      res.status(500).json({message: err.message});
-    }
+    const expensesList = await ExpenseModel.find({
+      userId: userIdOfToken,
+    }).sort({ date: -1 });
+    res.status(200).json({ message: "Expenses", payload: expensesList });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
-
 // GET SINGLE EXPENSE
-expenseApp.get("/expense/:id",VerifyToken("USER", "ADMIN"),async (req, res) => {
+expenseApp.get(
+  "/expense/:id",
+  VerifyToken("USER", "ADMIN"),
+  async (req, res) => {
     try {
       const userIdOfToken = req.user?.id;
       const expenseId = req.params.id;
 
-      const expense = await ExpenseModel.findOne({_id: expenseId,userId: userIdOfToken,});
+      const expense = await ExpenseModel.findOne({
+        _id: expenseId,
+        userId: userIdOfToken,
+      });
 
-      res.status(200).json({message: "Expense",payload: expense});
+      res.status(200).json({ message: "Expense", payload: expense });
     } catch (err) {
-      res.status(500).json({message: err.message,});
+      res.status(500).json({ message: err.message });
     }
-  });
-
+  },
+);
 
 // UPDATE EXPENSE
-expenseApp.put("/expense/:id",VerifyToken("USER", "ADMIN"),async (req, res) => {
+expenseApp.put(
+  "/expense/:id",
+  VerifyToken("USER", "ADMIN"),
+  async (req, res) => {
     try {
       const userIdOfToken = req.user?.id;
       const expenseId = req.params.id;
 
-      const updatedExpense = await ExpenseModel.findOneAndUpdate({_id: expenseId,userId: userIdOfToken},req.body,{ new: true });
-        res.status(200).json({message: "Expense updated",payload: updatedExpense,});
+      const updatedExpense = await ExpenseModel.findOneAndUpdate(
+        { _id: expenseId, userId: userIdOfToken },
+        req.body,
+        { new: true },
+      );
+      res
+        .status(200)
+        .json({ message: "Expense updated", payload: updatedExpense });
     } catch (err) {
-      res.status(500).json({message: err.message});
+      res.status(500).json({ message: err.message });
     }
-  });
-
+  },
+);
 
 // DELETE EXPENSE
-expenseApp.delete("/expense/:id",VerifyToken("USER", "ADMIN"),async (req, res) => {
+expenseApp.delete(
+  "/expense/:id",
+  VerifyToken("USER", "ADMIN"),
+  async (req, res) => {
     try {
       const userIdOfToken = req.user?.id;
       const expenseId = req.params.id;
 
-      await ExpenseModel.findOneAndDelete({_id: expenseId,userId: userIdOfToken,});
+      await ExpenseModel.findOneAndDelete({
+        _id: expenseId,
+        userId: userIdOfToken,
+      });
 
-      res.status(200).json({message: "Expense deleted",});
+      res.status(200).json({ message: "Expense deleted" });
     } catch (err) {
-      res.status(500).json({message: err.message});
+      res.status(500).json({ message: err.message });
     }
-  });
-
-
-
+  },
+);
 
 //Dashboard kind of thing
 
-  expenseApp.get("/summary",VerifyToken("USER", "ADMIN"),async (req, res) => {
-    try {
-      const userIdOfToken = req.user?.id;
+expenseApp.get("/summary", VerifyToken("USER", "ADMIN"), async (req, res) => {
+  try {
+    const userIdOfToken = req.user?.id;
 
-      const expenses = await ExpenseModel.find({userId: userIdOfToken,});
-      let income = 0;
-      let expense = 0;
+    const expenses = await ExpenseModel.find({ userId: userIdOfToken });
+    let income = 0;
+    let expense = 0;
 
-      expenses.forEach((item) => {
-        if (item.type === "INCOME") income += item.amount;
-        else expense += item.amount;
-      });
-      const savings = income - expense;
+    expenses.forEach((item) => {
+      if (item.type === "INCOME") income += item.amount;
+      else expense += item.amount;
+    });
+    const savings = income - expense;
 
-      res.status(200).json({message: "summary",payload: {income,expense,savings,}});
-    } catch (err) {
-      res.status(500).json({message: err.message});
-    }
-  });
+    res
+      .status(200)
+      .json({ message: "summary", payload: { income, expense, savings } });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
+//charts purpose
+//expenses category
 
-
-  //charts purpose
-  //expenses category
-
-  expenseApp.get("/category-analytics",VerifyToken("USER", "ADMIN"),async (req, res) => {
+expenseApp.get(
+  "/category-analytics",
+  VerifyToken("USER", "ADMIN"),
+  async (req, res) => {
     try {
       const userIdOfToken = req.user?.id;
 
@@ -179,38 +212,41 @@ expenseApp.delete("/expense/:id",VerifyToken("USER", "ADMIN"),async (req, res) =
         {
           $match: {
             userId: new mongoose.Types.ObjectId(userIdOfToken),
-            type: "EXPENSE"
-          }
+            type: "EXPENSE",
+          },
         },
         {
           $group: {
             _id: "$category",
             total: {
-              $sum: "$amount"
-            }
-          }
+              $sum: "$amount",
+            },
+          },
         },
         {
           $sort: {
-            total: -1
-          }
-        }
+            total: -1,
+          },
+        },
       ]);
 
-      res.status(200).json({message: "Category analytics",payload: analytics});
+      res
+        .status(200)
+        .json({ message: "Category analytics", payload: analytics });
     } catch (err) {
       res.status(500).json({
-        message: err.message
+        message: err.message,
       });
     }
-  });
+  },
+);
 
+//monthly income vs expenses comparision chart
 
-  
-
-  //monthly income vs expenses comparision chart 
-
-  expenseApp.get("/income-expense-analytics",VerifyToken("USER", "ADMIN"),async (req, res) => {
+expenseApp.get(
+  "/income-expense-analytics",
+  VerifyToken("USER", "ADMIN"),
+  async (req, res) => {
     try {
       const userIdOfToken = req.user?.id;
 
@@ -236,15 +272,18 @@ expenseApp.delete("/expense/:id",VerifyToken("USER", "ADMIN"),async (req, res) =
         },
       ]);
 
-      res.status(200).json({message: "Income vs Expense analytics",payload: analytics,});
+      res
+        .status(200)
+        .json({ message: "Income vs Expense analytics", payload: analytics });
     } catch (err) {
-      res.status(500).json({message: err.message});
+      res.status(500).json({ message: err.message });
     }
-  });
+  },
+);
 
-  //predict next month expenses
+//predict next month expenses
 
-  expenseApp.get(
+expenseApp.get(
   "/predict-expense",
   VerifyToken("USER", "ADMIN"),
   async (req, res) => {
@@ -256,60 +295,54 @@ expenseApp.delete("/expense/:id",VerifyToken("USER", "ADMIN"),async (req, res) =
         {
           $match: {
             userId: new mongoose.Types.ObjectId(userIdOfToken),
-            type: "EXPENSE"
-          }
+            type: "EXPENSE",
+          },
         },
         {
           $group: {
             _id: {
               year: { $year: "$date" },
-              month: { $month: "$date" }
+              month: { $month: "$date" },
             },
             total: {
-              $sum: "$amount"
-            }
-          }
+              $sum: "$amount",
+            },
+          },
         },
         {
           $sort: {
             "_id.year": 1,
-            "_id.month": 1
-          }
-        }
+            "_id.month": 1,
+          },
+        },
       ]);
 
       // calculate average
-     let predicted = 0;
+      let predicted = 0;
 
-// take only last 3 months
-const recentMonths = monthlyExpenses.slice(-3);
+      // take only last 3 months
+      const recentMonths = monthlyExpenses.slice(-3);
 
-if (recentMonths.length > 0) {
-  const sum = recentMonths.reduce(
-    (acc, item) => acc + item.total,
-    0
-  );
+      if (recentMonths.length > 0) {
+        const sum = recentMonths.reduce((acc, item) => acc + item.total, 0);
 
-  predicted = Math.round(sum / recentMonths.length);
-}
+        predicted = Math.round(sum / recentMonths.length);
+      }
 
       res.status(200).json({
-  message: "Predicted next month expense",
-  payload: {
-    consideredMonths: recentMonths,
-    predicted
-  }
-});
-
+        message: "Predicted next month expense",
+        payload: {
+          consideredMonths: recentMonths,
+          predicted,
+        },
+      });
     } catch (err) {
       res.status(500).json({
-        message: err.message
+        message: err.message,
       });
     }
-  }
+  },
 );
-
-
 
 //AI insights
 
@@ -368,75 +401,58 @@ expenseApp.get(
         message: "AI Insights",
         payload: advice,
       });
-
     } catch (err) {
       res.status(500).json({
         message: err.message,
       });
     }
-  }
+  },
 );
-
-
-
 
 //GOAL TRACKING
 
-
 //Add goal
 
-expenseApp.post(
-  "/goal",
-  VerifyToken("USER", "ADMIN"),
-  async (req, res) => {
-    try {
-      const userIdOfToken = req.user?.id;
+expenseApp.post("/goal", VerifyToken("USER", "ADMIN"), async (req, res) => {
+  try {
+    const userIdOfToken = req.user?.id;
 
-      const goal = await GoalModel.create({
-        ...req.body,
-        userId: userIdOfToken,
-      });
+    const goal = await GoalModel.create({
+      ...req.body,
+      userId: userIdOfToken,
+    });
 
-      res.status(201).json({
-        message: "Goal created",
-        payload: goal,
-      });
-    } catch (err) {
-      res.status(500).json({
-        message: err.message,
-      });
-    }
+    res.status(201).json({
+      message: "Goal created",
+      payload: goal,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
   }
-);
-
-
-
+});
 
 //get goal
 
-expenseApp.get(
-  "/goals",
-  VerifyToken("USER", "ADMIN"),
-  async (req, res) => {
-    try {
-      const userIdOfToken = req.user?.id;
+expenseApp.get("/goals", VerifyToken("USER", "ADMIN"), async (req, res) => {
+  try {
+    const userIdOfToken = req.user?.id;
 
-      const goals = await GoalModel.find({
-        userId: userIdOfToken,
-      }).sort({ createdAt: -1 });
+    const goals = await GoalModel.find({
+      userId: userIdOfToken,
+    }).sort({ createdAt: -1 });
 
-      res.status(200).json({
-        message: "Goals",
-        payload: goals,
-      });
-    } catch (err) {
-      res.status(500).json({
-        message: err.message,
-      });
-    }
+    res.status(200).json({
+      message: "Goals",
+      payload: goals,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
   }
-);
-
+});
 
 //delete goal
 
@@ -461,44 +477,37 @@ expenseApp.delete(
         message: err.message,
       });
     }
-  }
+  },
 );
-
-
 
 //edit goal
 
-expenseApp.put(
-  "/goal/:id",
-  VerifyToken("USER", "ADMIN"),
-  async (req, res) => {
-    try {
-      const userIdOfToken = req.user?.id;
-      const goalId = req.params.id;
+expenseApp.put("/goal/:id", VerifyToken("USER", "ADMIN"), async (req, res) => {
+  try {
+    const userIdOfToken = req.user?.id;
+    const goalId = req.params.id;
 
-      const updatedGoal = await GoalModel.findOneAndUpdate(
-        {
-          _id: goalId,
-          userId: userIdOfToken,
-        },
-        req.body,
-        {
-          new: true,
-        }
-      );
+    const updatedGoal = await GoalModel.findOneAndUpdate(
+      {
+        _id: goalId,
+        userId: userIdOfToken,
+      },
+      req.body,
+      {
+        new: true,
+      },
+    );
 
-      res.status(200).json({
-        message: "Goal updated",
-        payload: updatedGoal,
-      });
-    } catch (err) {
-      res.status(500).json({
-        message: err.message,
-      });
-    }
+    res.status(200).json({
+      message: "Goal updated",
+      payload: updatedGoal,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
   }
-);
-
+});
 
 //goal-analytics
 
@@ -518,10 +527,7 @@ expenseApp.get(
       });
 
       const analytics = goals.map((goal) => {
-        const progress = Math.min(
-          (savings / goal.targetAmount) * 100,
-          100
-        );
+        const progress = Math.min((savings / goal.targetAmount) * 100, 100);
 
         return {
           ...goal._doc,
@@ -540,5 +546,5 @@ expenseApp.get(
         message: err.message,
       });
     }
-  }
+  },
 );

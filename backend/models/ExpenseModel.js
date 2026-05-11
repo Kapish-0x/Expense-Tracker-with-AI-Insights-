@@ -1,43 +1,54 @@
-import {Schema, model} from "mongoose";
+import { Schema, model } from "mongoose";
 
-const ExpenseSchema = new Schema ({
+const ExpenseSchema = new Schema(
+  {
     userId: {
-        type: Schema.Types.ObjectId,
-        ref:"users",
-        required: true,
+      type: Schema.Types.ObjectId,
+      ref: "users",
+      required: true,
     },
-    title:{
-        type: String
+    title: {
+      type: String,
     },
-    amount:{
-        type:Number,
-        required:[true, "Amount is required"],
+    amount: {
+      type: Number,
+      required: [true, "Amount is required"],
     },
-    type:{
-        type:String,
-        enum:["INCOME","EXPENSE"],
-        required:[true, "Specify income or expense"],
+    type: {
+      type: String,
+      enum: ["INCOME", "EXPENSE"],
+      required: [true, "Specify income or expense"],
     },
-    category:{
-        type:String,
-        required: [true, "Category is required"],
-        enum:["FOOD","TRAVEL","TRANSPORT","RENT","SHOPPING","SALARY","ENTERTAINMENT","HEALTH","RECEIPT","OTHERS"],
+    category: {
+      type: String,
+      required: [true, "Category is required"],
+      enum: [
+        "FOOD",
+        "TRAVEL",
+        "TRANSPORT",
+        "RENT",
+        "SHOPPING",
+        "SALARY",
+        "ENTERTAINMENT",
+        "HEALTH",
+        "RECEIPT",
+        "OTHERS",
+      ],
     },
-    date:{
-        type:Date,
-        default: Date.now,
+    date: {
+      type: Date,
+      default: Date.now,
     },
-    description:{
-        type:String,
-        maxLength:[200,"Description can't exceed 200 characters"],
+    description: {
+      type: String,
+      maxLength: [200, "Description can't exceed 200 characters"],
     },
-    
-},
-    {
-        timestamps: true,
-        versionKey: false,
-        strict: "throw"
-    },    
+  },
+  {
+    timestamps: true,
+    versionKey: false,
+    strict: "throw",
+  },
 );
 
 export const ExpenseModel = model("expenses", ExpenseSchema);

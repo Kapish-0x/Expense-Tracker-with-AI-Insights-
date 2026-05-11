@@ -34,7 +34,7 @@ ChartJS.register(
   LineElement,
   Tooltip,
   Legend,
-  Filler
+  Filler,
 );
 
 const StatCard = ({ label, value, icon: Icon, variant = "default" }) => (
@@ -43,10 +43,10 @@ const StatCard = ({ label, value, icon: Icon, variant = "default" }) => (
       variant === "income"
         ? "bg-emerald-50/30 border-emerald-100"
         : variant === "expense"
-        ? "bg-rose-50/30 border-rose-100"
-        : variant === "category"
-        ? "bg-violet-50/30 border-violet-100"
-        : "bg-white border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
+          ? "bg-rose-50/30 border-rose-100"
+          : variant === "category"
+            ? "bg-violet-50/30 border-violet-100"
+            : "bg-white border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
     } hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)]`}
   >
     <div className="flex justify-between items-start">
@@ -55,10 +55,10 @@ const StatCard = ({ label, value, icon: Icon, variant = "default" }) => (
           variant === "income"
             ? "bg-emerald-100 text-emerald-600"
             : variant === "expense"
-            ? "bg-rose-100 text-rose-600"
-            : variant === "category"
-            ? "bg-violet-100 text-violet-600"
-            : "bg-slate-100 text-slate-700"
+              ? "bg-rose-100 text-rose-600"
+              : variant === "category"
+                ? "bg-violet-100 text-violet-600"
+                : "bg-slate-100 text-slate-700"
         }`}
       >
         <Icon size={20} strokeWidth={1.5} />
@@ -100,7 +100,7 @@ const Analytics = () => {
           "http://localhost:4000/expense-api/income-expense-analytics",
           {
             withCredentials: true,
-          }
+          },
         ),
         axios.get("http://localhost:4000/expense-api/goal-analytics", {
           withCredentials: true,
@@ -144,8 +144,7 @@ const Analytics = () => {
 
   const savings = income - expense;
 
-  const savingsRate =
-    income > 0 ? ((savings / income) * 100).toFixed(1) : 0;
+  const savingsRate = income > 0 ? ((savings / income) * 100).toFixed(1) : 0;
 
   const topCategory =
     categoryAnalytics.length > 0 ? categoryAnalytics[0]._id : "N/A";
@@ -172,8 +171,18 @@ const Analytics = () => {
   };
 
   const months = [
-    "Jan","Feb","Mar","Apr","May","Jun",
-    "Jul","Aug","Sep","Oct","Nov","Dec"
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
 
   const incomeMap = {};

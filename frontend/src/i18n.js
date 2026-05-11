@@ -6,7 +6,7 @@ i18n.use(initReactI18next).init({
     en: {
       translation: {
         // Headings
-        "overview": "Overview",
+        overview: "Overview",
 
         // Cards
         "total income": "Total Income",
@@ -14,22 +14,22 @@ i18n.use(initReactI18next).init({
         "net savings": "Net Savings",
 
         // Sidebar
-        "dashboard": "Dashboard",
-        "transactions": "Transactions",
+        dashboard: "Dashboard",
+        transactions: "Transactions",
         "ai insights": "AI Insights",
-        "notifications": "Notifications",
-        "settings": "Settings",
+        notifications: "Notifications",
+        settings: "Settings",
 
         // Misc
         "waiting data": "Waiting for transaction data...",
         "expense tracker": "Expense Tracker",
-      }
+      },
     },
 
     hi: {
       translation: {
         // Headings
-        "overview": "ओवरव्यू",
+        overview: "ओवरव्यू",
 
         // Cards
         "total income": "कुल आय",
@@ -37,22 +37,22 @@ i18n.use(initReactI18next).init({
         "net savings": "कुल बचत",
 
         // Sidebar
-        "dashboard": "डैशबोर्ड",
-        "transactions": "रूदाद",
+        dashboard: "डैशबोर्ड",
+        transactions: "रूदाद",
         "ai insights": "एआई परिज्ञान",
-        "notifications": "सूचनाएं",
-        "settings": "सेटिंग्स",
+        notifications: "सूचनाएं",
+        settings: "सेटिंग्स",
 
         // Misc
         "waiting data": "ट्रांज़ैक्शन डेटा का इंतज़ार हो रहा है...",
         "expense tracker": "खर्च प्रबंधक",
-      }
+      },
     },
 
     te: {
       translation: {
         // Headings
-        "overview": "సారాంశం",
+        overview: "సారాంశం",
 
         // Cards
         "total income": "పూర్తి ఆదాయం",
@@ -60,25 +60,25 @@ i18n.use(initReactI18next).init({
         "net savings": "పూర్తి పొదుపు",
 
         // Sidebar
-        "dashboard": "డాష్‌బోర్డ్",
-        "transactions": "లావాదేవీలు",
+        dashboard: "డాష్‌బోర్డ్",
+        transactions: "లావాదేవీలు",
         "ai insights": "ఏఐ విశ్లేషణలు",
-        "notifications": "హెచ్చరికలు",
-        "settings": "సెట్టింగ్స్",
+        notifications: "హెచ్చరికలు",
+        settings: "సెట్టింగ్స్",
 
         // Misc
         "waiting data": "లావాదేవీ డేటా కోసం వేచి ఉంది...",
         "expense tracker": "ఖర్చుల నివేదిక",
-      }
-    }
+      },
+    },
   },
 
   lng: localStorage.getItem("lang") || "en",
   fallbackLng: "en",
 
   interpolation: {
-    escapeValue: false
-  }
+    escapeValue: false,
+  },
 });
 
 export default i18n;

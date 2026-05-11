@@ -95,4 +95,3 @@ commonApp.put("/password" , VerifyToken("USER","ADMIN"), async (req,res) => {
   res.status(200).json({message: "Password changed"})
 });
 
-//SOFT DELETE 

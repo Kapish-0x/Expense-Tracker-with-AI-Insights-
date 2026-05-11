@@ -31,7 +31,7 @@ const GoalSchema = new Schema(
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 export const GoalModel = model("goals", GoalSchema);

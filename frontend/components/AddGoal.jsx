@@ -52,14 +52,12 @@ const AddGoal = ({ isOpen, onClose, onRefresh, initialData }) => {
         await axios.put(
           `http://localhost:4000/expense-api/goal/${initialData._id}`,
           payload,
-          { withCredentials: true }
+          { withCredentials: true },
         );
       } else {
-        await axios.post(
-          "http://localhost:4000/expense-api/goal",
-          payload,
-          { withCredentials: true }
-        );
+        await axios.post("http://localhost:4000/expense-api/goal", payload, {
+          withCredentials: true,
+        });
       }
 
       onRefresh();

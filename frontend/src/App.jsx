@@ -1,4 +1,8 @@
-import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from "react-router-dom";
 import RootLayout from "../components/RootLayout";
 import Dashboard from "../components/Dashboard";
 import Register from "../components/register";
@@ -15,7 +19,7 @@ const ProtectedRoute = ({ children }) => {
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
-// 2. Gatekeeper for Public Routes (Login/Register pe logged-in user nahi ja sakta)
+// 2. Gatekeeper for Public Routes 
 const PublicRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
   return !isAuthenticated ? children : <Navigate to="/dashboard" replace />;
@@ -32,7 +36,11 @@ function App() {
         {
           index: true,
           // Agar logged in hai toh dashboard bhej do, warna login
-          element: isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />,
+          element: isAuthenticated ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <Login />
+          ),
         },
         {
           path: "register",
@@ -71,13 +79,13 @@ function App() {
           path: "analytics",
           element: (
             <ProtectedRoute>
-              <Analytics/>
+              <Analytics />
             </ProtectedRoute>
           ),
         },
         {
           path: "ai-insights",
-          element:<AiInsights />,
+          element: <AiInsights />,
         },
         {
           path: "settings",
