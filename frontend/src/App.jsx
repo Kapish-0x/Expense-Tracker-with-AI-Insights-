@@ -13,6 +13,7 @@ import AiInsights from "../components/AiInsights";
 import Settings from "../components/Settings";
 import Analytics from "../components/Analytics";
 import UserProfile from "../components/UserProfile";
+import Reports from "../components/Reports";
 
 // 1. Gatekeeper for Protected Routes
 const ProtectedRoute = ({ children }) => {
@@ -88,6 +89,10 @@ function App() {
           path: "ai-insights",
           element: <AiInsights />,
         },
+        {
+  path: "reports",
+  element: <Reports />,
+},
         {
           path: "settings",
           element: (

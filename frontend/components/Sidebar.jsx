@@ -7,6 +7,7 @@ import {
   Settings,
   LogOut,
   BarChart3,
+  BarChart,
 } from "lucide-react";
 import { useAuth } from "../store/authStore";
 
@@ -55,10 +56,10 @@ const Sidebar = () => {
       path: "/ai-insights",
     },
     {
-      id: "alerts",
-      label: "Notifications",
-      icon: <Bell size={18} strokeWidth={1.5} />,
-      path: "/alerts",
+      id: "reports",
+      label: "Reports",
+      icon: <BarChart size={18} strokeWidth={1.5} />,
+      path: "/reports",
     },
     {
       id: "settings",
