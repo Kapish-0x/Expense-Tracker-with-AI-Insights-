@@ -196,9 +196,9 @@ const Dashboard = () => {
     currentUser?.savingsAlertEnabled === true &&
     savings < (currentUser?.minSavings || 0);
 
-  const isBudgetExceeded = 
+  const isBudgetExceeded =
     currentUser?.budgetAlertEnabled === true && // Check if toggle is ON
-    currentUser?.monthlyBudget > 0 && 
+    currentUser?.monthlyBudget > 0 &&
     expense > currentUser?.monthlyBudget;
 
   return (
@@ -248,7 +248,9 @@ const Dashboard = () => {
                 Budget Limit Breached
               </h4>
               <p className="text-orange-700/80 text-sm">
-                Warning: Total expenses (₹{expense.toLocaleString("en-IN")}) have crossed your set budget of ₹{currentUser?.monthlyBudget?.toLocaleString("en-IN")}.
+                Warning: Total expenses (₹{expense.toLocaleString("en-IN")})
+                have crossed your set budget of ₹
+                {currentUser?.monthlyBudget?.toLocaleString("en-IN")}.
               </p>
             </div>
           </div>
@@ -265,8 +267,8 @@ const Dashboard = () => {
                 Financial Guardrail Tripped
               </h4>
               <p className="text-rose-700/80 text-sm">
-                Your net savings (₹{savings.toLocaleString("en-IN")}) have fallen
-                below your set floor of ₹
+                Your net savings (₹{savings.toLocaleString("en-IN")}) have
+                fallen below your set floor of ₹
                 {currentUser?.minSavings?.toLocaleString("en-IN")}.
               </p>
             </div>

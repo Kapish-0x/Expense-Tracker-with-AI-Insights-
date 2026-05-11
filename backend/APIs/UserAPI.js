@@ -42,37 +42,7 @@ userApp.get(
   }),
 );
 
-// // 3. UPDATE BUDGET & ALERTS (Unified Route)
-// userApp.patch(
-//   "/budget",
-//   VerifyToken("USER"),
-//   expressAsyncHandler(async (req, res) => {
-//     const { monthlyBudget, minSavings, savingsAlertEnabled } = req.body;
-
-//     const updatedUser = await UserModel.findByIdAndUpdate(
-//       req.user.id,
-//       {
-//         $set: {
-//           monthlyBudget: Number(monthlyBudget),
-//           minSavings: Number(minSavings),
-//           savingsAlertEnabled: savingsAlertEnabled,
-//           budgetAlertEnabled: budgetAlertEnabled,
-//         },
-//       },
-//       { new: true, runValidators: true },
-//     ).select("-password");
-
-//     if (!updatedUser) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-
-//     res.status(200).json({
-//       message: "Financial protocols synchronized",
-//       payload: updatedUser,
-//     });
-//   }),
-// );
-
+// 3. UPDATE BUDGET & ALERTS (Unified Route)
 userApp.patch(
   "/budget",
   VerifyToken("USER"),
@@ -119,9 +89,6 @@ userApp.delete(
     res.status(200).json({ message: "Account terminated successfully" });
   }),
 );
-
-
-
 
 
 
