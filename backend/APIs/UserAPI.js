@@ -42,23 +42,61 @@ userApp.get(
   }),
 );
 
-// 3. UPDATE BUDGET & ALERTS (Unified Route)
+// // 3. UPDATE BUDGET & ALERTS (Unified Route)
+// userApp.patch(
+//   "/budget",
+//   VerifyToken("USER"),
+//   expressAsyncHandler(async (req, res) => {
+//     const { monthlyBudget, minSavings, savingsAlertEnabled } = req.body;
+
+//     const updatedUser = await UserModel.findByIdAndUpdate(
+//       req.user.id,
+//       {
+//         $set: {
+//           monthlyBudget: Number(monthlyBudget),
+//           minSavings: Number(minSavings),
+//           savingsAlertEnabled: savingsAlertEnabled,
+//           budgetAlertEnabled: budgetAlertEnabled,
+//         },
+//       },
+//       { new: true, runValidators: true },
+//     ).select("-password");
+
+//     if (!updatedUser) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     res.status(200).json({
+//       message: "Financial protocols synchronized",
+//       payload: updatedUser,
+//     });
+//   }),
+// );
+
 userApp.patch(
   "/budget",
   VerifyToken("USER"),
   expressAsyncHandler(async (req, res) => {
-    const { monthlyBudget, minSavings, savingsAlertEnabled } = req.body;
+    // 1. Sirf wahi data uthao jo update karna hai
+    // Baaki kachra (jaise _id, role, password) skip ho jayega
+    const { 
+      monthlyBudget, 
+      minSavings, 
+      savingsAlertEnabled, 
+      budgetAlertEnabled 
+    } = req.body;
+
+    // 2. Validate karo ki data empty na ho
+    const updatePayload = {};
+    if (monthlyBudget !== undefined) updatePayload.monthlyBudget = Number(monthlyBudget);
+    if (minSavings !== undefined) updatePayload.minSavings = Number(minSavings);
+    if (savingsAlertEnabled !== undefined) updatePayload.savingsAlertEnabled = savingsAlertEnabled;
+    if (budgetAlertEnabled !== undefined) updatePayload.budgetAlertEnabled = budgetAlertEnabled;
 
     const updatedUser = await UserModel.findByIdAndUpdate(
       req.user.id,
-      {
-        $set: {
-          monthlyBudget: Number(monthlyBudget),
-          minSavings: Number(minSavings),
-          savingsAlertEnabled: savingsAlertEnabled,
-        },
-      },
-      { new: true, runValidators: true },
+      { $set: updatePayload }, 
+      { new: true, runValidators: true }
     ).select("-password");
 
     if (!updatedUser) {
