@@ -115,7 +115,7 @@ export const startTour = async (navigate) => {
 
     smoothScroll: true,
 
-    allowClose: false,
+    allowClose: true,
   });
 
   driverObj.drive();
