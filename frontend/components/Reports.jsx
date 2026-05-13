@@ -2,14 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import html2canvas from "html2canvas";
 
 import {
   ShieldCheck,
   Download,
   CalendarRange,
-  TrendingUp,
-  TrendingDown,
-  Wallet,
 } from "lucide-react";
 
 const Reports = () => {
@@ -38,7 +36,7 @@ const Reports = () => {
     }
   };
 
-  // FILTER LOGIC
+  // DATE FILTER
   const filteredTransactions = useMemo(() => {
     const now = new Date();
 
@@ -114,74 +112,168 @@ const Reports = () => {
       ? "Moderate"
       : "Needs Attention";
 
-  // TOP CATEGORY
-  const categoryTotals = filteredTransactions
-    .filter((t) => t.type === "EXPENSE")
-    .reduce((acc, curr) => {
-      acc[curr.category] =
-        (acc[curr.category] || 0) + curr.amount;
-      return acc;
-    }, {});
 
-  const highestCategory =
-    Object.entries(categoryTotals).sort(
-      (a, b) => b[1] - a[1]
-    )[0];
+const downloadPDF = async () => {
+  try {
+    const doc = new jsPDF("p", "mm", "a4");
+    // TITLE
+    doc.setFontSize(24);
+    doc.setTextColor(15, 23, 42);
+    doc.text("Financial Report", 14, 20);
 
-  // PDF EXPORT
-  const downloadPDF = () => {
-    try {
-      const doc = new jsPDF();
+    doc.setFontSize(11);
+    doc.setTextColor(100);
 
-      doc.setFontSize(22);
-      doc.text("Financial Report", 14, 20);
+    doc.text(
+      `Generated on: ${new Date().toLocaleDateString("en-IN")}`,
+      14,
+      28
+    );
 
-      doc.setFontSize(12);
+    doc.text(`Report Range: ${range}`, 14, 34);
 
-      doc.text(`Date Range: ${range}`, 14, 35);
+    // SUMMARY BOXES
+    const summaryY = 48;
 
-      doc.text(
-        `Financial Score: ${financialScore}/100`,
-        14,
-        45
-      );
+    const drawBox = (x, title, value) => {
+      doc.setFillColor(248, 250, 252);
+      doc.roundedRect(x, summaryY, 55, 24, 4, 4, "F");
 
-      doc.text(
-        `Net Savings: ₹${savings.toLocaleString("en-IN")}`,
-        14,
-        55
-      );
+      doc.setFontSize(10);
+      doc.setTextColor(120);
+      doc.text(title, x + 4, summaryY + 8);
 
-      const tableData = filteredTransactions.map((t, index) => [
-        index + 1,
-        t.description || "-",
-        t.category,
-        t.type,
-        `₹${Number(t.amount).toLocaleString("en-IN")}`,
-        new Date(t.date).toLocaleDateString("en-IN"),
-      ]);
+      doc.setFontSize(16);
+      doc.setTextColor(15, 23, 42);
+      doc.text(value, x + 4, summaryY + 18);
+    };
 
-      autoTable(doc, {
-        startY: 70,
-        head: [
-          [
-            "#",
-            "Description",
-            "Category",
-            "Type",
-            "Amount",
-            "Date",
-          ],
-        ],
-        body: tableData,
-        theme: "grid",
+    drawBox(
+      14,
+      "Income",
+      `Rs. ${income.toLocaleString("en-IN")}`
+    );
+
+    drawBox(
+      77,
+      "Expense",
+      `Rs. ${expense.toLocaleString("en-IN")}`
+    );
+
+    drawBox(
+      140,
+      "Net Balance",
+      `Rs. ${savings.toLocaleString("en-IN")}`
+    );
+
+    // FINANCIAL SCORE
+    doc.setFontSize(18);
+    doc.setTextColor(15, 23, 42);
+    doc.text("Financial Score", 14, 88);
+
+    doc.setFontSize(34);
+    doc.text(`${financialScore}/100`, 14, 104);
+
+    doc.setFontSize(12);
+    doc.setTextColor(90);
+    doc.text(financialStatus, 14, 112);
+
+    // CHARTS
+
+    const chartElements = document.querySelectorAll("canvas");
+
+    let currentY = 125;
+
+    for (let i = 0; i < chartElements.length; i++) {
+      const canvas = await html2canvas(chartElements[i], {
+        scale: 2,
       });
 
-      doc.save("financial-report.pdf");
-    } catch (err) {
-      console.error("PDF Export Error:", err);
+      const imgData = canvas.toDataURL("image/png");
+
+      doc.addImage(
+        imgData,
+        "PNG",
+        14,
+        currentY,
+        180,
+        70
+      );
+
+      currentY += 80;
     }
-  };
+
+
+    // TRANSACTION TABLE
+    const tableData = filteredTransactions.map((t, index) => [
+      index + 1,
+      t.description || "-",
+      t.category,
+      t.type,
+      `Rs. ${Number(t.amount).toLocaleString("en-IN")}`,
+      new Date(t.date).toLocaleDateString("en-IN"),
+    ]);
+
+    autoTable(doc, {
+      startY: currentY,
+      head: [
+        [
+          "#",
+          "Description",
+          "Category",
+          "Type",
+          "Amount",
+          "Date",
+        ],
+      ],
+      body: tableData,
+
+      styles: {
+        fontSize: 10,
+        cellPadding: 4,
+      },
+
+      headStyles: {
+        fillColor: [15, 23, 42],
+      },
+
+      alternateRowStyles: {
+        fillColor: [248, 250, 252],
+      },
+
+      columnStyles: {
+        0: { cellWidth: 10 },
+        1: { cellWidth: 50 },
+        2: { cellWidth: 35 },
+        3: { cellWidth: 28 },
+        4: { cellWidth: 35 },
+        5: { cellWidth: 30 },
+      },
+    });
+
+    // FOOTER
+    const pageCount = doc.internal.getNumberOfPages();
+
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+
+      doc.setFontSize(10);
+      doc.setTextColor(140);
+
+      doc.text(
+        `Expense Tracker Report • Page ${i} of ${pageCount}`,
+        14,
+        290
+      );
+    }
+
+    doc.save("financial-report.pdf");
+  } catch (err) {
+    console.error("PDF Export Error:", err);
+  }
+};
+
+
 
   if (loading) {
     return (
@@ -203,7 +295,7 @@ const Reports = () => {
           </h1>
 
           <p className="text-slate-400 mt-2 text-sm">
-            Financial records & exports
+            Financial statements & exports
           </p>
         </div>
 
@@ -284,154 +376,176 @@ const Reports = () => {
               </p>
             </div>
           </div>
-
-          {/* SIDE INFO */}
-          <div className="grid grid-cols-1 gap-4 w-full xl:w-[320px]">
-            <div className="border border-slate-100 rounded-3xl p-5">
-              <p className="text-[11px] uppercase tracking-[2px] font-bold text-slate-400 mb-2">
-                Net Savings
-              </p>
-
-              <h3 className="text-3xl font-semibold text-slate-900">
-                ₹{savings.toLocaleString("en-IN")}
-              </h3>
-            </div>
-
-            <div className="border border-slate-100 rounded-3xl p-5">
-              <p className="text-[11px] uppercase tracking-[2px] font-bold text-slate-400 mb-2">
-                Savings Rate
-              </p>
-
-              <h3 className="text-3xl font-semibold text-slate-900">
-                {savingsRate.toFixed(1)}%
-              </h3>
-            </div>
-          </div>
         </div>
       </div>
 
-      {/* EXTRA REPORTS */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-        {/* STATEMENT */}
-        <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm">
-          <h2 className="text-2xl font-semibold text-slate-900 mb-8">
-            Income vs Expense
-          </h2>
+      {/* MONTHLY FINANCIAL STATEMENT */}
+      <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm">
+        <h2 className="text-2xl font-semibold text-slate-900 mb-8">
+          Monthly Financial Statement
+        </h2>
 
-          <div className="space-y-5">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-4">
-              <span className="text-slate-500 font-medium">
-                Total Income
-              </span>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-slate-100">
+                <th className="text-left py-4 text-slate-400 text-xs uppercase tracking-[2px]">
+                  Month
+                </th>
 
-              <span className="text-emerald-600 font-bold text-xl">
-                ₹{income.toLocaleString("en-IN")}
-              </span>
-            </div>
+                <th className="text-left py-4 text-slate-400 text-xs uppercase tracking-[2px]">
+                  Income
+                </th>
 
-            <div className="flex justify-between items-center border-b border-slate-100 pb-4">
-              <span className="text-slate-500 font-medium">
-                Total Expense
-              </span>
+                <th className="text-left py-4 text-slate-400 text-xs uppercase tracking-[2px]">
+                  Expense
+                </th>
 
-              <span className="text-rose-600 font-bold text-xl">
-                ₹{expense.toLocaleString("en-IN")}
-              </span>
-            </div>
+                <th className="text-left py-4 text-slate-400 text-xs uppercase tracking-[2px]">
+                  Balance
+                </th>
+              </tr>
+            </thead>
 
-            <div className="flex justify-between items-center pt-2">
-              <span className="text-slate-900 font-semibold text-lg">
-                Net Balance
-              </span>
+            <tbody>
+              {Array.from({ length: 12 }).map((_, index) => {
+                const month = index + 1;
 
-              <span
-                className={`font-bold text-2xl ${
-                  savings >= 0
-                    ? "text-emerald-600"
-                    : "text-rose-600"
-                }`}
-              >
-                ₹{savings.toLocaleString("en-IN")}
-              </span>
-            </div>
-          </div>
+                const monthIncome = transactions
+                  .filter(
+                    (t) =>
+                      new Date(t.date).getMonth() + 1 === month &&
+                      t.type === "INCOME"
+                  )
+                  .reduce(
+                    (sum, t) => sum + Number(t.amount),
+                    0
+                  );
+
+                const monthExpense = transactions
+                  .filter(
+                    (t) =>
+                      new Date(t.date).getMonth() + 1 === month &&
+                      t.type === "EXPENSE"
+                  )
+                  .reduce(
+                    (sum, t) => sum + Number(t.amount),
+                    0
+                  );
+
+                const balance = monthIncome - monthExpense;
+
+                return (
+                  <tr
+                    key={month}
+                    className="border-b border-slate-50"
+                  >
+                    <td className="py-4 font-medium text-slate-700">
+                      {new Date(0, index).toLocaleString(
+                        "default",
+                        {
+                          month: "long",
+                        }
+                      )}
+                    </td>
+
+                    <td className="py-4 text-emerald-600 font-semibold">
+                      ₹{monthIncome.toLocaleString("en-IN")}
+                    </td>
+
+                    <td className="py-4 text-rose-600 font-semibold">
+                      ₹{monthExpense.toLocaleString("en-IN")}
+                    </td>
+
+                    <td
+                      className={`py-4 font-bold ${
+                        balance >= 0
+                          ? "text-slate-900"
+                          : "text-rose-600"
+                      }`}
+                    >
+                      ₹{balance.toLocaleString("en-IN")}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
+      </div>
 
-        {/* SAVINGS TREND */}
-        <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm">
-          <h2 className="text-2xl font-semibold text-slate-900 mb-6">
-            Savings Trend
-          </h2>
+      {/* TRANSACTION LEDGER */}
+      <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm">
+        <h2 className="text-2xl font-semibold text-slate-900 mb-8">
+          Transaction Ledger
+        </h2>
 
-          <div className="flex flex-col gap-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400 text-sm mb-2">
-                  Current Trend
-                </p>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-slate-100">
+                <th className="text-left py-4 text-slate-400 text-xs uppercase tracking-[2px]">
+                  Description
+                </th>
 
-                <h3
-                  className={`text-3xl font-bold ${
-                    savingsRate >= 20
-                      ? "text-emerald-600"
-                      : "text-rose-600"
-                  }`}
+                <th className="text-left py-4 text-slate-400 text-xs uppercase tracking-[2px]">
+                  Category
+                </th>
+
+                <th className="text-left py-4 text-slate-400 text-xs uppercase tracking-[2px]">
+                  Type
+                </th>
+
+                <th className="text-left py-4 text-slate-400 text-xs uppercase tracking-[2px]">
+                  Amount
+                </th>
+
+                <th className="text-left py-4 text-slate-400 text-xs uppercase tracking-[2px]">
+                  Date
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {filteredTransactions.map((t) => (
+                <tr
+                  key={t._id}
+                  className="border-b border-slate-50"
                 >
-                  {savingsRate >= 20
-                    ? "Growing"
-                    : "Declining"}
-                </h3>
-              </div>
+                  <td className="py-4 text-slate-700 font-medium">
+                    {t.description}
+                  </td>
 
-              <div
-                className={`p-4 rounded-2xl ${
-                  savingsRate >= 20
-                    ? "bg-emerald-100 text-emerald-600"
-                    : "bg-rose-100 text-rose-600"
-                }`}
-              >
-                {savingsRate >= 20 ? (
-                  <TrendingUp size={28} />
-                ) : (
-                  <TrendingDown size={28} />
-                )}
-              </div>
-            </div>
+                  <td className="py-4 text-slate-500">
+                    {t.category}
+                  </td>
 
-            <div
-              className={`px-5 py-3 rounded-2xl text-sm font-semibold w-fit ${
-                savingsRate >= 20
-                  ? "bg-emerald-100 text-emerald-700"
-                  : "bg-rose-100 text-rose-700"
-              }`}
-            >
-              {savingsRate.toFixed(1)}% Savings Rate
-            </div>
-          </div>
-        </div>
+                  <td
+                    className={`py-4 font-semibold ${
+                      t.type === "INCOME"
+                        ? "text-emerald-600"
+                        : "text-rose-600"
+                    }`}
+                  >
+                    {t.type}
+                  </td>
 
-        {/* TOP CATEGORY */}
-        <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm">
-          <div className="flex items-center justify-between mb-6">
-            <div className="p-3 rounded-2xl bg-violet-100 text-violet-600">
-              <Wallet size={22} />
-            </div>
-          </div>
+                  <td className="py-4 font-bold text-slate-900">
+                    ₹
+                    {Number(t.amount).toLocaleString(
+                      "en-IN"
+                    )}
+                  </td>
 
-          <p className="text-[11px] uppercase tracking-[2px] font-bold text-slate-400 mb-3">
-            Highest Spending Category
-          </p>
-
-          <h2 className="text-3xl font-semibold text-slate-900">
-            {highestCategory?.[0] || "N/A"}
-          </h2>
-
-          <p className="text-slate-400 mt-3 text-lg">
-            ₹
-            {highestCategory?.[1]?.toLocaleString(
-              "en-IN"
-            ) || 0}
-          </p>
+                  <td className="py-4 text-slate-500">
+                    {new Date(t.date).toLocaleDateString(
+                      "en-IN"
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

@@ -1,9 +1,6 @@
-
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../store/authStore";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 import {
   Plus,
   UploadCloud,
@@ -49,6 +46,7 @@ const StatCard = ({ label, value, icon: Icon, variant = "default" }) => (
       <p className="text-slate-400 text-[11px] tracking-[2px] font-bold uppercase mb-1">
         {label}
       </p>
+
       <h2 className="text-3xl font-semibold tracking-tight text-slate-900 animate-in fade-in slide-in-from-bottom-2 duration-700">
         {value}
       </h2>
@@ -69,12 +67,14 @@ const Dashboard = () => {
   const handleRefresh = useCallback(async () => {
     try {
       if (checkAuth) await checkAuth();
+
       const res = await axios.get(
         "http://localhost:4000/expense-api/expenses",
         {
           withCredentials: true,
         },
       );
+
       setTransactions(res.data.payload || []);
       setIsLoading(false);
     } catch (err) {
@@ -84,11 +84,17 @@ const Dashboard = () => {
   }, [checkAuth]);
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this record?")) return;
+    if (!window.confirm("Are you sure you want to delete this record?"))
+      return;
+
     try {
-      await axios.delete(`http://localhost:4000/expense-api/expense/${id}`, {
-        withCredentials: true,
-      });
+      await axios.delete(
+        `http://localhost:4000/expense-api/expense/${id}`,
+        {
+          withCredentials: true,
+        },
+      );
+
       handleRefresh();
     } catch (err) {
       console.error("Delete failed", err);
@@ -101,44 +107,14 @@ const Dashboard = () => {
     setIsModalOpen(true);
   };
 
-  const downloadPDF = () => {
-    try {
-      const doc = new jsPDF();
-      doc.setFontSize(18);
-      doc.text("Recent Transaction Logs", 14, 20);
-      doc.setFontSize(12);
-      doc.text(`Total Income: Rs. ${income.toLocaleString("en-IN")}`, 14, 35);
-      doc.text(`Total Expense: Rs. ${expense.toLocaleString("en-IN")}`, 14, 45);
-      doc.text(`Net Savings: Rs. ${savings.toLocaleString("en-IN")}`, 14, 55);
-
-      const tableData = transactions.map((t, index) => [
-        index + 1,
-        t.description || "No Description",
-        t.type,
-        t.category,
-        `Rs. ${Number(t.amount).toFixed(2)}`,
-        new Date(t.date).toLocaleDateString("en-IN"),
-      ]);
-
-      autoTable(doc, {
-        startY: 70,
-        head: [["#", "Description", "Type", "Category", "Amount", "Date"]],
-        body: tableData,
-        theme: "grid",
-      });
-
-      doc.save("recent-transactions.pdf");
-    } catch (error) {
-      console.error("PDF Export Error:", error);
-      alert("Failed to export PDF");
-    }
-  };
-
   const handleReceiptUpload = async (e) => {
     try {
       const file = e.target.files[0];
+
       if (!file) return;
+
       setReceiptLoading(true);
+
       const formData = new FormData();
       formData.append("receipt", file);
 
@@ -151,6 +127,7 @@ const Dashboard = () => {
       );
 
       const extracted = scanRes.data.extracted;
+
       if (!extracted) throw new Error("No data received");
 
       await axios.post(
@@ -166,6 +143,7 @@ const Dashboard = () => {
       );
 
       await handleRefresh();
+
       alert("Receipt scanned successfully");
     } catch (err) {
       console.error(err);
@@ -191,13 +169,13 @@ const Dashboard = () => {
 
   const savings = income - expense;
 
-  // UPDATED ALERT LOGIC (Checking Settings Toggle)
+  // UPDATED ALERT LOGIC
   const isSavingsLow =
     currentUser?.savingsAlertEnabled === true &&
     savings < (currentUser?.minSavings || 0);
 
   const isBudgetExceeded =
-    currentUser?.budgetAlertEnabled === true && // Check if toggle is ON
+    currentUser?.budgetAlertEnabled === true &&
     currentUser?.monthlyBudget > 0 &&
     expense > currentUser?.monthlyBudget;
 
@@ -208,6 +186,7 @@ const Dashboard = () => {
         <h1 className="text-4xl font-semibold tracking-tight text-slate-900">
           Overview
         </h1>
+
         <div className="flex items-center gap-3 w-full md:w-auto">
           <input
             type="file"
@@ -216,13 +195,16 @@ const Dashboard = () => {
             className="hidden"
             onChange={handleReceiptUpload}
           />
+
           <label
             htmlFor="receiptUpload"
             className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-700 px-6 py-3 rounded-2xl font-semibold text-sm hover:bg-slate-50 cursor-pointer shadow-sm active:scale-95 transition-all"
           >
             <UploadCloud size={18} />
+
             {receiptLoading ? "Scanning..." : "Upload Receipt"}
           </label>
+
           <button
             onClick={() => {
               setSelectedTransaction(null);
@@ -243,12 +225,15 @@ const Dashboard = () => {
             <div className="p-3 bg-orange-100 text-orange-600 rounded-2xl shadow-sm">
               <Zap size={24} />
             </div>
+
             <div>
               <h4 className="text-orange-900 font-bold text-sm uppercase tracking-wider">
                 Budget Limit Breached
               </h4>
+
               <p className="text-orange-700/80 text-sm">
-                Warning: Total expenses (₹{expense.toLocaleString("en-IN")})
+                Warning: Total expenses (₹
+                {expense.toLocaleString("en-IN")})
                 have crossed your set budget of ₹
                 {currentUser?.monthlyBudget?.toLocaleString("en-IN")}.
               </p>
@@ -262,12 +247,15 @@ const Dashboard = () => {
             <div className="p-3 bg-rose-100 text-rose-600 rounded-2xl shadow-sm">
               <AlertTriangle size={24} />
             </div>
+
             <div>
               <h4 className="text-rose-900 font-bold text-sm uppercase tracking-wider">
                 Financial Guardrail Tripped
               </h4>
+
               <p className="text-rose-700/80 text-sm">
-                Your net savings (₹{savings.toLocaleString("en-IN")}) have
+                Your net savings (₹
+                {savings.toLocaleString("en-IN")}) have
                 fallen below your set floor of ₹
                 {currentUser?.minSavings?.toLocaleString("en-IN")}.
               </p>
@@ -284,12 +272,14 @@ const Dashboard = () => {
           icon={TrendingUp}
           variant="income"
         />
+
         <StatCard
           label="Total Expense"
           value={`₹${expense.toLocaleString("en-IN")}`}
           icon={ReceiptIndianRupee}
           variant="expense"
         />
+
         <StatCard
           label="Net Savings"
           value={`₹${savings.toLocaleString("en-IN")}`}
@@ -300,13 +290,9 @@ const Dashboard = () => {
       {/* LOGS */}
       <div className="flex flex-col gap-6">
         <div className="flex justify-between items-center px-2">
-          <h3 className="text-xl font-semibold text-slate-900">Recent Logs</h3>
-          <button
-            onClick={downloadPDF}
-            className="bg-slate-950 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-slate-800 transition-all active:scale-95 shadow-sm"
-          >
-            Export PDF
-          </button>
+          <h3 className="text-xl font-semibold text-slate-900">
+            Recent Logs
+          </h3>
         </div>
 
         <div className="bg-white border border-slate-100 rounded-[2.5rem] overflow-hidden shadow-sm">
@@ -314,6 +300,7 @@ const Dashboard = () => {
             {isLoading ? (
               <div className="p-20 text-center flex flex-col items-center gap-2">
                 <div className="w-2 h-2 bg-slate-950 rounded-full animate-ping" />
+
                 <p className="text-slate-400 text-xs font-bold uppercase tracking-[3px]">
                   Syncing...
                 </p>
@@ -331,7 +318,11 @@ const Dashboard = () => {
                   >
                     <div className="flex items-center gap-4">
                       <div
-                        className={`p-3 rounded-2xl ${t.type === "INCOME" ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"}`}
+                        className={`p-3 rounded-2xl ${
+                          t.type === "INCOME"
+                            ? "bg-emerald-50 text-emerald-600"
+                            : "bg-rose-50 text-rose-600"
+                        }`}
                       >
                         {t.type === "INCOME" ? (
                           <ArrowUpRight size={18} />
@@ -339,10 +330,12 @@ const Dashboard = () => {
                           <ArrowDownRight size={18} />
                         )}
                       </div>
+
                       <div>
                         <p className="text-slate-900 font-semibold text-sm">
                           {t.description || t.category}
                         </p>
+
                         <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
                           {new Date(t.date).toLocaleDateString("en-IN", {
                             day: "2-digit",
@@ -356,11 +349,16 @@ const Dashboard = () => {
                     <div className="flex items-center gap-4">
                       <div className="text-right">
                         <p
-                          className={`font-bold text-sm ${t.type === "INCOME" ? "text-emerald-600" : "text-slate-900"}`}
+                          className={`font-bold text-sm ${
+                            t.type === "INCOME"
+                              ? "text-emerald-600"
+                              : "text-slate-900"
+                          }`}
                         >
                           {t.type === "INCOME" ? "+" : "-"} ₹
                           {t.amount.toLocaleString("en-IN")}
                         </p>
+
                         <p className="text-[10px] text-slate-400 font-medium italic uppercase">
                           {t.category}
                         </p>
@@ -373,6 +371,7 @@ const Dashboard = () => {
                         >
                           <Pencil size={16} />
                         </button>
+
                         <button
                           onClick={() => handleDelete(t._id)}
                           className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
