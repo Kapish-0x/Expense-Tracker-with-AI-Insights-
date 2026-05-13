@@ -1,6 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../store/authStore";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { startTour } from "../src/utils/tour";
+
 import {
   Plus,
   UploadCloud,
@@ -63,6 +67,7 @@ const Dashboard = () => {
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [receiptLoading, setReceiptLoading] = useState(false);
+  const [tourStarted, setTourStarted] = useState(false);
 
   const handleRefresh = useCallback(async () => {
     try {
@@ -158,6 +163,24 @@ const Dashboard = () => {
     else handleRefresh();
   }, [isAuthenticated, navigate, handleRefresh]);
 
+  useEffect(() => {
+  if (!currentUser) return;
+
+  const tourKey = `cashflow-tour-${currentUser.email}`;
+
+  const hasSeenTour = localStorage.getItem(tourKey);
+
+  if (!hasSeenTour && !tourStarted) {
+    setTimeout(() => {
+      startTour(navigate);
+
+      localStorage.setItem(tourKey, "true");
+
+      setTourStarted(true);
+    }, 1000);
+  }
+}, [tourStarted, navigate, currentUser]);
+
   // CALCULATION LOGIC
   const income = transactions
     .filter((t) => t.type === "INCOME")
@@ -183,7 +206,9 @@ const Dashboard = () => {
     <div className="flex flex-col gap-12 animate-in fade-in duration-1000">
       {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <h1 className="text-4xl font-semibold tracking-tight text-slate-900">
+        <h1 
+         id="dashboard-overview"
+         className="text-4xl font-semibold tracking-tight text-slate-900">
           Overview
         </h1>
 
@@ -197,6 +222,7 @@ const Dashboard = () => {
           />
 
           <label
+            id="upload-receipt-btn"
             htmlFor="receiptUpload"
             className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-700 px-6 py-3 rounded-2xl font-semibold text-sm hover:bg-slate-50 cursor-pointer shadow-sm active:scale-95 transition-all"
           >
@@ -206,6 +232,7 @@ const Dashboard = () => {
           </label>
 
           <button
+            id="add-transaction-btn"
             onClick={() => {
               setSelectedTransaction(null);
               setIsModalOpen(true);
@@ -265,7 +292,9 @@ const Dashboard = () => {
       </div>
 
       {/* STATS */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div 
+       id="stats-section"
+       className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <StatCard
           label="Total Income"
           value={`₹${income.toLocaleString("en-IN")}`}
@@ -288,7 +317,9 @@ const Dashboard = () => {
       </div>
 
       {/* LOGS */}
-      <div className="flex flex-col gap-6">
+      <div 
+        id="recent-logs"
+        className="flex flex-col gap-6">
         <div className="flex justify-between items-center px-2">
           <h3 className="text-xl font-semibold text-slate-900">
             Recent Logs

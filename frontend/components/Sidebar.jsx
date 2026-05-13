@@ -91,7 +91,20 @@ const Sidebar = () => {
       {/* Navigation Links */}
       <ul className="space-y-2 flex-1">
         {menuItems.map((item) => (
-          <li key={item.id}>
+          <li
+            key={item.id}
+            id=
+            {
+              item.id === "analytics"
+                ? "analytics-nav"
+                : item.id === "ai"
+                  ? "ai-nav"
+                  : item.id === "reports"
+                    ? "reports-nav"
+                    : item.id === "settings"
+                      ? "settings-nav"
+                      : ""
+             } >
             <NavLink
               to={item.path}
               className={({ isActive }) =>
@@ -136,18 +149,16 @@ const Sidebar = () => {
       {/* User Section */}
       <div className="pt-6 border-t border-slate-50">
         <div className="flex items-center justify-between group">
-          
           {/* Clickable Profile */}
           <div
+            id="profile-section"
             onClick={() => navigate("/profile")}
             className="flex items-center gap-3 cursor-pointer p-2 rounded-2xl hover:bg-slate-50 transition-all duration-300"
           >
             {/* Avatar */}
             <div className="relative">
               <div className="w-10 h-10 rounded-2xl bg-slate-950 border border-slate-900 flex items-center justify-center text-[11px] font-bold text-white overflow-hidden uppercase">
-                {getInitials(
-                  currentUser?.name || currentUser?.username
-                )}
+                {getInitials(currentUser?.name || currentUser?.username)}
               </div>
 
               <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></div>
@@ -156,9 +167,7 @@ const Sidebar = () => {
             {/* User Details */}
             <div className="flex flex-col">
               <span className="text-slate-900 text-[12px] font-bold tracking-tight truncate w-32">
-                {currentUser?.name ||
-                  currentUser?.username ||
-                  "Guest User"}
+                {currentUser?.name || currentUser?.username || "Guest User"}
               </span>
 
               <span className="text-slate-400 text-[10px] truncate w-32">
