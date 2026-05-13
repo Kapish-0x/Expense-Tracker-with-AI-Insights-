@@ -52,7 +52,7 @@ const RootLayout = () => {
       )}
 
       <div className="flex-1 relative overflow-hidden flex flex-col">
-        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:32px_32px] opacity-40 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-size-[32px_32px] opacity-40 pointer-events-none"></div>
 
         <main
           className={`relative z-10 flex-1 overflow-y-auto scroll-smooth ${
@@ -62,14 +62,14 @@ const RootLayout = () => {
           }`}
         >
           <div
-            className={`${shouldHideSidebar ? "w-full max-w-md" : "w-full max-w-[1400px] mx-auto"}`}
+            className={`${shouldHideSidebar ? "w-full max-w-md" : "w-full max-w-350 mx-auto"}`}
           >
             <div
               className={`
               ${
                 shouldHideSidebar
                   ? "bg-white border border-slate-200 shadow-2xl rounded-3xl p-8"
-                  : "bg-white/80 backdrop-blur-md border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2rem] p-8 md:p-12"
+                  : "bg-white/80 backdrop-blur-md border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-4xl p-8 md:p-12"
               } transition-all duration-500 ease-in-out
             `}
             >

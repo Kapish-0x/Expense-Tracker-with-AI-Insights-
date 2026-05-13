@@ -77,7 +77,7 @@ const UserProfile = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 flex justify-center items-center p-6">
-      <div className="bg-white w-full max-w-md rounded-[2rem] border border-slate-100 shadow-sm p-8">
+      <div className="bg-white w-full max-w-md rounded-4xl border border-slate-100 shadow-sm p-8">
         {/* PROFILE */}
         <div className="flex flex-col items-center">
           {/* AVATAR */}
