@@ -3,10 +3,12 @@ import { useEffect } from "react";
 import Sidebar from "./Sidebar";
 import { useAuth } from "../store/authStore";
 import { Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const RootLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { isAuthenticated, isCheckingAuth, checkAuth } = useAuth();
 
@@ -19,7 +21,6 @@ const RootLayout = () => {
     }
   }, [checkAuth]);
 
-  // 2. Protected Routes Logic
   useEffect(() => {
     if (isCheckingAuth) return;
 
@@ -36,8 +37,9 @@ const RootLayout = () => {
     return (
       <div className="h-screen w-full flex flex-col items-center justify-center bg-[#fafafa]">
         <Loader2 className="animate-spin text-slate-400 mb-4" size={32} />
+
         <p className="text-slate-400 text-xs font-bold uppercase tracking-[3px]">
-          Syncing Node...
+          {t("syncing node")}
         </p>
       </div>
     );
@@ -62,7 +64,11 @@ const RootLayout = () => {
           }`}
         >
           <div
-            className={`${shouldHideSidebar ? "w-full max-w-md" : "w-full max-w-350 mx-auto"}`}
+            className={`${
+              shouldHideSidebar
+                ? "w-full max-w-md"
+                : "w-full max-w-350 mx-auto"
+            }`}
           >
             <div
               className={`

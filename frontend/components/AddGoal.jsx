@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { X, Sparkles } from "lucide-react";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 const AddGoal = ({ isOpen, onClose, onRefresh, initialData }) => {
   const [loading, setLoading] = useState(false);
+  const { t } = useTranslation();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -64,7 +66,7 @@ const AddGoal = ({ isOpen, onClose, onRefresh, initialData }) => {
       onClose();
     } catch (err) {
       console.error(err);
-      alert("Goal save failed");
+      alert(t("goal save failed"));
     } finally {
       setLoading(false);
     }
@@ -91,14 +93,14 @@ const AddGoal = ({ isOpen, onClose, onRefresh, initialData }) => {
 
         <header className="mb-10 text-center">
           <h2 className="text-3xl font-semibold text-slate-900">
-            {initialData ? "Update Goal" : "New Goal"}
+            {initialData ? t("update goal") : t("new goal")}
           </h2>
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <input
             required
-            placeholder="Goal title"
+            placeholder={t("goal title")}
             className="w-full border border-slate-200 rounded-2xl px-5 py-4"
             value={formData.title}
             onChange={(e) =>
@@ -109,7 +111,7 @@ const AddGoal = ({ isOpen, onClose, onRefresh, initialData }) => {
           <input
             required
             type="number"
-            placeholder="Target amount"
+            placeholder={t("target amount")}
             className="w-full border border-slate-200 rounded-2xl px-5 py-4"
             value={formData.targetAmount}
             onChange={(e) =>
@@ -127,7 +129,7 @@ const AddGoal = ({ isOpen, onClose, onRefresh, initialData }) => {
           />
 
           <textarea
-            placeholder="Description"
+            placeholder={t("description")}
             className="w-full border border-slate-200 rounded-2xl px-5 py-4"
             value={formData.description}
             onChange={(e) =>
@@ -139,7 +141,7 @@ const AddGoal = ({ isOpen, onClose, onRefresh, initialData }) => {
             disabled={loading}
             className="w-full bg-slate-950 text-white py-5 rounded-2xl font-semibold"
           >
-            {loading ? "Saving..." : "Save Goal"}
+            {loading ? t("saving") : t("save goal")}
           </button>
         </form>
       </div>

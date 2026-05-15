@@ -4,16 +4,22 @@ import axios from "axios";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Loader2, UserPlus } from "lucide-react";
 import { useAuth } from "../store/authStore";
+import { useTranslation } from "react-i18next";
 
 function Register() {
+  const { t } = useTranslation();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState(null);
+
   const navigate = useNavigate();
+
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -38,13 +44,14 @@ function Register() {
         "http://localhost:4000/user-api/users",
         payload,
       );
+
       if (res.status === 201 || res.status === 200) {
         navigate("/login");
       }
     } catch (err) {
       setApiError(
         err.response?.data?.message ||
-          "Connection refused. Please check your network.",
+          t("connection refused"),
       );
     } finally {
       setLoading(false);
@@ -58,8 +65,9 @@ function Register() {
         <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white border border-slate-100 mb-6 shadow-sm">
           <UserPlus className="text-slate-900" size={26} strokeWidth={1.5} />
         </div>
+
         <h2 className="text-slate-900 text-3xl font-semibold tracking-tight mb-2">
-          Create Account
+          {t("create account")}
         </h2>
       </div>
 
@@ -74,14 +82,18 @@ function Register() {
         {/* Name Input */}
         <div className="space-y-1.5">
           <label className="text-[11px] font-bold uppercase tracking-[2px] text-slate-500 ml-1">
-            Name
+            {t("name")}
           </label>
+
           <input
             type="text"
-            {...register("name", { required: "Name is required" })}
+            {...register("name", {
+              required: t("name required"),
+            })}
             className="w-full bg-white border border-slate-200 px-5 py-3.5 rounded-2xl text-slate-900 outline-none transition-all focus:ring-4 focus:ring-slate-100 focus:border-slate-400 placeholder:text-slate-300"
-            placeholder="Enter Name"
+            placeholder={t("enter name")}
           />
+
           {errors.name && (
             <p className="text-red-500 text-[10px] font-medium ml-1">
               {errors.name.message}
@@ -92,14 +104,18 @@ function Register() {
         {/* Email Input */}
         <div className="space-y-1.5">
           <label className="text-[11px] font-bold uppercase tracking-[2px] text-slate-500 ml-1">
-            Email
+            {t("email")}
           </label>
+
           <input
             type="email"
-            {...register("email", { required: "Email is required" })}
+            {...register("email", {
+              required: t("email required"),
+            })}
             className="w-full bg-white border border-slate-200 px-5 py-3.5 rounded-2xl text-slate-900 outline-none transition-all focus:ring-4 focus:ring-slate-100 focus:border-slate-400 placeholder:text-slate-300"
-            placeholder="Enter Email"
+            placeholder={t("enter email")}
           />
+
           {errors.email && (
             <p className="text-red-500 text-[10px] font-medium ml-1">
               {errors.email.message}
@@ -110,14 +126,18 @@ function Register() {
         {/* Password Input */}
         <div className="space-y-1.5">
           <label className="text-[11px] font-bold uppercase tracking-[2px] text-slate-500 ml-1">
-            Password
+            {t("password")}
           </label>
+
           <input
             type="password"
-            {...register("password", { required: "Password is required" })}
+            {...register("password", {
+              required: t("password required"),
+            })}
             className="w-full bg-white border border-slate-200 px-5 py-3.5 rounded-2xl text-slate-900 outline-none transition-all focus:ring-4 focus:ring-slate-100 focus:border-slate-400 placeholder:text-slate-300"
             placeholder="••••••••"
           />
+
           {errors.password && (
             <p className="text-red-500 text-[10px] font-medium ml-1">
               {errors.password.message}
@@ -135,7 +155,10 @@ function Register() {
             <Loader2 className="animate-spin" size={20} />
           ) : (
             <>
-              <span className="tracking-wide text-sm">Sign Up</span>
+              <span className="tracking-wide text-sm">
+                {t("sign up")}
+              </span>
+
               <div className="w-1.5 h-1.5 rounded-full bg-slate-400 group-hover:bg-white transition-colors"></div>
             </>
           )}
@@ -145,12 +168,13 @@ function Register() {
       {/* Footer */}
       <div className="mt-10 text-center">
         <p className="text-slate-400 text-[13px] font-medium">
-          Already a user?
+          {t("already user")}
+
           <NavLink
             to="/login"
             className="text-slate-900 ml-2 font-bold hover:underline underline-offset-4 decoration-slate-200"
           >
-            Login
+            {t("login")}
           </NavLink>
         </p>
       </div>

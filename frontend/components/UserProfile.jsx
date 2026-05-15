@@ -3,8 +3,12 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../store/authStore";
 import { startTour } from "../src/utils/tour";
+import i18n from "../src/i18n";
+import { useTranslation } from "react-i18next";
 
 const UserProfile = () => {
+  const { t } = useTranslation();
+
   const { currentUser, logout, updateUser } = useAuth();
 
   const navigate = useNavigate();
@@ -14,6 +18,12 @@ const UserProfile = () => {
   const [name, setName] = useState(
     currentUser?.name || currentUser?.username || "",
   );
+
+  const changeLang = (lang) => {
+    i18n.changeLanguage(lang);
+
+    localStorage.setItem("lang", lang);
+  };
 
   // Logout
   const handleLogout = async () => {
@@ -95,14 +105,46 @@ const UserProfile = () => {
             />
           ) : (
             <h1 className="text-2xl font-bold text-slate-900 mt-5">
-              {currentUser?.name || currentUser?.username || "Guest User"}
+              {currentUser?.name ||
+                currentUser?.username ||
+                t("guest user")}
             </h1>
           )}
 
           {/* EMAIL */}
           <p className="text-slate-400 text-sm mt-2">
-            {currentUser?.email || "No Email"}
+            {currentUser?.email || t("no email")}
           </p>
+        </div>
+
+        {/* LANGUAGE SWITCHER */}
+        <div className="mt-6">
+          <p className="text-xs font-semibold text-slate-400 uppercase mb-3">
+            {t("language")}
+          </p>
+
+          <div className="grid grid-cols-3 gap-3">
+            <button
+              onClick={() => changeLang("en")}
+              className="border border-slate-200 py-3 rounded-2xl font-semibold hover:bg-slate-50 transition-all"
+            >
+              English
+            </button>
+
+            <button
+              onClick={() => changeLang("hi")}
+              className="border border-slate-200 py-3 rounded-2xl font-semibold hover:bg-slate-50 transition-all"
+            >
+              हिन्दी
+            </button>
+
+            <button
+              onClick={() => changeLang("te")}
+              className="border border-slate-200 py-3 rounded-2xl font-semibold hover:bg-slate-50 transition-all"
+            >
+              తెలుగు
+            </button>
+          </div>
         </div>
 
         {/* BUTTONS */}
@@ -115,14 +157,14 @@ const UserProfile = () => {
                 onClick={handleSave}
                 className="w-full bg-emerald-500 text-white py-4 rounded-2xl font-semibold hover:bg-emerald-600 transition-all"
               >
-                Save Profile
+                {t("save profile")}
               </button>
             ) : (
               <button
                 onClick={() => setIsEditing(true)}
                 className="w-full bg-slate-950 text-white py-4 rounded-2xl font-semibold hover:bg-slate-800 transition-all"
               >
-                Edit Profile
+                {t("edit profile")}
               </button>
             )}
 
@@ -131,7 +173,7 @@ const UserProfile = () => {
               onClick={handleDeleteAll}
               className="w-full bg-rose-500 text-white py-4 rounded-2xl font-semibold hover:bg-rose-600 transition-all"
             >
-              Clear Transactions
+              {t("clear transactions")}
             </button>
           </div>
 
@@ -139,14 +181,15 @@ const UserProfile = () => {
             onClick={() => startTour(navigate)}
             className="w-full bg-slate-950 text-white py-4 rounded-2xl font-semibold hover:bg-slate-800 transition-all"
           >
-            Restart App Tour
+            {t("restart tour")}
           </button>
+
           {/* LOGOUT */}
           <button
             onClick={handleLogout}
             className="w-full border border-slate-200 py-4 rounded-2xl font-semibold text-slate-700 hover:bg-slate-50 transition-all"
           >
-            Logout
+            {t("logout")}
           </button>
         </div>
       </div>

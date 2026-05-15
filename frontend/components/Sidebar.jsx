@@ -1,9 +1,9 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next"; // Added this
 import {
   LayoutDashboard,
   BrainCircuit,
-  Bell,
   Settings,
   LogOut,
   BarChart3,
@@ -12,12 +12,12 @@ import {
 import { useAuth } from "../store/authStore";
 
 const Sidebar = () => {
+  const { t } = useTranslation(); // Hook initialized
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
 
   const getInitials = (name) => {
     if (!name) return "??";
-
     return name
       .split(" ")
       .map((n) => n[0])
@@ -26,7 +26,6 @@ const Sidebar = () => {
       .slice(0, 2);
   };
 
-  // Logout
   const handleLogout = async () => {
     try {
       await logout();
@@ -39,31 +38,31 @@ const Sidebar = () => {
   const menuItems = [
     {
       id: "dashboard",
-      label: "Dashboard",
+      label: t("dashboard"), 
       icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
       path: "/dashboard",
     },
     {
       id: "analytics",
-      label: "Analytics",
+      label: t("analytics"), // Translated
       icon: <BarChart3 size={18} strokeWidth={1.5} />,
       path: "/analytics",
     },
     {
       id: "ai",
-      label: "AI Insights",
+      label: t("ai insights"), // Translated
       icon: <BrainCircuit size={18} strokeWidth={1.5} />,
       path: "/ai-insights",
     },
     {
       id: "reports",
-      label: "Reports",
+      label: t("reports"), // Translated
       icon: <BarChart size={18} strokeWidth={1.5} />,
       path: "/reports",
     },
     {
       id: "settings",
-      label: "Settings",
+      label: t("settings"), // Translated
       icon: <Settings size={18} strokeWidth={1.5} />,
       path: "/settings",
     },
@@ -77,14 +76,12 @@ const Sidebar = () => {
           <div className="w-8 h-8 bg-slate-950 rounded-xl flex items-center justify-center">
             <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
           </div>
-
           <h2 className="text-slate-900 text-lg font-bold tracking-tight">
-            Cashflow
+            {t("cashflow")}   
           </h2>
         </div>
-
         <p className="text-slate-400 text-[10px] tracking-[2px] mt-2 font-bold uppercase">
-          Expense Tracker
+          {t("expense tracker")}
         </p>
       </div>
 
@@ -93,8 +90,7 @@ const Sidebar = () => {
         {menuItems.map((item) => (
           <li
             key={item.id}
-            id=
-            {
+            id={
               item.id === "analytics"
                 ? "analytics-nav"
                 : item.id === "ai"
@@ -104,7 +100,8 @@ const Sidebar = () => {
                     : item.id === "settings"
                       ? "settings-nav"
                       : ""
-             } >
+            }
+          >
             <NavLink
               to={item.path}
               className={({ isActive }) =>
@@ -127,7 +124,6 @@ const Sidebar = () => {
                   >
                     {item.icon}
                   </span>
-
                   <span
                     className={`text-[13px] font-semibold tracking-tight transition-all ${
                       isActive ? "translate-x-1" : ""
@@ -135,7 +131,6 @@ const Sidebar = () => {
                   >
                     {item.label}
                   </span>
-
                   {isActive && (
                     <div className="ml-auto w-1.5 h-5 bg-slate-950 rounded-full animate-in fade-in zoom-in duration-300"></div>
                   )}
@@ -149,7 +144,6 @@ const Sidebar = () => {
       {/* User Section */}
       <div className="pt-6 border-t border-slate-50">
         <div className="flex items-center justify-between group">
-          {/* Clickable Profile */}
           <div
             id="profile-section"
             onClick={() => navigate("/profile")}
@@ -160,18 +154,16 @@ const Sidebar = () => {
               <div className="w-10 h-10 rounded-2xl bg-slate-950 border border-slate-900 flex items-center justify-center text-[11px] font-bold text-white overflow-hidden uppercase">
                 {getInitials(currentUser?.name || currentUser?.username)}
               </div>
-
               <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></div>
             </div>
 
             {/* User Details */}
             <div className="flex flex-col">
               <span className="text-slate-900 text-[12px] font-bold tracking-tight truncate w-32">
-                {currentUser?.name || currentUser?.username || "Guest User"}
+                {currentUser?.name || currentUser?.username || t("guest user")}
               </span>
-
               <span className="text-slate-400 text-[10px] truncate w-32">
-                {currentUser?.email || "No Email"}
+                {currentUser?.email || t("no email")}
               </span>
             </div>
           </div>
@@ -180,7 +172,7 @@ const Sidebar = () => {
           <button
             onClick={handleLogout}
             className="p-2 text-slate-400 hover:text-red-500 transition-colors group-hover:rotate-12 duration-300"
-            title="Logout Session"
+            title={t("logout")}
           >
             <LogOut size={18} strokeWidth={1.5} />
           </button>

@@ -1,20 +1,36 @@
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
+import i18n from "../i18n";
 
 export const startTour = async (navigate) => {
+  // ALWAYS START FROM DASHBOARD
   navigate("/dashboard");
 
-  await new Promise((resolve) => setTimeout(resolve, 700));
+  // WAIT FOR PAGE RENDER
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
   const driverObj = driver({
     showProgress: true,
+    animate: true,
+    smoothScroll: true,
+    allowClose: true,
+
+    overlayColor: "rgba(15, 23, 42, 0.78)",
+
+    nextBtnText: i18n.t("tour next"),
+    prevBtnText: i18n.t("tour back"),
+    doneBtnText: i18n.t("tour finish"),
+
+    stagePadding: 12,
+    popoverOffset: 14,
 
     steps: [
+      // DASHBOARD
       {
         element: "#dashboard-overview",
         popover: {
-          title: "Dashboard Overview",
-          description:
-            "This section gives you a complete overview of your financial activity including income, expenses, and savings.",
+          title: i18n.t("dashboard overview"),
+          description: i18n.t("tour dashboard desc"),
           side: "bottom",
           align: "start",
         },
@@ -23,9 +39,8 @@ export const startTour = async (navigate) => {
       {
         element: "#upload-receipt-btn",
         popover: {
-          title: "Upload Receipts",
-          description:
-            "Scan bills and receipts instantly using OCR. Transactions are automatically added for you.",
+          title: i18n.t("tour upload title"),
+          description: i18n.t("tour upload desc"),
           side: "bottom",
         },
       },
@@ -33,8 +48,8 @@ export const startTour = async (navigate) => {
       {
         element: "#add-transaction-btn",
         popover: {
-          title: "Add Transactions",
-          description: "Manually add your income or expenses here.",
+          title: i18n.t("tour add transaction title"),
+          description: i18n.t("tour add transaction desc"),
           side: "bottom",
         },
       },
@@ -42,9 +57,8 @@ export const startTour = async (navigate) => {
       {
         element: "#stats-section",
         popover: {
-          title: "Financial Stats",
-          description:
-            "Track your total income, spending, and net savings in real time.",
+          title: i18n.t("tour stats title"),
+          description: i18n.t("tour stats desc"),
           side: "top",
         },
       },
@@ -52,19 +66,18 @@ export const startTour = async (navigate) => {
       {
         element: "#recent-logs",
         popover: {
-          title: "Recent Activity",
-          description:
-            "View, edit, or delete your latest financial transactions here.",
+          title: i18n.t("tour logs title"),
+          description: i18n.t("tour logs desc"),
           side: "top",
         },
       },
 
+      // SIDEBAR
       {
         element: "#analytics-nav",
         popover: {
-          title: "Analytics",
-          description:
-            "Visualize spending trends and financial patterns with charts.",
+          title: i18n.t("tour analytics title"),
+          description: i18n.t("tour analytics desc"),
           side: "right",
         },
       },
@@ -72,9 +85,8 @@ export const startTour = async (navigate) => {
       {
         element: "#ai-nav",
         popover: {
-          title: "AI Insights",
-          description:
-            "Get intelligent financial advice and future spending predictions powered by AI.",
+          title: i18n.t("tour ai title"),
+          description: i18n.t("tour ai desc"),
           side: "right",
         },
       },
@@ -82,8 +94,8 @@ export const startTour = async (navigate) => {
       {
         element: "#reports-nav",
         popover: {
-          title: "Reports",
-          description: "Generate downloadable PDF financial reports.",
+          title: i18n.t("tour reports title"),
+          description: i18n.t("tour reports desc"),
           side: "right",
         },
       },
@@ -91,32 +103,33 @@ export const startTour = async (navigate) => {
       {
         element: "#settings-nav",
         popover: {
-          title: "Settings",
-          description: "Customize alerts, savings goals, and preferences.",
+          title: i18n.t("tour settings title"),
+          description: i18n.t("tour settings desc"),
           side: "right",
         },
       },
 
+      // PROFILE
       {
         element: "#profile-section",
         popover: {
-          title: "Your Profile",
-          description: "Manage your profile and account settings from here.",
+          title: i18n.t("tour profile title"),
+          description: i18n.t("tour profile desc"),
           side: "top",
         },
       },
     ],
 
-    nextBtnText: "Next",
-    prevBtnText: "Back",
-    doneBtnText: "Finish",
+    // CUSTOM STYLING
+    popoverClass: "cashflow-tour-popover",
 
-    overlayColor: "rgba(0,0,0,0.75)",
-
-    smoothScroll: true,
-
-    allowClose: true,
+    onDestroyed: () => {
+      localStorage.setItem("tourCompleted", "true");
+    },
   });
 
-  driverObj.drive();
+  // SMALL FIX FOR SIDEBAR SCROLL/RENDER
+  requestAnimationFrame(() => {
+    driverObj.drive();
+  });
 };

@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../store/authStore";
+import { useTranslation } from "react-i18next";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { startTour } from "../src/utils/tour";
@@ -22,7 +23,12 @@ import {
 import AddTransaction from "./AddTransaction";
 import axios from "axios";
 
-const StatCard = ({ label, value, icon: Icon, variant = "default" }) => (
+const StatCard = ({
+  label,
+  value,
+  icon: Icon,
+  variant = "default",
+}) => (
   <div
     className={`h-44 border rounded-4xl p-8 flex flex-col justify-between transition-all duration-500 group ${
       variant === "income"
@@ -59,14 +65,24 @@ const StatCard = ({ label, value, icon: Icon, variant = "default" }) => (
 );
 
 const Dashboard = () => {
+  const { t } = useTranslation();
+
   const { isAuthenticated, checkAuth, currentUser } = useAuth();
+
   const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] = useState(null);
+
+  const [selectedTransaction, setSelectedTransaction] =
+    useState(null);
+
   const [transactions, setTransactions] = useState([]);
+
   const [isLoading, setIsLoading] = useState(true);
-  const [receiptLoading, setReceiptLoading] = useState(false);
+
+  const [receiptLoading, setReceiptLoading] =
+    useState(false);
+
   const [tourStarted, setTourStarted] = useState(false);
 
   const handleRefresh = useCallback(async () => {
@@ -81,15 +97,21 @@ const Dashboard = () => {
       );
 
       setTransactions(res.data.payload || []);
+
       setIsLoading(false);
     } catch (err) {
       console.error("Sync Error:", err);
+
       setIsLoading(false);
     }
   }, [checkAuth]);
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this record?"))
+    if (
+      !window.confirm(
+        t("delete transaction confirm"),
+      )
+    )
       return;
 
     try {
@@ -103,12 +125,14 @@ const Dashboard = () => {
       handleRefresh();
     } catch (err) {
       console.error("Delete failed", err);
-      alert("Failed to delete transaction");
+
+      alert(t("delete transaction failed"));
     }
   };
 
   const handleEdit = (transaction) => {
     setSelectedTransaction(transaction);
+
     setIsModalOpen(true);
   };
 
@@ -121,84 +145,116 @@ const Dashboard = () => {
       setReceiptLoading(true);
 
       const formData = new FormData();
+
       formData.append("receipt", file);
 
       const scanRes = await axios.post(
         "http://localhost:4000/scan-receipt",
         formData,
         {
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: {
+            "Content-Type":
+              "multipart/form-data",
+          },
         },
       );
 
       const extracted = scanRes.data.extracted;
 
-      if (!extracted) throw new Error("No data received");
+      if (!extracted)
+        throw new Error("No data received");
 
       await axios.post(
         "http://localhost:4000/expense-api/expense",
         {
-          amount: parseFloat(extracted.amount) || 0,
+          amount:
+            parseFloat(extracted.amount) || 0,
+
           category: "RECEIPT",
+
           type: "EXPENSE",
-          date: extracted.date || new Date(),
-          description: extracted.vendor || "Added from receipt scan",
+
+          date:
+            extracted.date || new Date(),
+
+          description:
+            extracted.vendor ||
+            "Added from receipt scan",
         },
         { withCredentials: true },
       );
 
       await handleRefresh();
 
-      alert("Receipt scanned successfully");
+      alert(t("receipt success"));
     } catch (err) {
       console.error(err);
-      alert("Receipt scan failed");
+
+      alert(t("receipt failed"));
     } finally {
       setReceiptLoading(false);
     }
   };
 
   useEffect(() => {
-    if (!isAuthenticated) navigate("/login");
+    if (!isAuthenticated)
+      navigate("/login");
     else handleRefresh();
-  }, [isAuthenticated, navigate, handleRefresh]);
+  }, [
+    isAuthenticated,
+    navigate,
+    handleRefresh,
+  ]);
 
   useEffect(() => {
-  if (!currentUser) return;
+    if (!currentUser) return;
 
-  const tourKey = `cashflow-tour-${currentUser.email}`;
+    const tourKey = `cashflow-tour-${currentUser.email}`;
 
-  const hasSeenTour = localStorage.getItem(tourKey);
+    const hasSeenTour =
+      localStorage.getItem(tourKey);
 
-  if (!hasSeenTour && !tourStarted) {
-    setTimeout(() => {
-      startTour(navigate);
+    if (!hasSeenTour && !tourStarted) {
+      setTimeout(() => {
+        startTour(navigate);
 
-      localStorage.setItem(tourKey, "true");
+        localStorage.setItem(
+          tourKey,
+          "true",
+        );
 
-      setTourStarted(true);
-    }, 1000);
-  }
-}, [tourStarted, navigate, currentUser]);
+        setTourStarted(true);
+      }, 1000);
+    }
+  }, [tourStarted, navigate, currentUser]);
 
-  // CALCULATION LOGIC
+  // CALCULATIONS
   const income = transactions
     .filter((t) => t.type === "INCOME")
-    .reduce((sum, t) => sum + Number(t.amount), 0);
+    .reduce(
+      (sum, t) => sum + Number(t.amount),
+      0,
+    );
 
   const expense = transactions
     .filter((t) => t.type === "EXPENSE")
-    .reduce((sum, t) => sum + Number(t.amount), 0);
+    .reduce(
+      (sum, t) => sum + Number(t.amount),
+      0,
+    );
 
   const savings = income - expense;
 
-  // UPDATED ALERT LOGIC
+  // ALERTS
   const isSavingsLow =
-    currentUser?.savingsAlertEnabled === true &&
-    savings < (currentUser?.minSavings || 0);
+    currentUser?.savingsAlertEnabled ===
+      true &&
+    savings <
+      (currentUser?.minSavings || 0);
 
   const isBudgetExceeded =
-    currentUser?.budgetAlertEnabled === true &&
+    currentUser?.budgetAlertEnabled ===
+      true &&
     currentUser?.monthlyBudget > 0 &&
     expense > currentUser?.monthlyBudget;
 
@@ -206,10 +262,11 @@ const Dashboard = () => {
     <div className="flex flex-col gap-12 animate-in fade-in duration-1000">
       {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <h1 
-         id="dashboard-overview"
-         className="text-4xl font-semibold tracking-tight text-slate-900">
-          Overview
+        <h1
+          id="dashboard-overview"
+          className="text-4xl font-semibold tracking-tight text-slate-900"
+        >
+          {t("overview")}
         </h1>
 
         <div className="flex items-center gap-3 w-full md:w-auto">
@@ -228,25 +285,29 @@ const Dashboard = () => {
           >
             <UploadCloud size={18} />
 
-            {receiptLoading ? "Scanning..." : "Upload Receipt"}
+            {receiptLoading
+              ? t("scanning")
+              : t("upload receipt")}
           </label>
 
           <button
             id="add-transaction-btn"
             onClick={() => {
               setSelectedTransaction(null);
+
               setIsModalOpen(true);
             }}
             className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-slate-950 text-white px-6 py-3 rounded-2xl font-semibold text-sm hover:bg-slate-800 shadow-lg active:scale-95 transition-all"
           >
-            <Plus size={18} /> Add Transaction
+            <Plus size={18} />
+
+            {t("add transaction")}
           </button>
         </div>
       </div>
 
-      {/* ALERT BANNERS SECTION */}
+      {/* ALERTS */}
       <div className="flex flex-col gap-4">
-        {/* BUDGET BREACH ALERT */}
         {isBudgetExceeded && (
           <div className="bg-orange-50 border border-orange-100 p-6 rounded-4xl flex items-center gap-4 animate-in slide-in-from-top duration-500">
             <div className="p-3 bg-orange-100 text-orange-600 rounded-2xl shadow-sm">
@@ -255,20 +316,23 @@ const Dashboard = () => {
 
             <div>
               <h4 className="text-orange-900 font-bold text-sm uppercase tracking-wider">
-                Budget Limit Breached
+                {t("budget breached")}
               </h4>
 
               <p className="text-orange-700/80 text-sm">
-                Warning: Total expenses (₹
-                {expense.toLocaleString("en-IN")})
-                have crossed your set budget of ₹
-                {currentUser?.monthlyBudget?.toLocaleString("en-IN")}.
+                {t("budget warning")} ₹
+                {expense.toLocaleString(
+                  "en-IN",
+                )}
+                . ₹
+                {currentUser?.monthlyBudget?.toLocaleString(
+                  "en-IN",
+                )}
               </p>
             </div>
           </div>
         )}
 
-        {/* SAVINGS BREACH ALERT */}
         {isSavingsLow && (
           <div className="bg-rose-50 border border-rose-100 p-6 rounded-4xl flex items-center gap-4 animate-bounce-subtle">
             <div className="p-3 bg-rose-100 text-rose-600 rounded-2xl shadow-sm">
@@ -277,14 +341,18 @@ const Dashboard = () => {
 
             <div>
               <h4 className="text-rose-900 font-bold text-sm uppercase tracking-wider">
-                Financial Guardrail Tripped
+                {t("savings alert")}
               </h4>
 
               <p className="text-rose-700/80 text-sm">
-                Your net savings (₹
-                {savings.toLocaleString("en-IN")}) have
-                fallen below your set floor of ₹
-                {currentUser?.minSavings?.toLocaleString("en-IN")}.
+                {t("savings warning")} ₹
+                {savings.toLocaleString(
+                  "en-IN",
+                )}
+                . ₹
+                {currentUser?.minSavings?.toLocaleString(
+                  "en-IN",
+                )}
               </p>
             </div>
           </div>
@@ -292,37 +360,45 @@ const Dashboard = () => {
       </div>
 
       {/* STATS */}
-      <div 
-       id="stats-section"
-       className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div
+        id="stats-section"
+        className="grid grid-cols-1 md:grid-cols-3 gap-8"
+      >
         <StatCard
-          label="Total Income"
-          value={`₹${income.toLocaleString("en-IN")}`}
+          label={t("total income")}
+          value={`₹${income.toLocaleString(
+            "en-IN",
+          )}`}
           icon={TrendingUp}
           variant="income"
         />
 
         <StatCard
-          label="Total Expense"
-          value={`₹${expense.toLocaleString("en-IN")}`}
+          label={t("total expense")}
+          value={`₹${expense.toLocaleString(
+            "en-IN",
+          )}`}
           icon={ReceiptIndianRupee}
           variant="expense"
         />
 
         <StatCard
-          label="Net Savings"
-          value={`₹${savings.toLocaleString("en-IN")}`}
+          label={t("net savings")}
+          value={`₹${savings.toLocaleString(
+            "en-IN",
+          )}`}
           icon={Wallet}
         />
       </div>
 
       {/* LOGS */}
-      <div 
+      <div
         id="recent-logs"
-        className="flex flex-col gap-6">
+        className="flex flex-col gap-6"
+      >
         <div className="flex justify-between items-center px-2">
           <h3 className="text-xl font-semibold text-slate-900">
-            Recent Logs
+            {t("recent logs")}
           </h3>
         </div>
 
@@ -333,12 +409,12 @@ const Dashboard = () => {
                 <div className="w-2 h-2 bg-slate-950 rounded-full animate-ping" />
 
                 <p className="text-slate-400 text-xs font-bold uppercase tracking-[3px]">
-                  Syncing...
+                  {t("syncing")}
                 </p>
               </div>
             ) : transactions.length === 0 ? (
               <div className="p-20 text-center italic text-slate-400">
-                No transactions found.
+                {t("no transactions")}
               </div>
             ) : (
               <div className="divide-y divide-slate-50">
@@ -364,15 +440,21 @@ const Dashboard = () => {
 
                       <div>
                         <p className="text-slate-900 font-semibold text-sm">
-                          {t.description || t.category}
+                          {t.description ||
+                            t.category}
                         </p>
 
                         <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
-                          {new Date(t.date).toLocaleDateString("en-IN", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })}
+                          {new Date(
+                            t.date,
+                          ).toLocaleDateString(
+                            "en-IN",
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            },
+                          )}
                         </p>
                       </div>
                     </div>
@@ -381,13 +463,20 @@ const Dashboard = () => {
                       <div className="text-right">
                         <p
                           className={`font-bold text-sm ${
-                            t.type === "INCOME"
+                            t.type ===
+                            "INCOME"
                               ? "text-emerald-600"
                               : "text-slate-900"
                           }`}
                         >
-                          {t.type === "INCOME" ? "+" : "-"} ₹
-                          {t.amount.toLocaleString("en-IN")}
+                          {t.type ===
+                          "INCOME"
+                            ? "+"
+                            : "-"}{" "}
+                          ₹
+                          {t.amount.toLocaleString(
+                            "en-IN",
+                          )}
                         </p>
 
                         <p className="text-[10px] text-slate-400 font-medium italic uppercase">
@@ -397,14 +486,18 @@ const Dashboard = () => {
 
                       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         <button
-                          onClick={() => handleEdit(t)}
+                          onClick={() =>
+                            handleEdit(t)
+                          }
                           className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all"
                         >
                           <Pencil size={16} />
                         </button>
 
                         <button
-                          onClick={() => handleDelete(t._id)}
+                          onClick={() =>
+                            handleDelete(t._id)
+                          }
                           className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
                         >
                           <Trash2 size={16} />
@@ -423,6 +516,7 @@ const Dashboard = () => {
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
+
           setSelectedTransaction(null);
         }}
         onRefresh={handleRefresh}

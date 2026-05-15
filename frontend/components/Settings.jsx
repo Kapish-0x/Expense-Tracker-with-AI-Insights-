@@ -10,8 +10,11 @@ import {
 } from "lucide-react";
 import { useAuth } from "../store/authStore";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 const Settings = () => {
+  const { t } = useTranslation();
+
   const { currentUser, updateUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [securityLoading, setSecurityLoading] = useState(false);
@@ -45,6 +48,7 @@ const Settings = () => {
   const handleUpdateBudget = async (e) => {
     if (e) e.preventDefault();
     setLoading(true);
+
     try {
       const res = await axios.patch(
         "http://localhost:4000/user-api/budget",
@@ -53,13 +57,16 @@ const Settings = () => {
           withCredentials: true,
         },
       );
+
       if (res.status === 200) {
         updateUser(res.data.payload);
-        alert("Financial protocols updated!");
+
+        alert(t("financial protocols updated"));
       }
     } catch (err) {
       console.error(err);
-      alert("Failed to update budget.");
+
+      alert(t("failed update budget"));
     } finally {
       setLoading(false);
     }
@@ -72,6 +79,7 @@ const Settings = () => {
 
     // 2. Optimistic Update: Change UI immediately
     const updatedData = { ...budgetData, [key]: newValue };
+
     setBudgetData(updatedData);
 
     try {
@@ -89,14 +97,21 @@ const Settings = () => {
     } catch (err) {
       // Rollback if API fails
       console.error("Sync failed:", err);
-      setBudgetData((prev) => ({ ...prev, [key]: !newValue }));
-      alert("Failed to sync preference with server.");
+
+      setBudgetData((prev) => ({
+        ...prev,
+        [key]: !newValue,
+      }));
+
+      alert(t("failed sync preference"));
     }
   };
 
   const handleUpdateSecurity = async (e) => {
     e.preventDefault();
+
     setSecurityLoading(true);
+
     try {
       await axios.put(
         "http://localhost:4000/common-api/password",
@@ -105,10 +120,15 @@ const Settings = () => {
           withCredentials: true,
         },
       );
-      alert("Password updated!");
-      setPasswordData({ currentPassword: "", newPassword: "" });
+
+      alert(t("password updated"));
+
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+      });
     } catch (err) {
-      alert(err.response?.data?.message || "Update failed.");
+      alert(err.response?.data?.message || t("update failed"));
     } finally {
       setSecurityLoading(false);
     }
@@ -116,12 +136,13 @@ const Settings = () => {
 
   const handleTerminateAccount = async () => {
     const confirmFirst = window.confirm(
-      "CRITICAL: This will wipe all data. Proceed?",
+      t("terminate warning"),
     );
+
     if (!confirmFirst) return;
 
     const passwordVerify = window.prompt(
-      "To verify, please enter your password:",
+      t("enter password verify"),
     );
 
     if (passwordVerify) {
@@ -135,13 +156,16 @@ const Settings = () => {
         );
 
         if (res.status === 200) {
-          alert("Account purged successfully.");
+          alert(t("account purged"));
+
           localStorage.removeItem("cashflow_user");
+
           window.location.href = "/login";
         }
       } catch (err) {
         alert(
-          err.response?.data?.message || "Invalid password. Deletion aborted.",
+          err.response?.data?.message ||
+            t("invalid password deletion"),
         );
       }
     }
@@ -151,10 +175,11 @@ const Settings = () => {
     <div className="p-8 max-w-4xl mx-auto space-y-8 animate-in fade-in duration-700">
       <header>
         <h1 className="text-3xl font-bold text-slate-900 font-mono tracking-tight">
-          Settings
+          {t("settings")}
         </h1>
+
         <p className="text-slate-500">
-          Manage financial limits and account security.
+          {t("settings subtitle")}
         </p>
       </header>
 
@@ -165,16 +190,21 @@ const Settings = () => {
             <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
               <Target size={20} />
             </div>
+
             <h2 className="text-lg font-semibold text-slate-800">
-              Budget Limits
+              {t("budget limits")}
             </h2>
           </div>
 
-          <form onSubmit={handleUpdateBudget} className="space-y-5">
+          <form
+            onSubmit={handleUpdateBudget}
+            className="space-y-5"
+          >
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-400 uppercase">
-                Monthly Budget Limit
+                {t("monthly budget")}
               </label>
+
               <input
                 type="number"
                 className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
@@ -187,10 +217,12 @@ const Settings = () => {
                 }
               />
             </div>
+
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-400 uppercase">
-                Min Savings
+                {t("min savings")}
               </label>
+
               <input
                 type="number"
                 className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
@@ -203,11 +235,16 @@ const Settings = () => {
                 }
               />
             </div>
+
             <button
               disabled={loading}
               className="w-full bg-slate-950 text-white py-3 rounded-xl text-sm font-medium hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
             >
-              <Save size={16} /> {loading ? "Syncing..." : "Update Limits"}
+              <Save size={16} />
+
+              {loading
+                ? t("syncing")
+                : t("update limits")}
             </button>
           </form>
         </div>
@@ -218,8 +255,9 @@ const Settings = () => {
             <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
               <Bell size={20} />
             </div>
+
             <h2 className="text-lg font-semibold text-slate-800">
-              Alert Prefs
+              {t("alert prefs")}
             </h2>
           </div>
 
@@ -227,16 +265,22 @@ const Settings = () => {
             {/* Savings Toggle */}
             <div
               className="flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl transition-all cursor-pointer group"
-              onClick={() => handleTogglePreference("savingsAlertEnabled")}
+              onClick={() =>
+                handleTogglePreference(
+                  "savingsAlertEnabled",
+                )
+              }
             >
               <div>
                 <p className="text-sm font-medium text-slate-700">
-                  Savings Warning
+                  {t("savings warning")}
                 </p>
+
                 <p className="text-[10px] text-slate-400">
-                  Alerts when below min limit.
+                  {t("savings warning desc")}
                 </p>
               </div>
+
               <div
                 className={`w-10 h-5 rounded-full relative transition-all duration-300 ${
                   budgetData.savingsAlertEnabled
@@ -246,7 +290,9 @@ const Settings = () => {
               >
                 <div
                   className={`absolute top-1 w-3 h-3 bg-white rounded-full shadow-sm transition-all duration-300 ${
-                    budgetData.savingsAlertEnabled ? "left-6" : "left-1"
+                    budgetData.savingsAlertEnabled
+                      ? "left-6"
+                      : "left-1"
                   }`}
                 ></div>
               </div>
@@ -255,7 +301,11 @@ const Settings = () => {
             {/* Budget Limit Toggle */}
             <div
               className="flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl transition-all cursor-pointer group"
-              onClick={() => handleTogglePreference("budgetAlertEnabled")}
+              onClick={() =>
+                handleTogglePreference(
+                  "budgetAlertEnabled",
+                )
+              }
             >
               <div className="flex items-center gap-3">
                 <Zap
@@ -266,15 +316,18 @@ const Settings = () => {
                       : "text-slate-400"
                   }`}
                 />
+
                 <div>
                   <p className="text-sm font-medium text-slate-700">
-                    Budget Limit
+                    {t("budget limit")}
                   </p>
+
                   <p className="text-[10px] text-slate-400">
-                    Notify when spending exceeds limit.
+                    {t("budget limit desc")}
                   </p>
                 </div>
               </div>
+
               <div
                 className={`w-10 h-5 rounded-full relative transition-all duration-300 ${
                   budgetData.budgetAlertEnabled
@@ -284,7 +337,9 @@ const Settings = () => {
               >
                 <div
                   className={`absolute top-1 w-3 h-3 bg-white rounded-full shadow-sm transition-all duration-300 ${
-                    budgetData.budgetAlertEnabled ? "left-6" : "left-1"
+                    budgetData.budgetAlertEnabled
+                      ? "left-6"
+                      : "left-1"
                   }`}
                 ></div>
               </div>
@@ -295,9 +350,13 @@ const Settings = () => {
         {/* SECURITY & DANGER ZONE */}
         <div className="md:col-span-2 bg-slate-950 text-white p-8 rounded-[2.5rem] shadow-xl space-y-6">
           <div className="flex items-center gap-3">
-            <ShieldCheck className="text-emerald-400" size={24} />
+            <ShieldCheck
+              className="text-emerald-400"
+              size={24}
+            />
+
             <h2 className="text-xl font-semibold font-mono tracking-tight">
-              Change your Password
+              {t("change password")}
             </h2>
           </div>
 
@@ -308,8 +367,9 @@ const Settings = () => {
             >
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                  Current Password
+                  {t("current password")}
                 </label>
+
                 <input
                   type="password"
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-emerald-500 outline-none"
@@ -323,10 +383,12 @@ const Settings = () => {
                   required
                 />
               </div>
+
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                  New Password
+                  {t("new password")}
                 </label>
+
                 <input
                   type="password"
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-emerald-500 outline-none"
@@ -340,31 +402,42 @@ const Settings = () => {
                   required
                 />
               </div>
+
               <button
                 disabled={securityLoading}
                 className="w-full bg-emerald-500 text-slate-950 py-3 rounded-xl text-sm font-bold hover:bg-emerald-400 transition-all"
               >
-                {securityLoading ? "Processing..." : "Save"}
+                {securityLoading
+                  ? t("processing")
+                  : t("save")}
               </button>
             </form>
 
             <div className="flex flex-col justify-center items-center text-center space-y-4">
               <div className="p-4 bg-red-500/10 rounded-3xl border border-red-500/20">
-                <AlertTriangle className="text-red-500" size={32} />
+                <AlertTriangle
+                  className="text-red-500"
+                  size={32}
+                />
               </div>
+
               <div>
                 <p className="text-sm font-bold uppercase tracking-wider text-red-400">
-                  Account Deletion
+                  {t("account deletion")}
                 </p>
+
                 <p className="text-xs text-slate-400 mt-1">
-                  Erases all data permanently.
+                  {t("account deletion desc")}
                 </p>
               </div>
+
               <button
                 onClick={handleTerminateAccount}
                 className="flex items-center gap-2 text-red-500 text-[11px] font-bold border border-red-500/30 px-8 py-3 rounded-xl hover:bg-red-500 hover:text-white transition-all"
               >
-                <Trash2 size={14} /> Delete
+                <Trash2 size={14} />
+
+                {t("delete")}
               </button>
             </div>
           </div>
