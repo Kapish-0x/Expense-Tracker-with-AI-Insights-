@@ -21,8 +21,9 @@ app.use(express.json());
 app.use(cookieParser());
 const upload = multer({ dest: "uploads/" });
 
-
-// FINAL STRONG AMOUNT EXTRACTION 
+// ===============================
+// CLEAN AMOUNT EXTRACTION (ROBUST)
+// ===============================
 function extractAmount(rawText) {
   const lines = rawText
     .split("\n")
@@ -31,64 +32,96 @@ function extractAmount(rawText) {
 
   let candidates = [];
 
+  const moneyRegex = /(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?|\d+\.\d{1,2})/g;
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].toLowerCase();
+
+    // prioritize TOTAL lines
     if (line.includes("total") && !line.includes("subtotal")) {
       for (let j = i; j <= i + 2 && j < lines.length; j++) {
-        const text = lines[j];
-        const matches = text.match(/\d+[.,]\d{2}/g);
+        const matches = lines[j].match(moneyRegex);
+
         if (matches) {
           matches.forEach(num => {
-            candidates.push(parseFloat(num.replace(/,/g, "")));
+            const cleaned = parseFloat(num.replace(/,/g, ""));
+            if (!isNaN(cleaned)) candidates.push(cleaned);
           });
-        }
-        const split = text.match(/(\d+)\s+(\d{2})/);
-        if (split) {
-          candidates.push(parseFloat(split[1] + "." + split[2]));
-        }
-        const merged = text.match(/\d{4,}/);
-        if (merged) {
-          candidates.push(parseFloat(merged[0]) / 100);
         }
       }
     }
   }
 
-  if (candidates.length > 0) {
-    return Math.max(...candidates).toFixed(2);
-  }
-  const all = rawText.match(/\d+[.,]\d{2}/g);
-  if (all) {
-    const values = all.map(v => parseFloat(v.replace(/,/g, "")));
-    return Math.max(...values).toFixed(2);
+  // fallback: scan whole text
+  if (candidates.length === 0) {
+    const all = rawText.match(moneyRegex);
+
+    if (all) {
+      all.forEach(num => {
+        const cleaned = parseFloat(num.replace(/,/g, ""));
+        if (!isNaN(cleaned)) candidates.push(cleaned);
+      });
+    }
   }
 
-  return "0.00";
+  if (candidates.length === 0) return "0.00";
+
+  // take highest (usually TOTAL)
+  return Math.max(...candidates).toFixed(2);
 }
 
+
+// ===============================
+// CLEAN DATE EXTRACTION
+// ===============================
 function extractDate(text) {
   const regex =
     /(\d{2}[\/\-]\d{2}[\/\-]\d{2,4})|(\d{4}[\/\-]\d{2}[\/\-]\d{2})/;
 
   const match = text.match(regex);
-  return match ? match[0] : new Date().toLocaleDateString();
+
+  if (!match) return new Date().toISOString();
+
+  const parsed = new Date(match[0]);
+
+  if (isNaN(parsed.getTime())) {
+    return new Date().toISOString();
+  }
+
+  return parsed.toISOString();
 }
+
+
+// ===============================
+// VENDOR EXTRACTION (IMPROVED)
+// ===============================
 function extractVendor(text) {
   const lines = text
     .split("\n")
     .map(l => l.trim())
     .filter(Boolean);
 
-  const ignore = [
-    "NAME", "ADDRESS", "DATE", "QTY",
-    "DESCRIPTION", "PRICE", "TOTAL",
-    "SUBTOTAL", "TAX", "PHONE"
+  const ignoreKeywords = [
+    "TOTAL",
+    "SUBTOTAL",
+    "TAX",
+    "DATE",
+    "AMOUNT",
+    "QTY",
+    "PRICE",
+    "INVOICE",
+    "RECEIPT",
+    "PHONE",
+    "GST"
   ];
 
   for (let line of lines) {
+    const upper = line.toUpperCase();
+
     if (
-      line.length > 2 &&
-      !ignore.some(w => line.toUpperCase().includes(w))
+      line.length > 3 &&
+      !ignoreKeywords.some(word => upper.includes(word)) &&
+      /[a-zA-Z]/.test(line)
     ) {
       return line;
     }
@@ -97,7 +130,13 @@ function extractVendor(text) {
   return "Unknown Vendor";
 }
 
+
+// ===============================
+// ROUTE
+// ===============================
 app.post("/scan-receipt", upload.single("receipt"), async (req, res) => {
+  let filePath;
+
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -105,8 +144,10 @@ app.post("/scan-receipt", upload.single("receipt"), async (req, res) => {
       });
     }
 
+    filePath = req.file.path;
+
     const result = await Tesseract.recognize(
-      req.file.path,
+      filePath,
       "eng",
       {
         logger: m => console.log(m)
@@ -121,10 +162,7 @@ app.post("/scan-receipt", upload.single("receipt"), async (req, res) => {
     const date = extractDate(rawText);
     const vendor = extractVendor(rawText);
 
-    // delete uploaded file
-    fs.unlinkSync(req.file.path);
-
-    res.json({
+    return res.json({
       success: true,
       extracted: {
         vendor,
@@ -135,12 +173,22 @@ app.post("/scan-receipt", upload.single("receipt"), async (req, res) => {
 
   } catch (err) {
     console.error("OCR ERROR:", err);
-    res.status(500).json({
-      error: err.message
+
+    return res.status(500).json({
+      message: err.message || "OCR processing failed"
     });
+
+  } finally {
+    // always cleanup file
+    if (filePath) {
+      try {
+        fs.unlinkSync(filePath);
+      } catch (e) {
+        console.warn("File cleanup failed:", e.message);
+      }
+    }
   }
 });
-
 app.use("/common-api", commonApp);
 app.use("/user-api", userApp);
 app.use("/expense-api", expenseApp);
