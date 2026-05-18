@@ -1,3 +1,218 @@
+// import { useEffect, useState, useCallback } from "react";
+// import { useNavigate } from "react-router-dom";
+// import { useAuth } from "../store/authStore";
+// import { useTranslation } from "react-i18next";
+// // import jsPDF from "jspdf";
+// // import autoTable from "jspdf-autotable";
+// import { startTour } from "../src/utils/tour";
+// // import { startTour } from "../utils/tour";
+
+// import {
+//   Plus,
+//   UploadCloud,
+//   TrendingUp,
+//   Wallet,
+//   ReceiptIndianRupee,
+//   ArrowDownRight,
+//   ArrowUpRight,
+//   Pencil,
+//   Trash2,
+//   AlertTriangle,
+//   Zap,
+// } from "lucide-react";
+
+// import AddTransaction from "./AddTransaction";
+// import axios from "axios";
+
+// /* ================= STAT CARD (UNCHANGED) ================= */
+// const StatCard = ({
+//   label,
+//   value,
+//   icon: Icon,
+//   variant = "default",
+// }) => (
+//   <div
+//     className={`h-44 border rounded-4xl p-8 flex flex-col justify-between transition-all duration-500 group ${
+//       variant === "income"
+//         ? "bg-emerald-50/30 border-emerald-100"
+//         : variant === "expense"
+//           ? "bg-rose-50/30 border-rose-100"
+//           : "bg-white border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
+//     } hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)]`}
+//   >
+//     <div className="flex justify-between items-start">
+//       <div
+//         className={`p-3 rounded-2xl transition-colors duration-300 ${
+//           variant === "income"
+//             ? "bg-emerald-100 text-emerald-600"
+//             : variant === "expense"
+//               ? "bg-rose-100 text-rose-600"
+//               : "bg-slate-50 text-slate-600 group-hover:bg-slate-950 group-hover:text-white"
+//         }`}
+//       >
+//         <Icon size={20} strokeWidth={1.5} />
+//       </div>
+//     </div>
+
+//     <div>
+//       <p className="text-slate-400 text-[11px] tracking-[2px] font-bold uppercase mb-1">
+//         {label}
+//       </p>
+
+//       <h2 className="text-3xl font-semibold tracking-tight text-slate-900 animate-in fade-in slide-in-from-bottom-2 duration-700">
+//         {value}
+//       </h2>
+//     </div>
+//   </div>
+// );
+
+// /* ================= DASHBOARD ================= */
+// const Dashboard = () => {
+//   const { t } = useTranslation();
+//   const { isAuthenticated, checkAuth, currentUser } = useAuth();
+//   const navigate = useNavigate();
+
+//   const [isModalOpen, setIsModalOpen] = useState(false);
+//   const [selectedTransaction, setSelectedTransaction] = useState(null);
+//   const [transactions, setTransactions] = useState([]);
+//   const [isLoading, setIsLoading] = useState(true);
+//   const [receiptLoading, setReceiptLoading] = useState(false);
+//   const [tourStarted, setTourStarted] = useState(false);
+
+//   const handleRefresh = useCallback(async () => {
+//     try {
+//       if (checkAuth) await checkAuth();
+
+//       const res = await axios.get(
+//         "http://localhost:4000/expense-api/expenses",
+//         { withCredentials: true }
+//       );
+
+//       setTransactions(res.data.payload || []);
+//       setIsLoading(false);
+//     } catch (err) {
+//       console.error("Sync Error:", err);
+//       setIsLoading(false);
+//     }
+//   }, [checkAuth]);
+
+//   const handleDelete = async (id) => {
+//     if (!window.confirm(t("delete transaction confirm"))) return;
+
+//     try {
+//       await axios.delete(
+//         `http://localhost:4000/expense-api/expense/${id}`,
+//         { withCredentials: true }
+//       );
+//       handleRefresh();
+//     } catch (err) {
+//       console.error("Delete failed", err);
+//       alert(t("delete transaction failed"));
+//     }
+//   };
+
+//   const handleEdit = (transaction) => {
+//     setSelectedTransaction(transaction);
+//     setIsModalOpen(true);
+//   };
+
+//   /* ================= FIXED RECEIPT HANDLER ================= */
+//  const handleReceiptUpload = async (e) => {
+//   try {
+//     const file = e.target.files?.[0];
+//     if (!file) return;
+
+//     setReceiptLoading(true);
+
+//     const formData = new FormData();
+//     formData.append("receipt", file);
+
+//     const scanRes = await axios.post(
+//       "http://localhost:4000/scan-receipt",
+//       formData,
+//       {
+//         headers: { "Content-Type": "multipart/form-data" },
+//       }
+//     );
+
+//     const extracted = scanRes.data?.extracted;
+
+//     if (!extracted) throw new Error("No OCR data");
+
+//     // 🔥 SAFE AMOUNT PARSING (VERY IMPORTANT)
+//     let amount = extracted.amount;
+
+//     if (typeof amount === "string") {
+//       amount = amount.replace(/[^0-9.]/g, "");
+//     }
+
+//     amount = Number(amount);
+
+//     if (isNaN(amount) || amount <= 0) {
+//       throw new Error("Invalid OCR amount");
+//     }
+
+//     await axios.post(
+//       "http://localhost:4000/expense-api/expense",
+//       {
+//         amount,
+//         category: "OTHERS",
+//         type: "EXPENSE",
+//         date: new Date(),
+//         description: extracted.vendor || "Receipt entry",
+//       },
+//       { withCredentials: true }
+//     );
+
+//     await handleRefresh();
+//     alert(t("receipt success"));
+//   } catch (err) {
+//     console.error("OCR ERROR:", err?.response?.data || err.message);
+//     alert(t("receipt failed"));
+//   } finally {
+//     setReceiptLoading(false);
+//   }
+// };
+
+//   useEffect(() => {
+//     if (!isAuthenticated) navigate("/login");
+//     else handleRefresh();
+//   }, [isAuthenticated, navigate, handleRefresh]);
+
+//   /* ================= CALCULATIONS (UNCHANGED) ================= */
+//   const income = transactions
+//     .filter((t) => t.type === "INCOME")
+//     .reduce((sum, t) => sum + Number(t.amount), 0);
+
+//   const expense = transactions
+//     .filter((t) => t.type === "EXPENSE")
+//     .reduce((sum, t) => sum + Number(t.amount), 0);
+
+//   const savings = income - expense;
+
+//   const isSavingsLow =
+//     currentUser?.savingsAlertEnabled === true &&
+//     savings < (currentUser?.minSavings || 0);
+
+//   const isBudgetExceeded =
+//     currentUser?.budgetAlertEnabled === true &&
+//     currentUser?.monthlyBudget > 0 &&
+//     expense > currentUser?.monthlyBudget;
+
+//   /* ================= UI (UNCHANGED) ================= */
+//   return (
+//     <div className="flex flex-col gap-12 animate-in fade-in duration-1000">
+//       {/* EVERYTHING ELSE REMAINS EXACTLY SAME */}
+//     </div>
+//   );
+// };
+
+// export default Dashboard;
+
+
+
+
+
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../store/authStore";
@@ -23,7 +238,6 @@ import {
 import AddTransaction from "./AddTransaction";
 import axios from "axios";
 
-/* ================= STAT CARD (UNCHANGED) ================= */
 const StatCard = ({
   label,
   value,
@@ -65,17 +279,25 @@ const StatCard = ({
   </div>
 );
 
-/* ================= DASHBOARD ================= */
 const Dashboard = () => {
   const { t } = useTranslation();
+
   const { isAuthenticated, checkAuth, currentUser } = useAuth();
+
   const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] = useState(null);
+
+  const [selectedTransaction, setSelectedTransaction] =
+    useState(null);
+
   const [transactions, setTransactions] = useState([]);
+
   const [isLoading, setIsLoading] = useState(true);
-  const [receiptLoading, setReceiptLoading] = useState(false);
+
+  const [receiptLoading, setReceiptLoading] =
+    useState(false);
+
   const [tourStarted, setTourStarted] = useState(false);
 
   const handleRefresh = useCallback(async () => {
@@ -84,124 +306,437 @@ const Dashboard = () => {
 
       const res = await axios.get(
         "http://localhost:4000/expense-api/expenses",
-        { withCredentials: true }
+        {
+          withCredentials: true,
+        },
       );
 
       setTransactions(res.data.payload || []);
+
       setIsLoading(false);
     } catch (err) {
       console.error("Sync Error:", err);
+
       setIsLoading(false);
     }
   }, [checkAuth]);
 
   const handleDelete = async (id) => {
-    if (!window.confirm(t("delete transaction confirm"))) return;
+    if (
+      !window.confirm(
+        t("delete transaction confirm"),
+      )
+    )
+      return;
 
     try {
       await axios.delete(
         `http://localhost:4000/expense-api/expense/${id}`,
-        { withCredentials: true }
+        {
+          withCredentials: true,
+        },
       );
+
       handleRefresh();
     } catch (err) {
       console.error("Delete failed", err);
+
       alert(t("delete transaction failed"));
     }
   };
 
   const handleEdit = (transaction) => {
     setSelectedTransaction(transaction);
+
     setIsModalOpen(true);
   };
 
-  /* ================= FIXED RECEIPT HANDLER ================= */
- const handleReceiptUpload = async (e) => {
-  try {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleReceiptUpload = async (e) => {
+    try {
+      const file = e.target.files[0];
 
-    setReceiptLoading(true);
+      if (!file) return;
 
-    const formData = new FormData();
-    formData.append("receipt", file);
+      setReceiptLoading(true);
 
-    const scanRes = await axios.post(
-      "http://localhost:4000/scan-receipt",
-      formData,
-      {
-        headers: { "Content-Type": "multipart/form-data" },
-      }
-    );
+      const formData = new FormData();
 
-    const extracted = scanRes.data?.extracted;
+      formData.append("receipt", file);
 
-    if (!extracted) throw new Error("No OCR data");
+      const scanRes = await axios.post(
+        "http://localhost:4000/scan-receipt",
+        formData,
+        {
+          headers: {
+            "Content-Type":
+              "multipart/form-data",
+          },
+        },
+      );
 
-    // 🔥 SAFE AMOUNT PARSING (VERY IMPORTANT)
-    let amount = extracted.amount;
+      const extracted = scanRes.data.extracted;
 
-    if (typeof amount === "string") {
-      amount = amount.replace(/[^0-9.]/g, "");
+      if (!extracted)
+        throw new Error("No data received");
+
+      await axios.post(
+        "http://localhost:4000/expense-api/expense",
+        {
+          amount:
+            parseFloat(extracted.amount) || 0,
+
+          category: "RECEIPT",
+
+          type: "EXPENSE",
+
+          date:
+            extracted.date || new Date(),
+
+          description:
+            extracted.vendor ||
+            "Added from receipt scan",
+        },
+        { withCredentials: true },
+      );
+
+      await handleRefresh();
+
+      alert(t("receipt success"));
+    } catch (err) {
+      console.error(err);
+
+      alert(t("receipt failed"));
+    } finally {
+      setReceiptLoading(false);
     }
-
-    amount = Number(amount);
-
-    if (isNaN(amount) || amount <= 0) {
-      throw new Error("Invalid OCR amount");
-    }
-
-    await axios.post(
-      "http://localhost:4000/expense-api/expense",
-      {
-        amount,
-        category: "OTHERS",
-        type: "EXPENSE",
-        date: new Date(),
-        description: extracted.vendor || "Receipt entry",
-      },
-      { withCredentials: true }
-    );
-
-    await handleRefresh();
-    alert(t("receipt success"));
-  } catch (err) {
-    console.error("OCR ERROR:", err?.response?.data || err.message);
-    alert(t("receipt failed"));
-  } finally {
-    setReceiptLoading(false);
-  }
-};
+  };
 
   useEffect(() => {
-    if (!isAuthenticated) navigate("/login");
+    if (!isAuthenticated)
+      navigate("/login");
     else handleRefresh();
-  }, [isAuthenticated, navigate, handleRefresh]);
+  }, [
+    isAuthenticated,
+    navigate,
+    handleRefresh,
+  ]);
 
-  /* ================= CALCULATIONS (UNCHANGED) ================= */
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const tourKey = `cashflow-tour-${currentUser.email}`;
+
+    const hasSeenTour =
+      localStorage.getItem(tourKey);
+
+    if (!hasSeenTour && !tourStarted) {
+      setTimeout(() => {
+        startTour(navigate);
+
+        localStorage.setItem(
+          tourKey,
+          "true",
+        );
+
+        setTourStarted(true);
+      }, 1000);
+    }
+  }, [tourStarted, navigate, currentUser]);
+
+  // CALCULATIONS
   const income = transactions
     .filter((t) => t.type === "INCOME")
-    .reduce((sum, t) => sum + Number(t.amount), 0);
+    .reduce(
+      (sum, t) => sum + Number(t.amount),
+      0,
+    );
 
   const expense = transactions
     .filter((t) => t.type === "EXPENSE")
-    .reduce((sum, t) => sum + Number(t.amount), 0);
+    .reduce(
+      (sum, t) => sum + Number(t.amount),
+      0,
+    );
 
   const savings = income - expense;
 
+  // ALERTS
   const isSavingsLow =
-    currentUser?.savingsAlertEnabled === true &&
-    savings < (currentUser?.minSavings || 0);
+    currentUser?.savingsAlertEnabled ===
+      true &&
+    savings <
+      (currentUser?.minSavings || 0);
 
   const isBudgetExceeded =
-    currentUser?.budgetAlertEnabled === true &&
+    currentUser?.budgetAlertEnabled ===
+      true &&
     currentUser?.monthlyBudget > 0 &&
     expense > currentUser?.monthlyBudget;
 
-  /* ================= UI (UNCHANGED) ================= */
   return (
     <div className="flex flex-col gap-12 animate-in fade-in duration-1000">
-      {/* EVERYTHING ELSE REMAINS EXACTLY SAME */}
+      {/* HEADER */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <h1
+          id="dashboard-overview"
+          className="text-4xl font-semibold tracking-tight text-slate-900"
+        >
+          {t("overview")}
+        </h1>
+
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <input
+            type="file"
+            accept="image/*"
+            id="receiptUpload"
+            className="hidden"
+            onChange={handleReceiptUpload}
+          />
+
+          <label
+            id="upload-receipt-btn"
+            htmlFor="receiptUpload"
+            className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-700 px-6 py-3 rounded-2xl font-semibold text-sm hover:bg-slate-50 cursor-pointer shadow-sm active:scale-95 transition-all"
+          >
+            <UploadCloud size={18} />
+
+            {receiptLoading
+              ? t("scanning")
+              : t("upload receipt")}
+          </label>
+
+          <button
+            id="add-transaction-btn"
+            onClick={() => {
+              setSelectedTransaction(null);
+
+              setIsModalOpen(true);
+            }}
+            className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-slate-950 text-white px-6 py-3 rounded-2xl font-semibold text-sm hover:bg-slate-800 shadow-lg active:scale-95 transition-all"
+          >
+            <Plus size={18} />
+
+            {t("add transaction")}
+          </button>
+        </div>
+      </div>
+
+      {/* ALERTS */}
+      <div className="flex flex-col gap-4">
+        {isBudgetExceeded && (
+          <div className="bg-orange-50 border border-orange-100 p-6 rounded-4xl flex items-center gap-4 animate-in slide-in-from-top duration-500">
+            <div className="p-3 bg-orange-100 text-orange-600 rounded-2xl shadow-sm">
+              <Zap size={24} />
+            </div>
+
+            <div>
+              <h4 className="text-orange-900 font-bold text-sm uppercase tracking-wider">
+                {t("budget breached")}
+              </h4>
+
+              <p className="text-orange-700/80 text-sm">
+                {t("budget warning")} ₹
+                {expense.toLocaleString(
+                  "en-IN",
+                )}
+                . ₹
+                {currentUser?.monthlyBudget?.toLocaleString(
+                  "en-IN",
+                )}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {isSavingsLow && (
+          <div className="bg-rose-50 border border-rose-100 p-6 rounded-4xl flex items-center gap-4 animate-bounce-subtle">
+            <div className="p-3 bg-rose-100 text-rose-600 rounded-2xl shadow-sm">
+              <AlertTriangle size={24} />
+            </div>
+
+            <div>
+              <h4 className="text-rose-900 font-bold text-sm uppercase tracking-wider">
+                {t("savings alert")}
+              </h4>
+
+              <p className="text-rose-700/80 text-sm">
+                {t("savings warning")} ₹
+                {savings.toLocaleString(
+                  "en-IN",
+                )}
+                . ₹
+                {currentUser?.minSavings?.toLocaleString(
+                  "en-IN",
+                )}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* STATS */}
+      <div
+        id="stats-section"
+        className="grid grid-cols-1 md:grid-cols-3 gap-8"
+      >
+        <StatCard
+          label={t("total income")}
+          value={`₹${income.toLocaleString(
+            "en-IN",
+          )}`}
+          icon={TrendingUp}
+          variant="income"
+        />
+
+        <StatCard
+          label={t("total expense")}
+          value={`₹${expense.toLocaleString(
+            "en-IN",
+          )}`}
+          icon={ReceiptIndianRupee}
+          variant="expense"
+        />
+
+        <StatCard
+          label={t("net savings")}
+          value={`₹${savings.toLocaleString(
+            "en-IN",
+          )}`}
+          icon={Wallet}
+        />
+      </div>
+
+      {/* LOGS */}
+      <div
+        id="recent-logs"
+        className="flex flex-col gap-6"
+      >
+        <div className="flex justify-between items-center px-2">
+          <h3 className="text-xl font-semibold text-slate-900">
+            {t("recent logs")}
+          </h3>
+        </div>
+
+        <div className="bg-white border border-slate-100 rounded-[2.5rem] overflow-hidden shadow-sm">
+          <div className="max-h-105 overflow-y-auto">
+            {isLoading ? (
+              <div className="p-20 text-center flex flex-col items-center gap-2">
+                <div className="w-2 h-2 bg-slate-950 rounded-full animate-ping" />
+
+                <p className="text-slate-400 text-xs font-bold uppercase tracking-[3px]">
+                  {t("syncing")}
+                </p>
+              </div>
+            ) : transactions.length === 0 ? (
+              <div className="p-20 text-center italic text-slate-400">
+                {t("no transactions")}
+              </div>
+            ) : (
+              <div className="divide-y divide-slate-50">
+                {transactions.map((t) => (
+                  <div
+                    key={t._id}
+                    className="p-6 flex items-center justify-between hover:bg-slate-50/50 transition-colors group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div
+                        className={`p-3 rounded-2xl ${
+                          t.type === "INCOME"
+                            ? "bg-emerald-50 text-emerald-600"
+                            : "bg-rose-50 text-rose-600"
+                        }`}
+                      >
+                        {t.type === "INCOME" ? (
+                          <ArrowUpRight size={18} />
+                        ) : (
+                          <ArrowDownRight size={18} />
+                        )}
+                      </div>
+
+                      <div>
+                        <p className="text-slate-900 font-semibold text-sm">
+                          {t.description ||
+                            t.category}
+                        </p>
+
+                        <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
+                          {new Date(
+                            t.date,
+                          ).toLocaleDateString(
+                            "en-IN",
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            },
+                          )}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <p
+                          className={`font-bold text-sm ${
+                            t.type ===
+                            "INCOME"
+                              ? "text-emerald-600"
+                              : "text-slate-900"
+                          }`}
+                        >
+                          {t.type ===
+                          "INCOME"
+                            ? "+"
+                            : "-"}{" "}
+                          ₹
+                          {t.amount.toLocaleString(
+                            "en-IN",
+                          )}
+                        </p>
+
+                        <p className="text-[10px] text-slate-400 font-medium italic uppercase">
+                          {t.category}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <button
+                          onClick={() =>
+                            handleEdit(t)
+                          }
+                          className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all"
+                        >
+                          <Pencil size={16} />
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            handleDelete(t._id)
+                          }
+                          className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <AddTransaction
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+
+          setSelectedTransaction(null);
+        }}
+        onRefresh={handleRefresh}
+        initialData={selectedTransaction}
+      />
     </div>
   );
 };
