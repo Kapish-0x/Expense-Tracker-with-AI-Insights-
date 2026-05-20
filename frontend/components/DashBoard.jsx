@@ -536,7 +536,6 @@
 
 
 
-
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../store/authStore";
@@ -605,23 +604,14 @@ const StatCard = ({
 
 const Dashboard = () => {
   const { t } = useTranslation();
-
   const { isAuthenticated, checkAuth, currentUser } = useAuth();
-
   const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const [selectedTransaction, setSelectedTransaction] =
-    useState(null);
-
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [transactions, setTransactions] = useState([]);
-
   const [isLoading, setIsLoading] = useState(true);
-
-  const [receiptLoading, setReceiptLoading] =
-    useState(false);
-
+  const [receiptLoading, setReceiptLoading] = useState(false);
   const [tourStarted, setTourStarted] = useState(false);
 
   const handleRefresh = useCallback(async () => {
@@ -636,22 +626,15 @@ const Dashboard = () => {
       );
 
       setTransactions(res.data.payload || []);
-
       setIsLoading(false);
     } catch (err) {
       console.error("Sync Error:", err);
-
       setIsLoading(false);
     }
   }, [checkAuth]);
 
   const handleDelete = async (id) => {
-    if (
-      !window.confirm(
-        t("delete transaction confirm"),
-      )
-    )
-      return;
+    if (!window.confirm(t("delete transaction confirm"))) return;
 
     try {
       await axios.delete(
@@ -660,31 +643,25 @@ const Dashboard = () => {
           withCredentials: true,
         },
       );
-
       handleRefresh();
     } catch (err) {
       console.error("Delete failed", err);
-
       alert(t("delete transaction failed"));
     }
   };
 
   const handleEdit = (transaction) => {
     setSelectedTransaction(transaction);
-
     setIsModalOpen(true);
   };
 
   const handleReceiptUpload = async (e) => {
     try {
       const file = e.target.files[0];
-
       if (!file) return;
 
       setReceiptLoading(true);
-
       const formData = new FormData();
-
       formData.append("receipt", file);
 
       const scanRes = await axios.post(
@@ -692,43 +669,30 @@ const Dashboard = () => {
         formData,
         {
           headers: {
-            "Content-Type":
-              "multipart/form-data",
+            "Content-Type": "multipart/form-data",
           },
         },
       );
 
       const extracted = scanRes.data.extracted;
-
-      if (!extracted)
-        throw new Error("No data received");
+      if (!extracted) throw new Error("No data received");
 
       await axios.post(
         "http://localhost:4000/expense-api/expense",
         {
-          amount:
-            parseFloat(extracted.amount) || 0,
-
+          amount: parseFloat(extracted.amount) || 0,
           category: "RECEIPT",
-
           type: "EXPENSE",
-
-          date:
-            extracted.date || new Date(),
-
-          description:
-            extracted.vendor ||
-            "Added from receipt scan",
+          date: extracted.date || new Date(),
+          description: extracted.vendor || "Added from receipt scan",
         },
         { withCredentials: true },
       );
 
       await handleRefresh();
-
-      alert(t("receipt success"));
+      alert(t("scan successful"));
     } catch (err) {
       console.error(err);
-
       alert(t("receipt failed"));
     } finally {
       setReceiptLoading(false);
@@ -736,32 +700,20 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    if (!isAuthenticated)
-      navigate("/login");
+    if (!isAuthenticated) navigate("/login");
     else handleRefresh();
-  }, [
-    isAuthenticated,
-    navigate,
-    handleRefresh,
-  ]);
+  }, [isAuthenticated, navigate, handleRefresh]);
 
   useEffect(() => {
     if (!currentUser) return;
 
     const tourKey = `cashflow-tour-${currentUser.email}`;
-
-    const hasSeenTour =
-      localStorage.getItem(tourKey);
+    const hasSeenTour = localStorage.getItem(tourKey);
 
     if (!hasSeenTour && !tourStarted) {
       setTimeout(() => {
         startTour(navigate);
-
-        localStorage.setItem(
-          tourKey,
-          "true",
-        );
-
+        localStorage.setItem(tourKey, "true");
         setTourStarted(true);
       }, 1000);
     }
@@ -770,30 +722,21 @@ const Dashboard = () => {
   // CALCULATIONS
   const income = transactions
     .filter((t) => t.type === "INCOME")
-    .reduce(
-      (sum, t) => sum + Number(t.amount),
-      0,
-    );
+    .reduce((sum, t) => sum + Number(t.amount), 0);
 
   const expense = transactions
     .filter((t) => t.type === "EXPENSE")
-    .reduce(
-      (sum, t) => sum + Number(t.amount),
-      0,
-    );
+    .reduce((sum, t) => sum + Number(t.amount), 0);
 
   const savings = income - expense;
 
   // ALERTS
   const isSavingsLow =
-    currentUser?.savingsAlertEnabled ===
-      true &&
-    savings <
-      (currentUser?.minSavings || 0);
+    currentUser?.savingsAlertEnabled === true &&
+    savings < (currentUser?.minSavings || 0);
 
   const isBudgetExceeded =
-    currentUser?.budgetAlertEnabled ===
-      true &&
+    currentUser?.budgetAlertEnabled === true &&
     currentUser?.monthlyBudget > 0 &&
     expense > currentUser?.monthlyBudget;
 
@@ -823,23 +766,18 @@ const Dashboard = () => {
             className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-700 px-6 py-3 rounded-2xl font-semibold text-sm hover:bg-slate-50 cursor-pointer shadow-sm active:scale-95 transition-all"
           >
             <UploadCloud size={18} />
-
-            {receiptLoading
-              ? t("scanning")
-              : t("upload receipt")}
+            {receiptLoading ? t("uploading") : t("upload receipt")}
           </label>
 
           <button
             id="add-transaction-btn"
             onClick={() => {
               setSelectedTransaction(null);
-
               setIsModalOpen(true);
             }}
             className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-slate-950 text-white px-6 py-3 rounded-2xl font-semibold text-sm hover:bg-slate-800 shadow-lg active:scale-95 transition-all"
           >
             <Plus size={18} />
-
             {t("add transaction")}
           </button>
         </div>
@@ -855,18 +793,13 @@ const Dashboard = () => {
 
             <div>
               <h4 className="text-orange-900 font-bold text-sm uppercase tracking-wider">
-                {t("budget breached")}
+                {t("budget limit")}
               </h4>
 
               <p className="text-orange-700/80 text-sm">
-                {t("budget warning")} ₹
-                {expense.toLocaleString(
-                  "en-IN",
-                )}
-                . ₹
-                {currentUser?.monthlyBudget?.toLocaleString(
-                  "en-IN",
-                )}
+                {t("budget limit desc")} ₹
+                {expense.toLocaleString("en-IN")}. ₹
+                {currentUser?.monthlyBudget?.toLocaleString("en-IN")}
               </p>
             </div>
           </div>
@@ -880,18 +813,13 @@ const Dashboard = () => {
 
             <div>
               <h4 className="text-rose-900 font-bold text-sm uppercase tracking-wider">
-                {t("savings alert")}
+                {t("savings warning")}
               </h4>
 
               <p className="text-rose-700/80 text-sm">
-                {t("savings warning")} ₹
-                {savings.toLocaleString(
-                  "en-IN",
-                )}
-                . ₹
-                {currentUser?.minSavings?.toLocaleString(
-                  "en-IN",
-                )}
+                {t("savings warning desc")} ₹
+                {savings.toLocaleString("en-IN")}. ₹
+                {currentUser?.minSavings?.toLocaleString("en-IN")}
               </p>
             </div>
           </div>
@@ -899,42 +827,30 @@ const Dashboard = () => {
       </div>
 
       {/* STATS */}
-      <div
-        id="stats-section"
-        className="grid grid-cols-1 md:grid-cols-3 gap-8"
-      >
+      <div id="stats-section" className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <StatCard
           label={t("total income")}
-          value={`₹${income.toLocaleString(
-            "en-IN",
-          )}`}
+          value={`₹${income.toLocaleString("en-IN")}`}
           icon={TrendingUp}
           variant="income"
         />
 
         <StatCard
           label={t("total expense")}
-          value={`₹${expense.toLocaleString(
-            "en-IN",
-          )}`}
+          value={`₹${expense.toLocaleString("en-IN")}`}
           icon={ReceiptIndianRupee}
           variant="expense"
         />
 
         <StatCard
           label={t("net savings")}
-          value={`₹${savings.toLocaleString(
-            "en-IN",
-          )}`}
+          value={`₹${savings.toLocaleString("en-IN")}`}
           icon={Wallet}
         />
       </div>
 
       {/* LOGS */}
-      <div
-        id="recent-logs"
-        className="flex flex-col gap-6"
-      >
+      <div id="recent-logs" className="flex flex-col gap-6">
         <div className="flex justify-between items-center px-2">
           <h3 className="text-xl font-semibold text-slate-900">
             {t("recent logs")}
@@ -946,7 +862,6 @@ const Dashboard = () => {
             {isLoading ? (
               <div className="p-20 text-center flex flex-col items-center gap-2">
                 <div className="w-2 h-2 bg-slate-950 rounded-full animate-ping" />
-
                 <p className="text-slate-400 text-xs font-bold uppercase tracking-[3px]">
                   {t("syncing")}
                 </p>
@@ -957,20 +872,20 @@ const Dashboard = () => {
               </div>
             ) : (
               <div className="divide-y divide-slate-50">
-                {transactions.map((t) => (
+                {transactions.map((tItem) => (
                   <div
-                    key={t._id}
+                    key={tItem._id}
                     className="p-6 flex items-center justify-between hover:bg-slate-50/50 transition-colors group"
                   >
                     <div className="flex items-center gap-4">
                       <div
                         className={`p-3 rounded-2xl ${
-                          t.type === "INCOME"
+                          tItem.type === "INCOME"
                             ? "bg-emerald-50 text-emerald-600"
                             : "bg-rose-50 text-rose-600"
                         }`}
                       >
-                        {t.type === "INCOME" ? (
+                        {tItem.type === "INCOME" ? (
                           <ArrowUpRight size={18} />
                         ) : (
                           <ArrowDownRight size={18} />
@@ -978,22 +893,17 @@ const Dashboard = () => {
                       </div>
 
                       <div>
+                        {/* If no user description, default to translated category */}
                         <p className="text-slate-900 font-semibold text-sm">
-                          {t.description ||
-                            t.category}
+                          {tItem.description || t(tItem.category.toLowerCase())}
                         </p>
 
                         <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
-                          {new Date(
-                            t.date,
-                          ).toLocaleDateString(
-                            "en-IN",
-                            {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            },
-                          )}
+                          {new Date(tItem.date).toLocaleDateString("en-IN", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })}
                         </p>
                       </div>
                     </div>
@@ -1002,41 +912,31 @@ const Dashboard = () => {
                       <div className="text-right">
                         <p
                           className={`font-bold text-sm ${
-                            t.type ===
-                            "INCOME"
+                            tItem.type === "INCOME"
                               ? "text-emerald-600"
                               : "text-slate-900"
                           }`}
                         >
-                          {t.type ===
-                          "INCOME"
-                            ? "+"
-                            : "-"}{" "}
-                          ₹
-                          {t.amount.toLocaleString(
-                            "en-IN",
-                          )}
+                          {tItem.type === "INCOME" ? "+" : "-"} ₹
+                          {tItem.amount.toLocaleString("en-IN")}
                         </p>
 
+                        {/* Category Label Translation */}
                         <p className="text-[10px] text-slate-400 font-medium italic uppercase">
-                          {t.category}
+                          {t(tItem.category.toLowerCase())}
                         </p>
                       </div>
 
                       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         <button
-                          onClick={() =>
-                            handleEdit(t)
-                          }
+                          onClick={() => handleEdit(tItem)}
                           className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all"
                         >
                           <Pencil size={16} />
                         </button>
 
                         <button
-                          onClick={() =>
-                            handleDelete(t._id)
-                          }
+                          onClick={() => handleDelete(tItem._id)}
                           className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
                         >
                           <Trash2 size={16} />
@@ -1055,7 +955,6 @@ const Dashboard = () => {
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
-
           setSelectedTransaction(null);
         }}
         onRefresh={handleRefresh}

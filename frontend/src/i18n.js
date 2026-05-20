@@ -226,6 +226,12 @@ i18n.use(initReactI18next).init({
 "salary": "Salary",
 "entertainment": "Entertainment",
 "health": "Health",
+
+
+"delete transaction confirm": "Are you sure you want to delete this transaction?",
+"delete transaction failed": "Failed to delete transaction. Please try again.",
+"receipt failed": "Failed to extract transaction from receipt.",
+"receipt": "Receipt",
       },
     },
 
@@ -452,6 +458,13 @@ i18n.use(initReactI18next).init({
 "salary": "वेतन",
 "entertainment": "मनोरंजन",
 "health": "स्वास्थ्य",
+
+
+
+"delete transaction confirm": "क्या आप वाकई इस ट्रांज़ैक्शन को हटाना चाहते हैं?",
+"delete transaction failed": "ट्रांज़ैक्शन हटाने में विफल। कृपया पुन: प्रयास करें।",
+"receipt failed": "रसीद से विवरण निकालने में विफल।",
+"receipt": "रसीद",
       },
     },
 
@@ -685,6 +698,12 @@ i18n.use(initReactI18next).init({
 "salary": "జీతం",
 "entertainment": "వినోదం",
 "health": "ఆరోగ్యం",
+
+
+"delete transaction confirm": "మీరు ఖచ్చితంగా ఈ లావాదేవీని తొలగించాలనుకుంటున్నారా?",
+"delete transaction failed": "లావాదేవీని తొలగించడం విఫలమైంది. దయచేసి మళ్ళీ ప్రయత్నించండి.",
+"receipt failed": "రశీదు నుండి వివరాలను సేకరించడం విఫలమైంది.",
+"receipt": "రశీదు",
       },
     },
   },
