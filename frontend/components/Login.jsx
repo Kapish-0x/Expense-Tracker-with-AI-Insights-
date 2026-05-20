@@ -45,7 +45,7 @@ function Login() {
   };
 
   return (
-    <div className="w-full max-w-120 transition-all duration-700 ease-in-out">
+      <div className="w-full max-w-120 mx-auto min-h-screen flex flex-col justify-center px-4 transition-all duration-700 ease-in-out">
       {/* HEADER */}
       <div className="text-center mb-12">
         <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-950 mb-6 shadow-xl shadow-slate-200">
