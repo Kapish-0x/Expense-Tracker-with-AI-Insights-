@@ -232,6 +232,11 @@ i18n.use(initReactI18next).init({
 "delete transaction failed": "Failed to delete transaction. Please try again.",
 "receipt failed": "Failed to extract transaction from receipt.",
 "receipt": "Receipt",
+  "budget limit": "Budget Limit Exceeded",
+  "budget limit desc": "You have spent more than your allocated monthly budget:",
+  "savings warning": "Low Savings Alert",
+  "savings warning desc": "Your net savings have dropped below your configured minimum threshold:",
+
       },
     },
 
@@ -465,6 +470,10 @@ i18n.use(initReactI18next).init({
 "delete transaction failed": "ट्रांज़ैक्शन हटाने में विफल। कृपया पुन: प्रयास करें।",
 "receipt failed": "रसीद से विवरण निकालने में विफल।",
 "receipt": "रसीद",
+"budget limit": "बजट सीमा पार हो गई",
+  "budget limit desc": "आपने अपने तय किए गए मासिक बजट से ज़्यादा खर्च कर दिया है:",
+  "savings warning": "कम बचत की चेतावनी",
+  "savings warning desc": "आपकी कुल बचत आपके तय किए गए न्यूनतम स्तर से नीचे आ गई है:",
       },
     },
 
@@ -704,6 +713,10 @@ i18n.use(initReactI18next).init({
 "delete transaction failed": "లావాదేవీని తొలగించడం విఫలమైంది. దయచేసి మళ్ళీ ప్రయత్నించండి.",
 "receipt failed": "రశీదు నుండి వివరాలను సేకరించడం విఫలమైంది.",
 "receipt": "రశీదు",
+"budget limit": "బడ్జెట్ పరిమితి దాటిపోయింది",
+  "budget limit desc": "మీరు కేటాయించిన నెలవారీ బడ్జెట్ కంటే ఎక్కువ ఖర్చు చేశారు:",
+  "savings warning": "తక్కువ పొదుపు హెచ్చరిక",
+  "savings warning desc": "మీ నికర పొదుపు మీరు నిర్ణయించుకున్న కనీస పరిమితి కంటే తగ్గిపోయింది:",
       },
     },
   },

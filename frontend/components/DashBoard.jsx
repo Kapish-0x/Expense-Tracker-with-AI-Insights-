@@ -785,46 +785,50 @@ const Dashboard = () => {
 
       {/* ALERTS */}
       <div className="flex flex-col gap-4">
-        {isBudgetExceeded && (
-          <div className="bg-orange-50 border border-orange-100 p-6 rounded-4xl flex items-center gap-4 animate-in slide-in-from-top duration-500">
-            <div className="p-3 bg-orange-100 text-orange-600 rounded-2xl shadow-sm">
-              <Zap size={24} />
-            </div>
-
-            <div>
-              <h4 className="text-orange-900 font-bold text-sm uppercase tracking-wider">
-                {t("budget limit")}
-              </h4>
-
-              <p className="text-orange-700/80 text-sm">
-                {t("budget limit desc")} ₹
-                {expense.toLocaleString("en-IN")}. ₹
-                {currentUser?.monthlyBudget?.toLocaleString("en-IN")}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {isSavingsLow && (
-          <div className="bg-rose-50 border border-rose-100 p-6 rounded-4xl flex items-center gap-4 animate-bounce-subtle">
-            <div className="p-3 bg-rose-100 text-rose-600 rounded-2xl shadow-sm">
-              <AlertTriangle size={24} />
-            </div>
-
-            <div>
-              <h4 className="text-rose-900 font-bold text-sm uppercase tracking-wider">
-                {t("savings warning")}
-              </h4>
-
-              <p className="text-rose-700/80 text-sm">
-                {t("savings warning desc")} ₹
-                {savings.toLocaleString("en-IN")}. ₹
-                {currentUser?.minSavings?.toLocaleString("en-IN")}
-              </p>
-            </div>
-          </div>
-        )}
+  {isBudgetExceeded && (
+    <div className="bg-orange-50 border border-orange-100 p-6 rounded-4xl flex items-center gap-4 animate-in slide-in-from-top duration-500">
+      <div className="p-3 bg-orange-100 text-orange-600 rounded-2xl shadow-sm">
+        <Zap size={24} />
       </div>
+
+      <div>
+        <h4 className="text-orange-900 font-bold text-sm uppercase tracking-wider">
+          {t("budget limit")}
+        </h4>
+
+        <p className="text-orange-700/80 text-sm">
+          {t("budget limit desc")}{" "}
+          <span className="font-semibold text-orange-900">
+            ₹{expense.toLocaleString("en-IN")}
+          </span>{" "}
+          / ₹{currentUser?.monthlyBudget?.toLocaleString("en-IN")}
+        </p>
+      </div>
+    </div>
+  )}
+
+  {isSavingsLow && (
+    <div className="bg-rose-50 border border-rose-100 p-6 rounded-4xl flex items-center gap-4 animate-bounce-subtle">
+      <div className="p-3 bg-rose-100 text-rose-600 rounded-2xl shadow-sm">
+        <AlertTriangle size={24} />
+      </div>
+
+      <div>
+        <h4 className="text-rose-900 font-bold text-sm uppercase tracking-wider">
+          {t("savings warning")}
+        </h4>
+
+        <p className="text-rose-700/80 text-sm">
+          {t("savings warning desc")}{" "}
+          <span className="font-semibold text-rose-950">
+            ₹{savings.toLocaleString("en-IN")}
+          </span>{" "}
+          / ₹{currentUser?.minSavings?.toLocaleString("en-IN")}
+        </p>
+      </div>
+    </div>
+  )}
+</div>
 
       {/* STATS */}
       <div id="stats-section" className="grid grid-cols-1 md:grid-cols-3 gap-8">
