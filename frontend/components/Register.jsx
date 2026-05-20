@@ -39,29 +39,27 @@ function Register() {
       role: "USER",
     };
 
-    try {
-      let res = await axios.post(
-        "http://localhost:4000/user-api/users",
-        payload,
-      );
+   try {
+  let res = await axios.post(
+  "http://localhost:4000/user-api/users",
+   payload,
+  );
 
-      if (res.status === 201 || res.status === 200) {
-        navigate("/login");
-      }
-    } catch (err) {
-      setApiError(
-        err.response?.data?.message ||
-          t("connection refused"),
-      );
-    } finally {
-      setLoading(false);
-    }
+if (res.status === 201 || res.status === 200) {
+ navigate("/login");
+ } } catch (err) {
+  setApiError(
+   err.response?.data?.message || t("connection refused"),
+  );
+   } finally {
+  setLoading(false);
+  }
   };
 
   return (
     <div className="w-full max-w-130 mx-auto min-h-screen flex flex-col justify-center px-4 transition-all duration-700 ease-in-out">
-    {/* Header Section */}
-    <div className="text-center mb-10">
+      {/* Header Section */}
+      <div className="text-center mb-10">
         <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white border border-slate-100 mb-6 shadow-sm">
           <UserPlus className="text-slate-900" size={26} strokeWidth={1.5} />
         </div>
@@ -168,7 +166,7 @@ function Register() {
       {/* Footer */}
       <div className="mt-10 text-center">
         <p className="text-slate-400 text-[13px] font-medium">
-          {t("already user")}
+          {t("already user")}{" "}
 
           <NavLink
             to="/login"

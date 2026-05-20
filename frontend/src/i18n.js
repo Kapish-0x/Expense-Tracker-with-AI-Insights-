@@ -6,7 +6,7 @@ i18n.use(initReactI18next).init({
     en: {
       translation: {
         // GENERAL
-        cashflow : "CashFlow",
+        cashflow: "CashFlow",
         overview: "Overview",
         analytics: "Analytics",
         reports: "Reports",
@@ -18,6 +18,13 @@ i18n.use(initReactI18next).init({
         transactions: "Transactions",
         "ai insights": "AI Insights",
         "expense tracker": "Expense Tracker",
+
+        // LOGIN / REGISTER SPECIFIC
+        "welcome cashflow": "Welcome to CashFlow",
+        "enter credentials": "Enter your credentials to access your account",
+        "authentication failed": "Authentication Failed",
+        forgot: "Forgot?",
+        "new user": "New user?",
 
         // DASHBOARD
         "total income": "Total Income",
@@ -48,8 +55,6 @@ i18n.use(initReactI18next).init({
         "moderate finance desc":
           "Your finances are moderate and need better planning.",
         "poor finance desc": "Your spending is high and savings are low.",
-
-        "monthly financial statement": "Monthly Financial Statement",
         excellent: "Excellent",
         stable: "Stable",
         moderate: "Moderate",
@@ -59,43 +64,38 @@ i18n.use(initReactI18next).init({
         "loading reports": "Loading Reports...",
         "net balance": "Net Balance",
 
-  "analytics": "Analytics",
-  "total income": "Total Income",
-  "total expense": "Total Expense",
-  "top category": "Top Category",
-  "savings rate": "Savings Rate",
-  "income vs expense": "Income vs Expense",
-  "category breakdown": "Category Breakdown",
-  "savings goals": "Savings Goals",
-  "add goal": "Add Goal",
-  "no goals": "No goals set yet",
-  "progress": "Progress",
-  "savings": "Savings",
-  "completed": "Completed",
-  "deadline": "Deadline",
-  "income": "Income",
-  "expense": "Expense",
-  "jan": "Jan",
-  "feb": "Feb",
-  "mar": "Mar",
-  "apr": "Apr",
-  "may": "May",
-  "jun": "Jun",
-  "jul": "Jul",
-  "aug": "Aug",
-  "sep": "Sep",
-  "oct": "Oct",
-  "nov": "Nov",
-  "dec": "Dec",
-        month: "Month",
+        // ANALYTICS & MONTHS
+        "top category": "Top Category",
+        "savings rate": "Savings Rate",
+        "income vs expense": "Income vs Expense",
+        "category breakdown": "Category Breakdown",
+        "savings goals": "Savings Goals",
+        "add goal": "Add Goal",
+        "no goals": "No goals set yet",
+        progress: "Progress",
+        savings: "Savings",
+        completed: "Completed",
+        deadline: "Deadline",
         income: "Income",
         expense: "Expense",
+        month: "Month",
         balance: "Balance",
-
         description: "Description",
         category: "Category",
         type: "Type",
         date: "Date",
+        jan: "Jan",
+        feb: "Feb",
+        mar: "Mar",
+        apr: "Apr",
+        may: "May",
+        jun: "Jun",
+        jul: "Jul",
+        aug: "Aug",
+        sep: "Sep",
+        oct: "Oct",
+        nov: "Nov",
+        dec: "Dec",
 
         // PROFILE
         "edit profile": "Edit Profile",
@@ -107,26 +107,17 @@ i18n.use(initReactI18next).init({
 
         // SETTINGS
         "settings subtitle": "Manage financial limits and account security.",
-
         "budget limits": "Budget Limits",
         "monthly budget": "Monthly Budget Limit",
         "min savings": "Minimum Savings",
         "update limits": "Update Limits",
         syncing: "Syncing...",
-
         "alert prefs": "Alert Preferences",
-        "savings warning": "Savings Warning",
-        "savings warning desc": "Alerts when savings drop below minimum limit.",
-
-        "budget limit": "Budget Limit",
-        "budget limit desc": "Notify when spending exceeds monthly budget.",
-
         "change password": "Change your Password",
         "current password": "Current Password",
         "new password": "New Password",
         save: "Save",
         processing: "Processing...",
-
         "account deletion": "Account Deletion",
         "account deletion desc": "Erases all data permanently.",
         delete: "Delete",
@@ -158,91 +149,128 @@ i18n.use(initReactI18next).init({
         amount: "Amount",
         "scan successful": "Receipt scanned successfully",
 
-        // ROOT LAYOUT
+        // ROOT LAYOUT / TOUR
         "syncing node": "Syncing Node...",
-
-        // TOUR
         "dashboard overview": "Dashboard Overview",
-
         "tour dashboard desc":
           "This section gives you a complete overview of your financial activity including income, expenses, and savings.",
-
         "tour upload title": "Upload Receipts",
         "tour upload desc":
           "Scan bills and receipts instantly using OCR. Transactions are automatically added for you.",
-
         "tour add transaction title": "Add Transactions",
         "tour add transaction desc":
           "Manually add your income or expenses here.",
-
         "tour stats title": "Financial Statistics",
         "tour stats desc":
           "Track your total income, spending, and net savings in real time.",
-
         "tour logs title": "Recent Activity",
         "tour logs desc":
           "View, edit, or delete your latest financial transactions here.",
-
         "tour analytics title": "Analytics",
         "tour analytics desc":
           "Visualize spending trends and financial patterns with charts.",
-
         "tour ai title": "AI Insights",
         "tour ai desc":
           "Get intelligent financial advice and spending predictions powered by AI.",
-
         "tour reports title": "Reports",
         "tour reports desc": "Generate downloadable PDF financial reports.",
-
         "tour settings title": "Settings",
         "tour settings desc":
           "Customize alerts, savings goals, and preferences.",
-
         "tour profile title": "Your Profile",
         "tour profile desc":
           "Manage your profile and account settings from here.",
-
         "tour next": "Next",
         "tour back": "Back",
         "tour finish": "Finish",
         language: "Language",
-        "no transactions": "No transactions found",
 
+        // TRANSACTIONS CONTROL
+        "update entry": "Update Entry",
+        "new entry": "New Entry",
+        "modifying existing record": "Modifying existing record",
+        user: "User",
+        label: "Label",
+        "flow type": "Flow Type",
+        "amount arrow": "Amount (₹)",
+        "transaction date": "Transaction Date",
+        "update transaction btn": "Update Transaction",
+        "confirm transaction": "Confirm Transaction",
+        "transaction failed": "Transaction failed",
+        food: "Food",
+        transport: "Transport",
+        rent: "Rent",
+        salary: "Salary",
+        entertainment: "Entertainment",
+        health: "Health",
+        "delete transaction confirm":
+          "Are you sure you want to delete this transaction?",
+        "delete transaction failed":
+          "Failed to delete transaction. Please try again.",
+        "receipt failed": "Failed to extract transaction from receipt.",
+        receipt: "Receipt",
 
-"update entry": "Update Entry",
-"new entry": "New Entry",
-"modifying existing record": "Modifying existing record",
-"user": "User",
-"label": "Label",
-"flow type": "Flow Type",
-"amount arrow": "Amount (₹)",
-"transaction date": "Transaction Date",
-"update transaction btn": "Update Transaction",
-"confirm transaction": "Confirm Transaction",
-"transaction failed": "Transaction failed",
-"food": "Food",
-"transport": "Transport",
-"rent": "Rent",
-"salary": "Salary",
-"entertainment": "Entertainment",
-"health": "Health",
-
-
-"delete transaction confirm": "Are you sure you want to delete this transaction?",
-"delete transaction failed": "Failed to delete transaction. Please try again.",
-"receipt failed": "Failed to extract transaction from receipt.",
-"receipt": "Receipt",
-  "budget limit": "Budget Limit Exceeded",
-  "budget limit desc": "You have spent more than your allocated monthly budget:",
-  "savings warning": "Low Savings Alert",
-  "savings warning desc": "Your net savings have dropped below your configured minimum threshold:",
-
+        // AUTH & WARN
+        "budget limit": "Budget Limit Exceeded",
+        "budget limit desc":
+          "You have spent more than your allocated monthly budget:",
+        "savings warning": "Low Savings Alert",
+        "savings warning desc":
+          "Your net savings have dropped below your configured minimum threshold:",
+        "create account": "Create Account",
+        name: "Name",
+        "enter name": "Enter your name",
+        "name required": "Name is required",
+        email: "Email",
+        "enter email": "name@mail.com",
+        "email required": "Email is required",
+        password: "Password",
+        "password required": "Password is required",
+        "sign up": "Sign Up",
+        "already user": "Already a user?",
+        login: "Login",
+        "connection refused": "Connection refused. Please try again.",
+        "homepage.heroBadge": "AI-Powered Smart Expense Tracking",
+        "homepage.heroTitle": "Take absolute control of your money.",
+        "homepage.heroSubtitle":
+          "An automated, highly calibrated visual dashboard engineered to map tracking protocols and secure local asset states.",
+        "homepage.btnRegister": "Register",
+        "homepage.btnLogin": "Login",
+        "homepage.activeSystem": "Active System",
+        "homepage.totalInflow": "Total Inflow",
+        "homepage.netMetrics": "Net Metrics",
+        "homepage.stripeIngestion": "Stripe Ingestion Flow",
+        "homepage.feature1Title": "OCR Receipt Scan",
+        "homepage.feature1Desc":
+          "Extracts structured pricing data straight from layout images into database syncs.",
+        "homepage.feature2Title": "Dynamic Safeguards",
+        "homepage.feature2Desc":
+          "Enforces automated local budget targets. Triggers instant telemetry when broken.",
+        "homepage.feature3Title": "Cryptographic Shield Layer",
+        "homepage.feature3Desc":
+          "Isolated multi-sandbox protocols keep syncing structures completely protected.",
+        "homepage.activationMatrix": "Fast-track pipeline activation matrix",
+        "homepage.footerBrandDesc":
+          "Computational state engine built for efficient expense mapping, asset monitoring, and data privacy.",
+        "homepage.footerCol1Title": "Infrastructure",
+        "homepage.footerCol1Item1": "System Pipeline",
+        "homepage.footerCol1Item2": "OCR Processing",
+        "homepage.footerCol1Item3": "Security Audits",
+        "homepage.footerCol2Title": "Platform Info",
+        "homepage.footerCol2Item1": "Localization Mapping",
+        "homepage.footerCol2Item2": "Open Source",
+        "homepage.footerCol2Item3": "API Framework",
+        "homepage.footerCol3Title": "Contact Us",
+        "homepage.footerAddress": "Hyderabad, Telangana,",
+        "homepage.footerCountry": "India",
+        "homepage.footerCopyright":
+          "© 2026 Cashflow Inc. All computational infrastructure secure.",
       },
     },
 
     hi: {
       translation: {
-        "cashflow": "कैशफ्लो",
+        cashflow: "कैशफ्लो",
         overview: "ओवरव्यू",
         analytics: "विश्लेषण",
         reports: "रिपोर्ट्स",
@@ -255,15 +283,21 @@ i18n.use(initReactI18next).init({
         "ai insights": "एआई इनसाइट्स",
         "expense tracker": "खर्च ट्रैकर",
 
+        // LOGIN / REGISTER SPECIFIC
+        "welcome cashflow": "कैशफ्लो में आपका स्वागत है",
+        "enter credentials":
+          "अपने खाते तक पहुँचने के लिए क्रेडेंशियल दर्ज करें",
+        "authentication failed": "प्रमाणीकरण विफल रहा",
+        forgot: "भूल गए?",
+        "new user": "नए उपयोगकर्ता?",
+
         "total income": "कुल आय",
         "total expense": "कुल खर्च",
         "net savings": "कुल बचत",
-
         "waiting data": "ट्रांज़ैक्शन डेटा का इंतज़ार हो रहा है...",
         "upload receipt": "रसीद अपलोड करें",
         "add transaction": "ट्रांज़ैक्शन जोड़ें",
         "recent logs": "हाल की गतिविधियाँ",
-
         "export pdf": "पीडीएफ डाउनलोड करें",
         "financial report": "वित्तीय रिपोर्ट",
         "financial score": "वित्तीय स्कोर",
@@ -273,7 +307,7 @@ i18n.use(initReactI18next).init({
         "last 7 days": "पिछले 7 दिन",
         "last 30 days": "पिछले 30 दिन",
         "last 3 months": "पिछले 3 महीने",
-        "last 1 year": "पिछला 1 वर्ष",
+        "last 1 year": "पिछले 1 वर्ष",
         score: "स्कोर",
         "overall financial health": "संपूर्ण वित्तीय स्थिति",
         "excellent finance desc":
@@ -292,62 +326,39 @@ i18n.use(initReactI18next).init({
         category: "श्रेणी",
         type: "प्रकार",
         date: "तारीख",
-        // Status labels for Score Card
         excellent: "बेहतरीन",
         stable: "स्थिर",
         moderate: "सामान्य",
         "needs attention": "ध्यान देने की जरूरत",
-
-        // Other missing keys in your code
         "generated on": "जनरेट किया गया",
         "report range": "रिपोर्ट की अवधि",
         "loading reports": "रिपोर्ट लोड हो रही है...",
         "net balance": "कुल शेष",
-
         "edit profile": "प्रोफाइल संपादित करें",
         "save profile": "प्रोफाइल सेव करें",
         "clear transactions": "सभी ट्रांज़ैक्शन हटाएं",
         "restart tour": "ऐप टूर फिर से शुरू करें",
         "guest user": "अतिथि उपयोगकर्ता",
         "no email": "कोई ईमेल नहीं",
-        // Analytics & Goals
-"analytics": "एनालिटिक्स",
-"category breakdown": "श्रेणी विवरण",
-"income vs expense": "आय बनाम खर्च",
-"savings goals": "बचत के लक्ष्य",
-"add goal": "लक्ष्य जोड़ें",
-"no goals": "कोई लक्ष्य नहीं",
-"others": "अन्य",
-"shopping": "खरीदारी",
-"receipt": "रसीद",
-"not available": "उपलब्ध नहीं",
-
+        others: "अन्य",
+        shopping: "खरीदारी",
+        receipt: "रसीद",
+        "not available": "उपलब्ध नहीं",
         "settings subtitle": "वित्तीय सीमाएँ और अकाउंट सुरक्षा प्रबंधित करें।",
-
         "budget limits": "बजट सीमाएँ",
         "monthly budget": "मासिक बजट सीमा",
         "min savings": "न्यूनतम बचत",
         "update limits": "सीमाएँ अपडेट करें",
         syncing: "सिंक हो रहा है...",
-
         "alert prefs": "अलर्ट प्राथमिकताएँ",
-        "savings warning": "बचत चेतावनी",
-        "savings warning desc": "बचत न्यूनतम सीमा से नीचे जाने पर अलर्ट।",
-
-        "budget limit": "बजट सीमा",
-        "budget limit desc": "खर्च बजट से अधिक होने पर सूचित करें।",
-        "monthly budget": "मासिक बजट सीमा",
-
         "change password": "पासवर्ड बदलें",
         "current password": "वर्तमान पासवर्ड",
         "new password": "नया पासवर्ड",
         save: "सेव करें",
         processing: "प्रोसेस हो रहा है...",
-
         "account deletion": "अकाउंट हटाना",
         "account deletion desc": "सभी डेटा स्थायी रूप से मिटा देगा।",
         delete: "हटाएँ",
-
         "ai analysis": "एआई विश्लेषण",
         "generating ai": "एआई इनसाइट्स तैयार हो रही हैं",
         "generating ai insights": "एआई इनसाइट्स तैयार हो रहे हैं",
@@ -360,39 +371,25 @@ i18n.use(initReactI18next).init({
         "smart suggestions": "स्मार्ट सुझाव",
         "ai fallback summary": "फिलहाल एआई इनसाइट्स उपलब्ध नहीं हैं।",
         "ai fallback outlook": "भविष्य के खर्च का विश्लेषण नहीं हो सका।",
-      
-  "analytics": "विश्लेषण",
-  "total income": "कुल आय",
-  "total expense": "कुल व्यय",
-  "top category": "शीर्ष श्रेणी",
-  "savings rate": "बचत दर",
-  "income vs expense": "आय बनाम व्यय",
-  "category breakdown": "श्रेणी विवरण",
-  "savings goals": "बचत लक्ष्य",
-  "add goal": "लक्ष्य जोड़ें",
-  "no goals": "कोई लक्ष्य नहीं",
-  "progress": "प्रगति",
-  "savings": "बचत",
-  "completed": "पूरा हुआ",
-  "deadline": "समय सीमा",
-  "loading analytics": "विश्लेषण लोड हो रहा है...",
-  "income": "आय",
-  "expense": "खर्च",
-  "not available": "उपलब्ध नहीं",
-  "jan": "जनवरी",
-  "feb": "फरवरी",
-  "mar": "मार्च",
-  "apr": "अप्रैल",
-  "may": "मई",
-  "jun": "जून",
-  "jul": "जुलाई",
-  "aug": "अगस्त",
-  "sep": "सितंबर",
-  "oct": "अक्टूबर",
-  "nov": "नवंबर",
-  "dec": "दिसंबर",
-  "others": "अन्य",
-
+        "top category": "शीर्ष श्रेणी",
+        "savings rate": "बचत दर",
+        progress: "प्रगति",
+        savings: "बचत",
+        completed: "पूरा हुआ",
+        deadline: "समय सीमा",
+        "loading analytics": "विश्लेषण लोड हो रहा है...",
+        jan: "जनवरी",
+        feb: "फरवरी",
+        mar: "मार्च",
+        apr: "अप्रैल",
+        may: "मई",
+        jun: "जून",
+        jul: "जुलाई",
+        aug: "अगस्त",
+        sep: "सितंबर",
+        oct: "अक्टूबर",
+        nov: "नवंबर",
+        dec: "दिसंबर",
         "scan receipt": "रसीद स्कैन करें",
         "receipt subtitle": "खर्च विवरण निकालने के लिए बिल या रसीद अपलोड करें।",
         "select image": "रसीद छवि चुनें",
@@ -403,85 +400,117 @@ i18n.use(initReactI18next).init({
         vendor: "विक्रेता",
         amount: "राशि",
         "scan successful": "रसीद सफलतापूर्वक स्कैन हुई",
-
         "syncing node": "सिंक हो रहा है...",
-
         "dashboard overview": "डैशबोर्ड ओवरव्यू",
-
         "tour dashboard desc":
           "यह सेक्शन आपकी आय, खर्च और बचत का पूरा सारांश दिखाता है।",
-
         "tour upload title": "रसीद अपलोड करें",
         "tour upload desc":
           "OCR द्वारा रसीद स्कैन करें और ट्रांज़ैक्शन ऑटोमेटिक जोड़ें।",
-
         "tour add transaction title": "ट्रांज़ैक्शन जोड़ें",
         "tour add transaction desc": "यहाँ अपनी आय या खर्च जोड़ें।",
-
         "tour stats title": "वित्तीय आँकड़े",
         "tour stats desc": "अपनी आय, खर्च और बचत को रियल टाइम में ट्रैक करें।",
-
         "tour logs title": "हाल की गतिविधि",
         "tour logs desc": "अपनी हाल की गतिविधियाँ देखें और प्रबंधित करें।",
-
         "tour analytics title": "विश्लेषण",
         "tour analytics desc": "चार्ट्स द्वारा खर्च पैटर्न समझें।",
-
         "tour ai title": "एआई इनसाइट्स",
         "tour ai desc": "AI आधारित वित्तीय सुझाव प्राप्त करें।",
-
         "tour reports title": "रिपोर्ट्स",
         "tour reports desc": "डाउनलोड करने योग्य रिपोर्ट्स बनाएँ।",
-
         "tour settings title": "सेटिंग्स",
         "tour settings desc": "अलर्ट्स और प्राथमिकताएँ बदलें।",
-
         "tour profile title": "आपकी प्रोफाइल",
         "tour profile desc": "यहाँ से अपनी प्रोफाइल मैनेज करें।",
-
         "tour next": "आगे",
         "tour back": "पीछे",
         "tour finish": "समाप्त",
         language: "भाषा",
         "no transactions": "कोई लेनदेन नहीं मिला",
-
-
-"update entry": "एंट्री अपडेट करें",
-"new entry": "नई एंट्री",
-"modifying existing record": "मौजूदा रिकॉर्ड में बदलाव",
-"user": "उपयोगकर्ता",
-"label": "लेबल",
-"flow type": "फ्लो का प्रकार",
-"amount arrow": "राशि (₹)",
-"transaction date": "लेनदेन की तारीख",
-"update transaction btn": "ट्रांज़ैक्शन अपडेट करें",
-"confirm transaction": "ट्रांज़ैक्शन की पुष्टि करें",
-"transaction failed": "लेनदेन विफल रहा",
-"food": "भोजन",
-"transport": "यातायात",
-"rent": "किराया",
-"salary": "वेतन",
-"entertainment": "मनोरंजन",
-"health": "स्वास्थ्य",
-
-
-
-"delete transaction confirm": "क्या आप वाकई इस ट्रांज़ैक्शन को हटाना चाहते हैं?",
-"delete transaction failed": "ट्रांज़ैक्शन हटाने में विफल। कृपया पुन: प्रयास करें।",
-"receipt failed": "रसीद से विवरण निकालने में विफल।",
-"receipt": "रसीद",
-"budget limit": "बजट सीमा पार हो गई",
-  "budget limit desc": "आपने अपने तय किए गए मासिक बजट से ज़्यादा खर्च कर दिया है:",
-  "savings warning": "कम बचत की चेतावनी",
-  "savings warning desc": "आपकी कुल बचत आपके तय किए गए न्यूनतम स्तर से नीचे आ गई है:",
+        "update entry": "एंट्री अपडेट करें",
+        "new entry": "नई एंट्री",
+        "modifying existing record": "मौजूदा रिकॉर्ड में बदलाव",
+        user: "उपयोगकर्ता",
+        label: "लेबल",
+        "flow type": "फ्लो का प्रकार",
+        "amount arrow": "राशि (₹)",
+        "transaction date": "लेनदेन की तारीख",
+        "update transaction btn": "ट्रांज़ैक्शन अपडेट करें",
+        "confirm transaction": "ट्रांज़ैक्शन की पुष्टि करें",
+        "transaction failed": "लेनदेन विफल रहा",
+        food: "भोजन",
+        transport: "यातायात",
+        rent: "किराया",
+        salary: "वेतन",
+        entertainment: "मनोरंजन",
+        health: "स्वास्थ्य",
+        "delete transaction confirm":
+          "क्या आप वाकई इस ट्रांज़ैक्शन को हटाना चाहते हैं?",
+        "delete transaction failed":
+          "ट्रांज़ैक्शन हटाने में विफल। कृपया पुन: प्रयास करें।",
+        "receipt failed": "रसीद से विवरण निकालने में विफल।",
+        "budget limit": "बजट सीमा पार हो गई",
+        "budget limit desc":
+          "आपने अपने तय किए गए मासिक बजट से ज़्यादा खर्च कर दिया है:",
+        "savings warning": "कम बचत की चेतावनी",
+        "savings warning desc":
+          "आपकी कुल बचत आपके तय किए गए न्यूनतम स्तर से नीचे आ गई है:",
+        "create account": "खाता बनाएं",
+        name: "नाम",
+        "enter name": "अपना नाम दर्ज करें",
+        "name required": "नाम दर्ज करना अनिवार्य है",
+        email: "ईमेल",
+        "enter email": "name@mail.com",
+        "email required": "ईमेल दर्ज करना अनिवार्य है",
+        password: "पासवर्ड",
+        "password required": "पासवर्ड दर्ज करना अनिवार्य है",
+        "sign up": "साइन अप करें",
+        "already user": "पहले से खाता है?",
+        login: "लॉगिन करें",
+        "connection refused": "कनेक्शन विफल रहा। कृपया पुनः प्रयास करें।",
+        "homepage.heroBadge": "एआई-संचालित स्मार्ट व्यय ट्रैकिंग",
+        "homepage.heroTitle": "अपने पैसे पर पूर्ण नियंत्रण प्राप्त करें।",
+        "homepage.heroSubtitle":
+          "एक स्वचालित, अत्यधिक कैलिब्रेटेड विज़ुअल डैशबोर्ड जिसे ट्रैकिंग प्रोटोकॉल मैप करने और स्थानीय संपत्ति स्थितियों को सुरक्षित करने के लिए इंजीनियर किया गया है।",
+        "homepage.btnRegister": "पंजीकरण करें",
+        "homepage.btnLogin": "लॉगिन",
+        "homepage.activeSystem": "सक्रिय प्रणाली",
+        "homepage.totalInflow": "कुल आवक (Inflow)",
+        "homepage.netMetrics": "नेट मेट्रिक्स",
+        "homepage.stripeIngestion": "स्ट्राइप इनजेशन फ्लो",
+        "homepage.feature1Title": "ओसीआर रसीद स्कैन",
+        "homepage.feature1Desc":
+          "अपने बिलों को तुरंत स्कैन करें और संरचित मूल्य निर्धारण डेटा को स्वचालित रूप से अपने रिकॉर्ड में जोड़ें।",
+        "homepage.feature2Title": "गतिशील सुरक्षा उपाय",
+        "homepage.feature2Desc":
+          "अपने सख्त बजट नियमों को कॉन्फ़िगर करें। निर्धारित सीमा से अधिक होने पर तुरंत अलर्ट प्राप्त करें।",
+        "homepage.feature3Title": "क्रिप्टोग्राफिक शील्ड लेयर",
+        "homepage.feature3Desc":
+          "एंड-टू-एंड उपयोगकर्ता डेटा सुरक्षा के साथ आपके वित्तीय लॉग हमेशा पूरी तरह सुरक्षित और पृथक रहते हैं।",
+        "homepage.activationMatrix": "फास्ट-ट्रैक पाइपलाइन एक्टिवेशन मैट्रिक्स",
+        "homepage.footerBrandDesc":
+          "कुशल व्यय मैपिंग, संपत्ति की निगरानी और डेटा गोपनीयता के लिए बनाया गया एक कंप्यूटेशनल इंजन।",
+        "homepage.footerCol1Title": "बुनियादी ढांचा",
+        "homepage.footerCol1Item1": "सिस्टम पाइपलाइन",
+        "homepage.footerCol1Item2": "ओसीआर प्रोसेसिंग",
+        "homepage.footerCol1Item3": "सुरक्षा ऑडिट",
+        "homepage.footerCol2Title": "प्लेटफ़ॉर्म जानकारी",
+        "homepage.footerCol2Item1": "स्थानीयकरण मैपिंग",
+        "homepage.footerCol2Item2": "ओपन सोर्स",
+        "homepage.footerCol2Item3": "एपीआई फ्रेमवर्क",
+        "homepage.footerCol3Title": "संपर्क करें",
+        "homepage.footerAddress": "हैदराबाद, तेलंगाना,",
+        "homepage.footerCountry": "भारत",
+        "homepage.footerCopyright":
+          "© 2026 Cashflow Inc. सभी कंप्यूटेशनल बुनियादी ढांचे सुरक्षित हैं।",
       },
     },
 
     te: {
       translation: {
-        "cashflow": "క్యాష్ ఫ్లో",
+        cashflow: "క్యాష్ ఫ్లో",
         overview: "సారాంశం",
-        "no transactions": "ఎటువంటి లావాదేవీలు లేవు",
         analytics: "విశ్లేషణలు",
         reports: "రిపోర్ట్స్",
         profile: "ప్రొఫైల్",
@@ -493,150 +522,118 @@ i18n.use(initReactI18next).init({
         "ai insights": "ఏఐ విశ్లేషణలు",
         "expense tracker": "ఖర్చుల ట్రాకర్",
 
+        // LOGIN / REGISTER SPECIFIC
+        "welcome cashflow": "క్యాష్ ఫ్లోకు స్వాగతం",
+        "enter credentials":
+          "మీ ఖాతాను యాక్సెస్ చేయడానికి మీ వివరాలను నమోదు చేయండి",
+        "authentication failed": "ధృవీకరణ విఫలమైంది",
+        forgot: "మరచిపోయారా?",
+        "new user": "కొత్త వినియోగదారుడా?",
+
         "total income": "మొత్తం ఆదాయం",
         "total expense": "మొత్తం ఖర్చు",
         "net savings": "మొత్తం పొదుపు",
-
         "waiting data": "లావాదేవీ డేటా కోసం వేచి ఉంది...",
         "upload receipt": "రసీదు అప్లోడ్ చేయి",
         "add transaction": "లావాదేవీ జోడించు",
         "recent logs": "ఇటీవలి లాగ్స్",
-
         "export pdf": "PDF ఎగుమతి చేయి",
         "financial report": "ఆర్థిక రిపోర్ట్",
         "financial score": "ఆర్థిక స్కోర్",
         "monthly statement": "మాసిక ఆర్థిక నివేదిక",
         "transaction ledger": "లావాదేవీ రికార్డు",
         "financial statements": "ఆర్థిక నివేదికలు",
-        // Analytics & Goals
-"analytics": "విశ్లేషణలు",
-"category breakdown": "వర్గం విశ్లేషణ",
-"income vs expense": "ఆదాయం వర్సెస్ ఖర్చు",
-"savings goals": "పొదుపు లక్ష్యాలు",
-"add goal": "లక్ష్యాన్ని జోడించు",
-"no goals": "లక్ష్యాలు లేవు",
-"others": "ఇతరాలు",
-"shopping": "షాపింగ్",
-"receipt": "రశీదు",
-"not available": "అందుబాటులో లేదు",
-
-        "edit profile": "ప్రొఫైల్ మార్చు",
-        "save profile": "ప్రొఫైల్ సేవ్ చేయి",
-        "clear transactions": "అన్ని లావాదేవీలు తొలగించు",
-        "restart tour": "యాప్ టూర్ మళ్లీ ప్రారంభించు",
-        "guest user": "అతిథి వినియోగదారు",
-        "no email": "ఈమెయిల్ లేదు",
-
-        "settings subtitle":
-          "ఆర్థిక పరిమితులు మరియు ఖాతా భద్రతను నిర్వహించండి.",
-
-        "budget limits": "బడ్జెట్ పరిమితులు",
-        "monthly budget": "మాసిక బడ్జెట్ పరిమితి",
-        "min savings": "కనిష్ట పొదుపు",
-        "update limits": "పరిమితులు నవీకరించు",
-        syncing: "సింక్ అవుతోంది...",
         "last 7 days": "గత 7 రోజులు",
         "last 30 days": "గత 30 రోజులు",
         "last 3 months": "గత 3 నెలలు",
         "last 1 year": "గత 1 సంవత్సరం",
         score: "స్కోర్",
         "overall financial health": "మొత్తం ఆర్థిక స్థితి",
-
         "excellent finance desc": "మీ ఆర్థిక స్థితి చాలా మంచి సమతుల్యతలో ఉంది.",
-
         "stable finance desc":
           "మీ ఆర్థిక పరిస్థితి స్థిరంగా ఉంది మరియు ఖర్చులు నియంత్రణలో ఉన్నాయి.",
-
         "moderate finance desc":
           "మీ ఆర్థిక పరిస్థితి సాధారణంగా ఉంది మరియు మంచి ప్రణాళిక అవసరం.",
-
         "poor finance desc":
           "మీ ఖర్చులు ఎక్కువగా ఉన్నాయి మరియు పొదుపు తక్కువగా ఉంది.",
-
         "monthly financial statement": "మాసిక ఆర్థిక నివేదిక",
-
         month: "నెల",
         income: "ఆదాయం",
         expense: "ఖర్చు",
         balance: "మిగులు",
-
         description: "వివరణ",
         category: "వర్గం",
         type: "రకం",
         date: "తేదీ",
-
+        "edit profile": "ప్రొఫైల్ మార్చు",
+        "save profile": "ప్రొఫైల్ సేవ్ చేయి",
+        "clear transactions": "అన్ని లావాదేవీలు తొలగించు",
+        "restart tour": "యాప్ టూర్ మళ్లీ ప్రారంభించు",
+        "guest user": "అతిథి వినియోగదారు",
+        "no email": "ఈమెయిల్ లేదు",
+        others: "ఇతరాలు",
+        shopping: "షాపింగ్",
+        receipt: "రశీదు",
+        "not available": "అందుబాటులో లేదు",
+        "settings subtitle":
+          "ఆర్థిక పరిమితులు మరియు ఖాతా భద్రతను నిర్వహించండి.",
+        "budget limits": "బడ్జెట్ పరిమితులు",
+        "monthly budget": "మాసిక బడ్జెట్ పరిమితి",
+        "min savings": "కనిష్ట పొదుపు",
+        "update limits": "పరిమితులు నవీకరించు",
+        syncing: "సింక్ అవుతోంది...",
         "alert prefs": "అలర్ట్ ప్రాధాన్యతలు",
-        "savings warning": "పొదుపు హెచ్చరిక",
-        "savings warning desc": "పొదుపు పరిమితి కంటే తగ్గితే హెచ్చరిక.",
-
-        "budget limit": "బడ్జెట్ పరిమితి",
-        "budget limit desc": "ఖర్చు బడ్జెట్ మించితే తెలియజేయండి.",
-
         "change password": "పాస్‌వర్డ్ మార్చండి",
         "current password": "ప్రస్తుత పాస్‌వర్డ్",
         "new password": "కొత్త పాస్‌వర్డ్",
         save: "సేవ్ చేయి",
         processing: "ప్రాసెస్ అవుతోంది...",
-
         "account deletion": "ఖాతా తొలగింపు",
         "account deletion desc": "అన్ని డేటాను శాశ్వతంగా తొలగిస్తుంది.",
         delete: "తొలగించు",
-        // Status labels for Score Card
         excellent: "అద్భుతమైనది",
         stable: "స్థిరంగా ఉంది",
         moderate: "సాధారణం",
         "needs attention": "శ్రద్ధ అవసరం",
-
-        // Other missing keys in your code
         "generated on": "నివేదిక తేదీ",
-        "report range": "రిపోర్ట్ పరిధి",
+        "report range": "रिपोर्ठ परिधि",
         "loading reports": "రిపోర్ట్స్ లోడ్ అవుతున్నాయి...",
         "net balance": "మొత్తం మిగులు",
-
         "ai analysis": "ఏఐ విశ్లేషణ",
         "generating ai insights": "ఏఐ విశ్లేషణలు రూపొందుతున్నాయి",
         "generating ai": "ఏఐ ఇన్‌సైట్స్ రూపొందుతున్నాయి",
         "ai loading desc":
           "ఖర్చుల నమూనాలు మరియు భవిష్యత్ ట్రెండ్స్ విశ్లేషించబడుతున్నాయి...",
         "financial summary": "ఆర్థిక సారాంశం",
-        "risk level": "ప్రమాద స్థాయి",
+        "risk level": "ప్రమాద శాతం",
         "future outlook": "భవిష్యత్ అంచనా",
         "predicted expense": "తదుపరి నెల అంచనా ఖర్చు",
         "smart suggestions": "స్మార్ట్ సూచనలు",
         "ai fallback summary": "ప్రస్తుతం ఏఐ ఇన్‌సైట్స్ అందుబాటులో లేవు.",
         "ai fallback outlook": "భవిష్యత్ ఖర్చు విశ్లేషించబడలేదు.",
-
-  "analytics": "విశ్లేషణలు",
-  "total income": "మొత్తం ఆదాయం",
-  "total expense": "మొత్తం ఖర్చు",
-  "top category": "అగ్ర వర్గం",
-  "savings rate": "పొదుపు రేటు",
-  "income vs expense": "ఆదాయం వర్సెస్ ఖర్చు",
-  "category breakdown": "వర్గం విభజన",
-  "savings goals": "పొదుపు లక్ష్యాలు",
-  "add goal": "లక్ష్యాన్ని జోడించు",
-  "no goals": "లక్ష్యాలు లేవు",
-  "progress": "పురోగతి",
-  "savings": "పొదుపు",
-  "completed": "పూర్తయింది",
-  "deadline": "గడువు",
-  "loading analytics": "విశ్లేషణలను లోడ్ చేస్తోంది...",
-  "income": "ఆదాయం",
-  "expense": "ఖర్చు",
-  "not available": "అందుబాటులో లేదు",
-  "jan": "జనవరి",
-  "feb": "ఫిబ్రవరి",
-  "mar": "మార్చి",
-  "apr": "ఏప్రిల్",
-  "may": "మే",
-  "jun": "జూన్",
-  "jul": "జూలై",
-  "aug": "ఆగస్టు",
-  "sep": "సెప్టెంబర్",
-  "oct": "అక్టోబర్",
-  "nov": "నవంబర్",
-  "dec": "డిసెంబర్",
-  "others": "ఇతరములు",
+        "top category": "అగ్ర వర్గం",
+        "savings rate": "పొదుపు రేటు",
+        "category breakdown": "వర్గం విభజన",
+        "savings goals": "పొదుపు లక్ష్యాలు",
+        "add goal": "లక్ష్యాన్ని జోడించు",
+        "no goals": "లక్ష్యాలు లేవు",
+        progress: "పురోగతి",
+        savings: "పొదుపు",
+        completed: "పూర్తయింది",
+        deadline: "గడువు",
+        "loading analytics": "విశ్లేషణలను లోడ్ చేస్తోంది...",
+        jan: "జనవరి",
+        feb: "ఫిబ్రవరి",
+        mar: "మార్చి",
+        apr: "ఏప్రిల్",
+        may: "మే",
+        jun: "జూన్",
+        jul: "జూలై",
+        aug: "ఆగస్టు",
+        sep: "సెప్టెంబర్",
+        oct: "అక్టోబర్",
+        nov: "నవంబర్",
+        dec: "డిసెంబర్",
         "scan receipt": "రసీదు స్కాన్ చేయి",
         "receipt subtitle":
           "ఖర్చు వివరాలు పొందడానికి బిల్ లేదా రసీదు అప్లోడ్ చేయండి.",
@@ -648,78 +645,116 @@ i18n.use(initReactI18next).init({
         vendor: "విక్రేత",
         amount: "మొత్తం",
         "scan successful": "రసీదు విజయవంతంగా స్కాన్ అయింది",
-
         "syncing node": "సింక్ అవుతోంది...",
-
         "dashboard overview": "డాష్‌బోర్డ్ సారాంశం",
-
         "tour dashboard desc":
           "ఈ విభాగం మీ ఆదాయం, ఖర్చులు మరియు పొదుపుల వివరాలను చూపిస్తుంది.",
-
         "tour upload title": "రసీదులు అప్లోడ్ చేయండి",
         "tour upload desc":
           "OCR ద్వారా రసీదులు స్కాన్ చేసి లావాదేవీలు జోడించండి.",
-
         "tour add transaction title": "లావాదేవీ జోడించండి",
         "tour add transaction desc": "మీ ఆదాయం లేదా ఖర్చులను జోడించండి.",
-
         "tour stats title": "ఆర్థిక గణాంకాలు",
         "tour stats desc": "మీ ఆదాయం, ఖర్చులు మరియు పొదుపులను ట్రాక్ చేయండి.",
-
         "tour logs title": "ఇటీవలి కార్యకలాపాలు",
         "tour logs desc": "మీ తాజా లావాదేవీలను చూడండి మరియు నిర్వహించండి.",
-
         "tour analytics title": "విశ్లేషణలు",
         "tour analytics desc": "చార్ట్స్ ద్వారా ఖర్చుల నమూనాలను విశ్లేషించండి.",
-
         "tour ai title": "ఏఐ విశ్లేషణలు",
         "tour ai desc": "AI ఆధారిత ఆర్థిక సూచనలు పొందండి.",
-
         "tour reports title": "రిపోర్ట్స్",
         "tour reports desc": "డౌన్‌లోడ్ చేయగల రిపోర్టులను సృష్టించండి.",
-
         "tour settings title": "సెట్టింగ్స్",
         "tour settings desc": "అలర్ట్స్ మరియు ప్రాధాన్యతలను మార్చండి.",
-
         "tour profile title": "మీ ప్రొఫైల్",
         "tour profile desc": "ఇక్కడి నుండి మీ ప్రొఫైల్ నిర్వహించండి.",
-
         "tour next": "తర్వాత",
         "tour back": "వెనక్కి",
         "tour finish": "ముగించు",
         language: "భాష",
-
-
-"update entry": "వివరాలను నవీకరించు",
-"new entry": "కొత్త నివేదిక",
-"modifying existing record": "ఇప్పటికే ఉన్న రికార్డును మారుస్తున్నారు",
-"user": "వినియోగదారుడు",
-"label": "లేబుల్",
-"flow type": "ప్రవాహ రకం",
-"amount arrow": "మొత్తం (₹)",
-"transaction date": "లావాదేవీ తేదీ",
-"update transaction btn": "లావాదేవీని నవీకరించు",
-"confirm transaction": "లావాదేవీని నిర్ధారించండి",
-"transaction failed": "లావాదేవీ విఫలమైంది",
-"food": "ఆహారం",
-"transport": "రవాణా",
-"rent": "అద్దె",
-"salary": "జీతం",
-"entertainment": "వినోదం",
-"health": "ఆరోగ్యం",
-
-
-"delete transaction confirm": "మీరు ఖచ్చితంగా ఈ లావాదేవీని తొలగించాలనుకుంటున్నారా?",
-"delete transaction failed": "లావాదేవీని తొలగించడం విఫలమైంది. దయచేసి మళ్ళీ ప్రయత్నించండి.",
-"receipt failed": "రశీదు నుండి వివరాలను సేకరించడం విఫలమైంది.",
-"receipt": "రశీదు",
-"budget limit": "బడ్జెట్ పరిమితి దాటిపోయింది",
-  "budget limit desc": "మీరు కేటాయించిన నెలవారీ బడ్జెట్ కంటే ఎక్కువ ఖర్చు చేశారు:",
-  "savings warning": "తక్కువ పొదుపు హెచ్చరిక",
-  "savings warning desc": "మీ నికర పొదుపు మీరు నిర్ణయించుకున్న కనీస పరిమితి కంటే తగ్గిపోయింది:",
+        "no transactions": "ఎటువంటి లావాదేవీలు లేవు",
+        "update entry": "వివరాలను నవీకరించు",
+        "new entry": "కొత్త నివేదిక",
+        "modifying existing record": "ఇప్పటికే ఉన్న రికార్డును మారుస్తున్నారు",
+        user: "వినియోగదారుడు",
+        label: "లేబుల్",
+        "flow type": "ప్రవాహ రకం",
+        "amount arrow": "మొత్తం (₹)",
+        "transaction date": "లావాదేవీ తేదీ",
+        "update transaction btn": "లావాదేవీని నవీకరించు",
+        "confirm transaction": "లావాదేవీని నిర్ధారించండి",
+        "transaction failed": "లావాదేవీ విఫలమైంది",
+        food: "ఆహారం",
+        transport: "రవాణా",
+        rent: "అద్దె",
+        salary: "జీతం",
+        entertainment: "வినోదం",
+        health: "ఆరోగ్యం",
+        "delete transaction confirm":
+          "మీరు ఖచ్చితంగా ఈ లావాదేవీని తొలగించాలనుకుంటున్నారా?",
+        "delete transaction failed":
+          "లావాదేవీని తొలగించడం విఫలమైంది. దయచేసి మళ్ళీ ప్రయత్నించండి.",
+        "receipt failed": "రశీదు నుండి వివరాలను సేకరించడం విఫలమైంది.",
+        receipt: "రశీదు",
+        "budget limit": "బడ్జెట్ పరిమితి దాటిపోయింది",
+        "budget limit desc":
+          "మీరు కేటాయించిన నెలవారీ బడ్జెట్ కంటే ఎక్కువ ఖర్చు చేశారు:",
+        "savings warning": "తక్కువ పొదుపు హెచ్చరిక",
+        "savings warning desc":
+          "మీ నికర పొదుపు మీరు నిర్ణయించుకున్న కనీస పరిమితి కంటే తగ్గిపోయింది:",
+        "create account": "ఖాతాను సృష్టించండి",
+        name: "పేరు",
+        "enter name": "మీ పేరును నమోదు చేయండి",
+        "name required": "పేరు నమోదు చేయడం తప్పనిసరి",
+        email: "ఇమెయిల్",
+        "enter email": "name@mail.com",
+        "email required": "ఇమెయిల్ నమోదు చేయడం తప్పనిసరి",
+        password: "పాస్‌వర్డ్",
+        "password required": "పాస్‌వర్డ్ నమోదు చేయడం తప్పనిసరి",
+        "sign up": "సైన్ అప్",
+        "already user": "ఇప్పటికే ఖాతా ఉందా?",
+        login: "లాగిన్",
+        "connection refused": "కనెక్షన్ విఫలమైంది. దయచేసి మళ్ళీ ప్రయత్నించండి.",
+        "homepage.heroBadge": "AI-ఆధారిత స్మార్ట్ ఖర్చుల ట్రాకింగ్",
+        "homepage.heroTitle": "మీ డబ్బుపై సంపూర్ణ నియంత్రణ తీసుకోండి.",
+        "homepage.heroSubtitle":
+          "ట్రాకింగ్ ప్రోటోకాల్‌లను మ్యాప్ చేయడానికి మరియు స్థానిక ఆస్తి స్థితిగతులను సురక్షితం చేయడానికి రూపొందించబడిన ఒక ఆటోమేటెడ్ డ్యాష్‌బోర్డ్.",
+        "homepage.btnRegister": "రిజిస్టర్",
+        "homepage.btnLogin": "లాగిన్",
+        "homepage.activeSystem": "యాక్టివ్ సిస్టమ్",
+        "homepage.totalInflow": "మొత్తం ఇన్‌ఫ్లో",
+        "homepage.netMetrics": "నెట్ మెట్రిక్స్",
+        "homepage.stripeIngestion": "స్ట్రైప్ ఇంజెషన్ ఫ్లో",
+        "homepage.feature1Title": "OCR రసీదు స్కాన్",
+        "homepage.feature1Desc":
+          "మీ బిల్లులను తక్షణమే స్కాన్ చేయండి మరియు డేటాను ఆటోమేటిక్‌గా రికార్డ్‌లలో సేవ్ చేయండి.",
+        "homepage.feature2Title": "డైనమిక్ రక్షణలు",
+        "homepage.feature2Desc":
+          "మీ బడ్జెట్ నియమాలను కాన్ఫిగర్ చేయండి. పరిమితి దాటినప్పుడు తక్షణ అలర్ట్‌లను పొందండి.",
+        "homepage.feature3Title": "క్రిప్టోగ్రాఫిక్ షీల్డ్ లేయర్",
+        "homepage.feature3Desc":
+          "ఎండ్-టు-ఎండ్ యూజర్ స్టేట్ ప్రొటెక్షన్‌తో మీ ఆర్థిక లాగ్‌లు పూర్తిగా సురక్షితంగా ఉంటాయి.",
+        "homepage.activationMatrix":
+          "ఫాస్ట్ ట్రాక్ పైప్‌లైన్ యాక్టివేషన్ మ్యాట్రిక్స్",
+        "homepage.footerBrandDesc":
+          "సమర్థవంతమైన ఖర్చుల మ్యాపింగ్, ఆస్తి పర్యవేక్షణ మరియు డేటా గోప్యత కోసం నిర్మించబడిన కంప్యూటేషనల్ ఇంజిన్.",
+        "homepage.footerCol1Title": "ఇన్‌ఫ్రాస్ట్రక్చర్",
+        "homepage.footerCol1Item1": "సిస్టమ్ పైప్‌లైన్",
+        "homepage.footerCol1Item2": "OCR ప్రాసెసింగ్",
+        "homepage.footerCol1Item3": "సెక్యూరిటీ ఆడిట్స్",
+        "homepage.footerCol2Title": "ప్లాట్‌ఫారమ్ సమాచారం",
+        "homepage.footerCol2Item1": "లోకలైజేషన్ మ్యాపింగ్",
+        "homepage.footerCol2Item2": "Open Source",
+        "homepage.footerCol2Item3": "API ఫ్రేమ్‌వర్క్",
+        "homepage.footerCol3Title": "మమ్మల్ని సంప్రదించండి",
+        "homepage.footerAddress": "హైదరాబాద్, తెలంగాణ,",
+        "homepage.footerCountry": "భారతదేశం",
+        "homepage.footerCopyright":
+          "© 2026 Cashflow Inc. అన్ని కంప్యూటేషనల్ ఇన్‌ఫ్రాస్ట్రక్చర్‌లు సురక్షితం.",
       },
     },
   },
+
 
   lng: localStorage.getItem("lang") || "en",
   fallbackLng: "en",

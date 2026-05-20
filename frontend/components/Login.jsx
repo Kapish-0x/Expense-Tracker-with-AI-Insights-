@@ -45,7 +45,7 @@ function Login() {
   };
 
   return (
-      <div className="w-full max-w-120 mx-auto min-h-screen flex flex-col justify-center px-4 transition-all duration-700 ease-in-out">
+    <div className="w-full max-w-120 mx-auto min-h-screen flex flex-col justify-center px-4 transition-all duration-700 ease-in-out">
       {/* HEADER */}
       <div className="text-center mb-12">
         <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-950 mb-6 shadow-xl shadow-slate-200">
@@ -68,8 +68,7 @@ function Login() {
       {/* ERROR */}
       {error && (
         <div className="bg-orange-50 border border-orange-100 text-orange-700 text-xs py-3 px-4 rounded-xl mb-8 text-center font-medium animate-in fade-in slide-in-from-top-2">
-          {t("authentication failed")}:
-          {" "}
+          {t("authentication failed")}:{" "}
           {error}
         </div>
       )}
@@ -141,7 +140,7 @@ function Login() {
             <Loader2
               className="animate-spin"
               size={20}
-            />
+            />
           ) : (
             <span className="tracking-wide text-sm">
               {t("login")}
